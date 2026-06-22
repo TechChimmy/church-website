@@ -1,10 +1,10 @@
 "use client";
 
 const DOCTRINE_ITEMS = [
-  { id: 1, title: "The Word",   desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 2, title: "The Faith",  desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 3, title: "The Spirit", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 4, title: "The Church", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+  { id: 1, image: "/images/doctrine/word.jpg",  title: "The Word", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+  { id: 2, image: "/images/doctrine/faith.jpg", title: "The Faith",  desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+  { id: 3, image: "/images/doctrine/spirit.jpg", title: "The Spirit", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+  { id: 4, image: "/images/doctrine/church.jpg", title: "The Church", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
 ];
 
 export default function OurDoctrine() {
@@ -53,8 +53,11 @@ export default function OurDoctrine() {
                   el.style.transform = "";
                 }}
               >
-                <span className="font-lato text-[11px] uppercase tracking-wider"
-                  style={{ color: "rgba(140,58,99,0.5)" }}>Image</span>
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h4 className="font-playfair text-[14px] sm:text-[15px] font-semibold mb-2
                              transition-colors duration-200 group-hover:text-[var(--burgundy)]"

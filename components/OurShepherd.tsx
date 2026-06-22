@@ -47,13 +47,11 @@ export default function OurShepherd({ heading, body, imageUrl }: OurShepherdProp
       <div className="relative overflow-hidden order-first sm:order-last">
         <div
           className="w-full h-full flex items-center justify-center min-h-[250px] sm:min-h-[420px]"
-          style={imageUrl ? {
-            backgroundImage: `url(${imageUrl})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          } : {
-            background: "linear-gradient(135deg, #8C3A63, #6D2C4E, #A04A74)",
-          }}
+          style={{
+          backgroundImage: "url('/images/about/pastor.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
         >
           {!imageUrl && (
             <span className="font-lato text-[13px] uppercase tracking-widest"

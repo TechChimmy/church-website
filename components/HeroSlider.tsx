@@ -63,11 +63,11 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
             <motion.div
               key={slide.id}
               className={`absolute inset-0 bg-gradient-to-br ${slide.gradient ?? "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]"}`}
-              style={slide.imageUrl ? {
-                backgroundImage: `url(${slide.imageUrl})`,
+              style={ {
+                backgroundImage: `url(/images/hero/slide-${i + 1}.jpg)`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
-              } : {}}
+              } }
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}

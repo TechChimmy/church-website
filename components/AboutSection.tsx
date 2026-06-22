@@ -46,14 +46,12 @@ export default function AboutSection({ heading, body }: AboutSectionProps) {
       </div>
 
       {/* Right — image */}
-      <div className="relative overflow-hidden order-first sm:order-last"
-        style={{ background: "linear-gradient(135deg, #6D2C4E, #4A1A35, #8C3A63)" }}>
-        <div className="w-full h-full flex items-center justify-center min-h-[240px] sm:min-h-[380px]">
-          <span className="font-lato text-[13px] uppercase tracking-widest"
-            style={{ color: "rgba(243,233,229,0.2)" }}>
-            Image
-          </span>
-        </div>
+      <div className="relative overflow-hidden order-first sm:order-last min-h-[380px]">
+        <img
+          src="/images/about/section.jpg"
+          alt="About Us"
+          className="w-full h-full object-cover"
+        />
       </div>
     </section>
   );

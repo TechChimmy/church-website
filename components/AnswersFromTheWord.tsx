@@ -107,16 +107,13 @@ export default function AnswersFromTheWord() {
                 </div>
 
                 {/* Image */}
+                {/* Image */}
                 <div className={item.imageLeft ? "order-1" : "order-2"}>
-                  <div className="w-full flex items-center justify-center rounded-sm"
-                    style={{
-                      minHeight: "210px",
-                      background: "linear-gradient(135deg, rgba(140,58,99,0.1), rgba(109,44,78,0.18))",
-                      border: "1px solid rgba(140,58,99,0.12)",
-                    }}>
-                    <span className="font-lato text-[11px] uppercase tracking-wider"
-                      style={{ color: "rgba(140,58,99,0.4)" }}>Image</span>
-                  </div>
+                  <img
+                    src={`/images/answers/answer-${item.id}.jpg`}
+                    alt={item.title}
+                    className="w-full h-[210px] object-cover rounded-sm"
+                  />
                 </div>
               </div>
             ))}

@@ -1,18 +1,22 @@
 "use client";
+import Image from "next/image";
 
 const ACTIVE_ITEMS = [
   {
     id: 1, imageLeft: true,
+    image: "/images/activity/fellowship.jpg",
     title: "Fellowship Groups",
     desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
   },
   {
     id: 2, imageLeft: false,
+    image: "/images/activity/retreat.jpg",
     title: "Church Retreat",
     desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
   },
   {
     id: 3, imageLeft: true,
+    image: "/images/activity/evangelical.jpg",
     title: "Evangelical Sunday",
     desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
   },
@@ -49,17 +53,13 @@ export default function WeStayActive() {
               className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-start">
               {/* Image */}
               <div className={`${item.imageLeft ? "sm:order-1" : "sm:order-2"} order-1`}>
-                <div
-                  className="w-full flex items-center justify-center rounded-sm overflow-hidden"
-                  style={{
-                    minHeight: "220px",
-                    background: "linear-gradient(135deg, rgba(140,58,99,0.12), rgba(109,44,78,0.2))",
-                    border: "1px solid rgba(140,58,99,0.12)",
-                  }}
-                >
-                  <span className="font-lato text-[12px] uppercase tracking-wider"
-                    style={{ color: "rgba(140,58,99,0.4)" }}>Image</span>
-                </div>
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  width={800}
+                  height={500}
+                  className="w-full h-[320px] object-cover rounded-sm"
+                />
               </div>
 
               {/* Text */}
