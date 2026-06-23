@@ -1,11 +1,16 @@
 "use client";
 
-export default function EventsHero() {
+type EventsHeroProps = {
+  imageUrl?: string;
+};
+
+export default function EventsHero({ imageUrl }: EventsHeroProps) {
+  const bg = imageUrl || "/images/banners/events.jpg";
   return (
     <section
       className="relative w-full h-[220px] overflow-hidden flex items-center justify-center"
       style={{
-        backgroundImage: "url('/images/banners/events.jpg')",
+        backgroundImage: `url('${bg}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import ImageUploader from "@/components/admin/ImageUploader";
 import {
-  AdminPageHeader, Card, Field, Input, Textarea,
+  AdminPageHeader, Card, CardSection, Field, Input, Textarea,
   SaveButton, DangerButton, Toast,
 } from "@/components/admin/AdminUI";
 
@@ -16,8 +16,15 @@ const EMPTY: Omit<Ev, "id"> = {
   title: "", description: "", date: "", time: "", location: "", imageUrl: "", featured: false, active: true,
 };
 
+type S = Record<string, string>;
+const EVENTS_PAGE_KEYS = [
+  "events_banner_image",
+  "activity_fellowship_image", "activity_retreat_image", "activity_evangelical_image",
+];
+
 export default function AdminEvents() {
-  const [events, setEvents]   = useState<Ev[]>([]);
+  const [events, setEvents]     = useState<Ev[]>([]);
+  const [settings, setSettings] = useState<S>({});
   const [form, setForm]       = useState<Omit<Ev,"id"> & { id?: string }>(EMPTY);
   const [editing, setEditing] = useState<string | null>(null);
   const [saving, setSaving]   = useState(false);
@@ -30,7 +37,26 @@ export default function AdminEvents() {
     setEvents(await r.json());
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  const loadSettings = useCallback(async () => {
+    const r = await fetch("/api/cms/settings");
+    const all: { key: string; value: string }[] = await r.json();
+    const map: S = {};
+    EVENTS_PAGE_KEYS.forEach(k => { map[k] = all.find(s => s.key === k)?.value ?? ""; });
+    setSettings(map);
+  }, []);
+
+  useEffect(() => { load(); loadSettings(); }, [load, loadSettings]);
+
+  const setSettingValue = (key: string, value: string) =>
+    setSettings(s => ({ ...s, [key]: value }));
+
+  async function saveSetting(key: string) {
+    await fetch("/api/cms/settings", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, value: settings[key], group: "events", type: "image" }),
+    });
+    showToast("Saved");
+  }
 
   function startEdit(ev: Ev) {
     setEditing(ev.id);
@@ -69,7 +95,39 @@ export default function AdminEvents() {
     <div>
       <AdminPageHeader title="Events" description="Create, edit and delete events. All changes appear instantly on Homepage Calendar, Events Page, and Upcoming Events." />
 
-
+      {/* Events Page Images */}
+      <Card className="mb-6">
+        <CardSection title="Events Page Banner">
+          <ImageUploader
+            label="Events Page Banner Image"
+            currentUrl={settings.events_banner_image}
+            folder="events"
+            onUploaded={url => { setSettingValue("events_banner_image", url); saveSetting("events_banner_image"); }}
+          />
+        </CardSection>
+        <CardSection title="We Stay Active — Activity Images">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <ImageUploader
+              label="Fellowship Groups"
+              currentUrl={settings.activity_fellowship_image}
+              folder="activity"
+              onUploaded={url => { setSettingValue("activity_fellowship_image", url); saveSetting("activity_fellowship_image"); }}
+            />
+            <ImageUploader
+              label="Church Retreat"
+              currentUrl={settings.activity_retreat_image}
+              folder="activity"
+              onUploaded={url => { setSettingValue("activity_retreat_image", url); saveSetting("activity_retreat_image"); }}
+            />
+            <ImageUploader
+              label="Evangelical Sunday"
+              currentUrl={settings.activity_evangelical_image}
+              folder="activity"
+              onUploaded={url => { setSettingValue("activity_evangelical_image", url); saveSetting("activity_evangelical_image"); }}
+            />
+          </div>
+        </CardSection>
+      </Card>
 
       {/* Form */}
       <Card className="mb-6">

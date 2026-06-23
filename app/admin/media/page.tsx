@@ -7,13 +7,13 @@ import {
 } from "@/components/admin/AdminUI";
 
 type MI = {
-  id: string; filename: string; url: string; publicId: string;
-  width: number; height: number; size: number; folder: string; createdAt: string;
+  id: string; filename: string; url: string; path: string;
+  width?: number | null; height?: number | null; size?: number | null; folder: string; createdAt: string;
 };
 
-const FOLDERS = ["all","general","hero","about","events","testimonials"];
+const FOLDERS = ["all","general","hero","about","doctrine","activity","events","testimonials"];
 
-function formatBytes(bytes: number) {
+function formatBytes(bytes?: number | null) {
   if (!bytes) return "";
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024*1024) return `${(bytes/1024).toFixed(1)} KB`;
@@ -149,7 +149,7 @@ export default function AdminMedia() {
               <p className="font-lato font-bold text-[14px] text-stone-900 mb-2">{selected.filename}</p>
               <p className="font-lato text-[12px] text-stone-400 mb-1">Folder: {selected.folder}</p>
               <p className="font-lato text-[12px] text-stone-400 mb-1">
-                Size: {formatBytes(selected.size)} · {selected.width}×{selected.height}
+                Size: {formatBytes(selected.size)}{selected.width && selected.height ? ` · ${selected.width}×${selected.height}` : ""}
               </p>
               <p className="font-lato text-[12px] text-stone-400 mb-3">
                 Uploaded: {new Date(selected.createdAt).toLocaleDateString()}

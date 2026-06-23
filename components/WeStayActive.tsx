@@ -1,26 +1,11 @@
 "use client";
 import Image from "next/image";
 
-const ACTIVE_ITEMS = [
-  {
-    id: 1, imageLeft: true,
-    image: "/images/activity/fellowship.jpg",
-    title: "Fellowship Groups",
-    desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
-  },
-  {
-    id: 2, imageLeft: false,
-    image: "/images/activity/retreat.jpg",
-    title: "Church Retreat",
-    desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
-  },
-  {
-    id: 3, imageLeft: true,
-    image: "/images/activity/evangelical.jpg",
-    title: "Evangelical Sunday",
-    desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
-  },
-];
+export type ActivityImages = Partial<{
+  fellowship: string;
+  retreat: string;
+  evangelical: string;
+}>;
 
 function ExpandableText({ text }: { text: string }) {
   return (
@@ -35,7 +20,28 @@ function ExpandableText({ text }: { text: string }) {
   );
 }
 
-export default function WeStayActive() {
+export default function WeStayActive({ images }: { images?: ActivityImages }) {
+  const ACTIVE_ITEMS = [
+    {
+      id: 1, imageLeft: true,
+      image: images?.fellowship || "/images/activity/fellowship.jpg",
+      title: "Fellowship Groups",
+      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+    },
+    {
+      id: 2, imageLeft: false,
+      image: images?.retreat || "/images/activity/retreat.jpg",
+      title: "Church Retreat",
+      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+    },
+    {
+      id: 3, imageLeft: true,
+      image: images?.evangelical || "/images/activity/evangelical.jpg",
+      title: "Evangelical Sunday",
+      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+    },
+  ];
+
   return (
     <section className="py-12 sm:py-16 px-4 sm:px-10 bg-white"
       style={{ borderTop: "1px solid rgba(140,58,99,0.08)" }}>

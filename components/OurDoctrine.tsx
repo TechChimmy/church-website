@@ -1,13 +1,20 @@
 "use client";
 
-const DOCTRINE_ITEMS = [
-  { id: 1, image: "/images/doctrine/word.jpg",  title: "The Word", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 2, image: "/images/doctrine/faith.jpg", title: "The Faith",  desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 3, image: "/images/doctrine/spirit.jpg", title: "The Spirit", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-  { id: 4, image: "/images/doctrine/church.jpg", title: "The Church", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-];
+export type DoctrineImages = Partial<{
+  word: string;
+  faith: string;
+  spirit: string;
+  church: string;
+}>;
 
-export default function OurDoctrine() {
+export default function OurDoctrine({ images }: { images?: DoctrineImages }) {
+  const DOCTRINE_ITEMS = [
+    { id: 1, image: images?.word   || "/images/doctrine/word.jpg",   title: "The Word",   desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+    { id: 2, image: images?.faith  || "/images/doctrine/faith.jpg",  title: "The Faith",  desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+    { id: 3, image: images?.spirit || "/images/doctrine/spirit.jpg", title: "The Spirit", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+    { id: 4, image: images?.church || "/images/doctrine/church.jpg", title: "The Church", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+  ];
+
   return (
     <section className="py-12 sm:py-16 px-4 sm:px-10 bg-white"
       style={{ borderTop: "1px solid rgba(140,58,99,0.08)" }}>

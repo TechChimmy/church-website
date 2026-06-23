@@ -64,7 +64,7 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
               key={slide.id}
               className={`absolute inset-0 bg-gradient-to-br ${slide.gradient ?? "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]"}`}
               style={ {
-                backgroundImage: `url(/images/hero/slide-${i + 1}.jpg)`,
+                backgroundImage: `url(${slide.imageUrl || `/images/hero/slide-${(i) + 1}.jpg`})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               } }

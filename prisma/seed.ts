@@ -68,6 +68,16 @@ async function main() {
     { key: "shepherd_heading", value: "Our Shepherd",                label: "Shepherd Heading",   group: "shepherd", type: "text" },
     { key: "shepherd_body",    value: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment.", label: "Shepherd Body", group: "shepherd", type: "textarea" },
     { key: "shepherd_image",   value: "",                            label: "Shepherd Image",     group: "shepherd", type: "image" },
+    // Doctrine images (About page — Our Doctrine section)
+    { key: "doctrine_word_image",   value: "", label: "The Word Image",   group: "doctrine", type: "image" },
+    { key: "doctrine_faith_image",  value: "", label: "The Faith Image",  group: "doctrine", type: "image" },
+    { key: "doctrine_spirit_image", value: "", label: "The Spirit Image", group: "doctrine", type: "image" },
+    { key: "doctrine_church_image", value: "", label: "The Church Image", group: "doctrine", type: "image" },
+    // Events page banner + activity images (Events page — We Stay Active section)
+    { key: "events_banner_image",        value: "", label: "Events Page Banner Image", group: "events",   type: "image" },
+    { key: "activity_fellowship_image",  value: "", label: "Fellowship Groups Image",  group: "activity", type: "image" },
+    { key: "activity_retreat_image",     value: "", label: "Church Retreat Image",     group: "activity", type: "image" },
+    { key: "activity_evangelical_image", value: "", label: "Evangelical Sunday Image", group: "activity", type: "image" },
     // YouTube
     { key: "youtube_channel_id", value: "",                          label: "YouTube Channel ID", group: "youtube", type: "text" },
     // Join Us

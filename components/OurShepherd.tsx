@@ -48,18 +48,11 @@ export default function OurShepherd({ heading, body, imageUrl }: OurShepherdProp
         <div
           className="w-full h-full flex items-center justify-center min-h-[250px] sm:min-h-[420px]"
           style={{
-          backgroundImage: "url('/images/about/pastor.jpg')",
+          backgroundImage: `url('${imageUrl || "/images/about/pastor.jpg"}')`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
-        >
-          {!imageUrl && (
-            <span className="font-lato text-[13px] uppercase tracking-widest"
-              style={{ color: "rgba(243,233,229,0.2)" }}>
-              Image
-            </span>
-          )}
-        </div>
+        />
       </div>
     </section>
   );

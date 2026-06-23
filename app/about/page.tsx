@@ -41,7 +41,12 @@ export default async function AboutPage() {
         imageUrl={settings.shepherd_image ?? ""}
       />
       <AskCollins />
-      <OurDoctrine />
+      <OurDoctrine images={{
+        word:   settings.doctrine_word_image,
+        faith:  settings.doctrine_faith_image,
+        spirit: settings.doctrine_spirit_image,
+        church: settings.doctrine_church_image,
+      }} />
       <OurCommunityServer />
       <ServiceTimes />
       <FooterContact {...contact} />

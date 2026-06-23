@@ -43,9 +43,13 @@ export default async function EventsPage() {
   return (
     <main>
       <Navbar />
-      <EventsHero />
+      <EventsHero imageUrl={settings.events_banner_image} />
       <UpcomingEvents events={upcomingEvents} />
-      <WeStayActive />
+      <WeStayActive images={{
+        fellowship:  settings.activity_fellowship_image,
+        retreat:     settings.activity_retreat_image,
+        evangelical: settings.activity_evangelical_image,
+      }} />
       <CalendarOfEvents />
       <OurCommunityServer />
       <ServiceTimes />

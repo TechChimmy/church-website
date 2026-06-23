@@ -12,6 +12,7 @@ type S = Record<string, string>;
 const ABOUT_KEYS = [
   "about_heading","about_body","about_image",
   "shepherd_heading","shepherd_body","shepherd_image",
+  "doctrine_word_image","doctrine_faith_image","doctrine_spirit_image","doctrine_church_image",
 ];
 
 export default function AdminAbout() {
@@ -95,6 +96,41 @@ export default function AdminAbout() {
               currentUrl={settings.shepherd_image}
               folder="about"
               onUploaded={url => { set("shepherd_image", url); save("shepherd_image"); }}
+            />
+          </div>
+        </CardSection>
+      </Card>
+
+      {/* Our Doctrine Images */}
+      <Card className="mt-6">
+        <CardSection title="Our Doctrine Images">
+          <p className="font-lato text-[12px] text-stone-400 mb-5">
+            Images shown next to each doctrine item on the About page. Each saves automatically once uploaded.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <ImageUploader
+              label="The Word"
+              currentUrl={settings.doctrine_word_image}
+              folder="doctrine"
+              onUploaded={url => { set("doctrine_word_image", url); save("doctrine_word_image"); }}
+            />
+            <ImageUploader
+              label="The Faith"
+              currentUrl={settings.doctrine_faith_image}
+              folder="doctrine"
+              onUploaded={url => { set("doctrine_faith_image", url); save("doctrine_faith_image"); }}
+            />
+            <ImageUploader
+              label="The Spirit"
+              currentUrl={settings.doctrine_spirit_image}
+              folder="doctrine"
+              onUploaded={url => { set("doctrine_spirit_image", url); save("doctrine_spirit_image"); }}
+            />
+            <ImageUploader
+              label="The Church"
+              currentUrl={settings.doctrine_church_image}
+              folder="doctrine"
+              onUploaded={url => { set("doctrine_church_image", url); save("doctrine_church_image"); }}
             />
           </div>
         </CardSection>

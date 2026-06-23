@@ -12,6 +12,9 @@ const GROUP_LABELS: Record<string,string> = {
   general:  "Church Information",
   about:    "About Page",
   shepherd: "Our Shepherd",
+  doctrine: "Our Doctrine",
+  events:   "Events Page",
+  activity: "We Stay Active",
   homepage: "Homepage",
   youtube:  "YouTube Integration",
 };

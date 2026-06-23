@@ -5,11 +5,12 @@ type AboutHeroProps = {
 };
 
 export default function AboutHero({ imageUrl }: AboutHeroProps) {
+  const bg = imageUrl || "/images/about/banner.jpg";
   return (
     <section
       className="relative w-full h-[220px] overflow-hidden flex items-center justify-center"
       style={{
-        backgroundImage: "url('/images/about/banner.jpg')",
+        backgroundImage: `url('${bg}')`,
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}

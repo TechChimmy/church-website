@@ -22,8 +22,19 @@ export async function GET() {
 export async function PATCH(req: NextRequest) {
   try {
     if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    const { key, value } = await req.json();
-    const updated = await prisma.siteSetting.update({ where: { key }, data: { value } });
+    const { key, value, label, group, type } = await req.json();
+    if (!key) return NextResponse.json({ error: "Missing key" }, { status: 400 });
+    const updated = await prisma.siteSetting.upsert({
+      where: { key },
+      update: { value },
+      create: {
+        key,
+        value: value ?? "",
+        label: label ?? key,
+        group: group ?? "general",
+        type:  type  ?? "text",
+      },
+    });
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PATCH /api/cms/settings error:", error);

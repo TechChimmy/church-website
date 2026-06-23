@@ -193,11 +193,16 @@ model ServiceTime {
 }
 
 // ── Media Library ─────────────────────────────────────
+// Backed by Supabase Storage (bucket: "cms-images").
+// `path` is the object path inside the bucket (used for deletes);
+// `url` is the public URL returned by Supabase and stored on the
+// record that uses the image (HeroSlide.imageUrl, Event.imageUrl,
+// SiteSetting.value, etc).
 model MediaItem {
   id        String   @id @default(cuid())
   filename  String
   url       String
-  publicId  String
+  path      String
   width     Int?
   height    Int?
   size      Int?
