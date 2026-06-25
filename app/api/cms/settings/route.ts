@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/sanity/lib/client";
+import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
   const session = await auth();
@@ -128,6 +129,11 @@ export async function PATCH(req: NextRequest) {
     };
 
     const updated = await client.createOrReplace(doc);
+    
+    revalidatePath("/");
+    revalidatePath("/about");
+    revalidatePath("/events");
+    revalidatePath("/join-us-live");
     
     return NextResponse.json({
       id: updated._id,

@@ -13,6 +13,8 @@ import { Suspense } from "react";
 import { fetchHeroSlides, fetchEvents, fetchPrayerRequestsApproved, fetchFooter } from "@/lib/sanity-queries";
 
 
+import { getChannelVideoData } from "@/lib/youtube";
+
 export const revalidate = 60;
 
 async function safeGetSlides() {
@@ -76,12 +78,13 @@ async function safeGetApprovedPrayers() {
 
 
 export default async function HomePage() {
-  const [slides, settings, upcomingEvents, prayers, footer] = await Promise.all([
+  const [slides, settings, upcomingEvents, prayers, footer, ytData] = await Promise.all([
     safeGetSlides(),
     getAllSettings(),
     safeGetUpcomingEvents(),
     safeGetApprovedPrayers(),
     fetchFooter(),
+    getChannelVideoData(),
   ]);
 
 
@@ -97,8 +100,8 @@ export default async function HomePage() {
           ctaHref: "/join-us-live",
           order: 0,
           active: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: "2026-06-24T00:00:00Z",
+          updatedAt: "2026-06-24T00:00:00Z",
         },
       ];
 
@@ -133,6 +136,7 @@ export default async function HomePage() {
       <JoinVisit
         joinUsText={settings.join_us_text ?? "Your paragraph lorem ipsum the warmth and charm of a cosy service — join us online wherever you are."}
         visitUsText={settings.visit_us_text ?? "Your paragraph lorem ipsum the warmth and charm of a cosy service — we'd love to see you in person this Sunday."}
+        mainVideo={ytData.mainVideo}
       />
       <AboutSection
         heading={settings.about_heading ?? "About Us"}

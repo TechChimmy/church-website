@@ -53,6 +53,7 @@ export default function JoinAskCollins() {
             <div className="flex flex-col gap-2">
               <div className="flex items-stretch">
                 <input
+                  suppressHydrationWarning
                   type="text"
                   value={value}
                   onChange={(e) => setValue(e.target.value)}
@@ -65,6 +66,7 @@ export default function JoinAskCollins() {
                   onBlur={e => { (e.target as HTMLElement).style.borderColor = "rgba(140,58,99,0.2)"; }}
                 />
                 <button
+                  suppressHydrationWarning
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading}

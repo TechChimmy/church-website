@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { sanityCreateDoc, sanityDeleteDoc, sanityPatchDoc } from "@/lib/sanity-mutations";
 import { sanityFetch } from "@/sanity/lib/sanity";
+import { revalidatePath } from "next/cache";
 
 async function requireAdmin() {
   return Boolean((await auth())?.user);
@@ -13,12 +14,12 @@ async function requireAdmin() {
 // - POST accepts body containing those fields (date as string)
 // - PATCH accepts { id, ...fields }
 // - DELETE accepts { id }
-// Sanity document `calendarEvent` only defines: title, description, date, active.
+// Sanity document `event` defines: title, description, date, endDate, time, location, imageUrl, active, featured.
 // Any extra fields from the admin UI should be ignored by Sanity.
 
 export async function GET() {
   try {
-    const q = `*[_type == "calendarEvent"]| order(date asc){
+    const q = `*[_type == "event"]| order(date asc){
       _id,
       title,
       description,
@@ -52,15 +53,17 @@ export async function POST(req: NextRequest) {
     if (!data.date) return NextResponse.json({ error: "Date required" }, { status: 400 });
 
     const created = await sanityCreateDoc({
-      type: "calendarEvent",
+      type: "event",
       data: {
         title: data.title.trim(),
         description: typeof data.description === "string" ? data.description : "",
         date: new Date(data.date).toISOString(),
-
         active: data.active !== false,
       },
     });
+
+    revalidatePath("/");
+    revalidatePath("/events");
 
     return NextResponse.json(created, { status: 201 });
   } catch (error) {
@@ -78,7 +81,7 @@ export async function PATCH(req: NextRequest) {
 
     const updated = await sanityPatchDoc({
       id,
-      type: "calendarEvent",
+      type: "event",
       patch: {
         set: {
           title: typeof data.title === "string" ? data.title.trim() : undefined,
@@ -88,6 +91,9 @@ export async function PATCH(req: NextRequest) {
         },
       },
     });
+
+    revalidatePath("/");
+    revalidatePath("/events");
 
     return NextResponse.json(updated);
   } catch (error) {
@@ -104,10 +110,13 @@ export async function DELETE(req: NextRequest) {
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
     await sanityDeleteDoc(id);
+
+    revalidatePath("/");
+    revalidatePath("/events");
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/cms/calendar error:", error);
     return NextResponse.json({ error: "Failed to delete calendar event" }, { status: 500 });
   }
 }
-

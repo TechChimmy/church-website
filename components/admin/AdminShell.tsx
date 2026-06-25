@@ -1,8 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import AdminSidebar from "@/components/admin/AdminSidebar";
-import AdminTopBar from "@/components/admin/AdminTopBar";
+import dynamic from "next/dynamic";
+
+const AdminSidebar = dynamic(() => import("@/components/admin/AdminSidebar"), { ssr: false });
+const AdminTopBar = dynamic(() => import("@/components/admin/AdminTopBar"), { ssr: false });
 
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

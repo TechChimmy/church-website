@@ -6,6 +6,8 @@ export interface YouTubeVideo {
   publishedAt: string;
   thumbnail: string;
   isLive: boolean;
+  isUpcoming?: boolean;
+  isCompletedLive?: boolean;
 }
 
 export interface YouTubeLiveResult {

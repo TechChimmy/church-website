@@ -41,32 +41,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           const normalizedEmail = (credentials.email as string).toLowerCase().trim();
 
-          // Auto-seed default admin user if count of admin users is 0
-          const adminCount = await client.fetch<number>(`count(*[_type == "adminUser"])`);
-          if (adminCount === 0) {
-            console.log("[Auth] Seeding default admin user into Sanity...");
-            const defaultEmail = "admin@cftchurch.com";
-            const defaultPassword = "churchwebpage@2026";
-            const salt = await bcrypt.genSalt(10);
-            const hash = await bcrypt.hash(defaultPassword, salt);
-            await client.create({
-              _type: "adminUser",
-              email: defaultEmail,
-              passwordHash: hash,
-              role: "ADMIN",
-              active: true,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            });
-          }
-
-          // Query the admin user from Sanity
-          const userDoc = await client.fetch<any>(
+          // Query the admin user from Sanity first
+          let userDoc = await client.fetch<any>(
             `*[_type == "adminUser" && email == $email && active == true][0]`,
             { email: normalizedEmail }
           );
 
-          if (!userDoc) return null;
+          if (!userDoc) {
+            // Auto-seed default admin user ONLY if count of admin users is 0
+            const adminCount = await client.fetch<number>(`count(*[_type == "adminUser"])`);
+            if (adminCount === 0) {
+              console.log("[Auth] Seeding default admin user into Sanity...");
+              const defaultEmail = "admin@cftchurch.com";
+              const defaultPassword = "churchwebpage@2026";
+              const salt = await bcrypt.genSalt(10);
+              const hash = await bcrypt.hash(defaultPassword, salt);
+              userDoc = await client.create({
+                _type: "adminUser",
+                email: defaultEmail,
+                passwordHash: hash,
+                role: "ADMIN",
+                active: true,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+              });
+
+              if (normalizedEmail !== defaultEmail) {
+                return null;
+              }
+            } else {
+              return null;
+            }
+          }
 
           const pass = credentials.password as string;
           const valid = await bcrypt.compare(pass, userDoc.passwordHash);

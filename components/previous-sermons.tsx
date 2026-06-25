@@ -8,6 +8,7 @@ import type { YouTubeVideo } from "@/types/youtube";
 
 interface Props {
   sermons: YouTubeVideo[];
+  title?: string;
 }
 
 function formatDate(iso: string): string {
@@ -44,14 +45,14 @@ function PlaceholderCard({ index }: { index: number }) {
   );
 }
 
-export default function PreviousSermons({ sermons }: Props) {
+export default function PreviousSermons({ sermons, title = "Previous Sermons" }: Props) {
   const [activeVideo, setActiveVideo] = useState<YouTubeVideo | null>(null);
 
   return (
     <section className="py-8 sm:py-10 px-4 sm:px-10 bg-white">
       <div className="max-w-[1280px] mx-auto">
         <h3 className="font-playfair text-[20px] font-semibold text-stone-900 mb-5">
-          Previous Sermons
+          {title}
         </h3>
 
         {/* 4-column grid */}
@@ -104,14 +105,27 @@ export default function PreviousSermons({ sermons }: Props) {
                   </div>
 
                   {/* Title + date strip */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70
-                                  to-transparent px-2 py-2 z-10">
-                    <p className="font-lato text-[10px] text-white font-bold truncate leading-tight">
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90
+                                  via-black/70 to-transparent px-3 py-2.5 z-10">
+                    <p className="font-lato text-[11px] text-white font-bold truncate leading-tight mb-1">
                       {sermon.title}
                     </p>
-                    <p className="font-lato text-[9px] text-white/60">
-                      {formatDate(sermon.publishedAt)}
-                    </p>
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="font-lato text-[9px] text-white/60 shrink-0">
+                        {formatDate(sermon.publishedAt)}
+                      </p>
+                      <a
+                        href={`https://www.youtube.com/watch?v=${sermon.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-lato text-[8px] font-bold uppercase tracking-wider
+                                   bg-white/15 hover:bg-red-600 hover:text-white text-white/80 px-2 py-0.5 rounded-sm
+                                   transition-colors duration-150 no-underline whitespace-nowrap"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Watch on YouTube
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
               ))

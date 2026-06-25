@@ -23,10 +23,10 @@ export default function VideoModal({ videoId, title, onClose }: Props) {
   return (
     <AnimatePresence>
       {videoId && (
-        <>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/75 z-50"
+            className="absolute inset-0 bg-black/75"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -35,8 +35,7 @@ export default function VideoModal({ videoId, title, onClose }: Props) {
 
           {/* Modal panel */}
           <motion.div
-            className="fixed top-1/2 left-1/2 z-50 w-full max-w-[800px] px-4"
-            style={{ transform: "translate(-50%, -50%)" }}
+            className="relative w-full max-w-[800px] z-10"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
@@ -66,7 +65,7 @@ export default function VideoModal({ videoId, title, onClose }: Props) {
               />
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

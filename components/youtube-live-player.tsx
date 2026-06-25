@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import type { YouTubeVideo } from "@/types/youtube";
 
@@ -16,6 +18,18 @@ export default function YouTubeLivePlayer({
   watchUrl,
   isLive,
 }: Props) {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Automatically check for YouTube live stream updates by requesting fresh Server Component payload every 10s.
+    // Next.js reconciliation keeps the same iframe element if src/embedUrl doesn't change, preventing playback disruption.
+    const interval = setInterval(() => {
+      router.refresh();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [router]);
+
   /* Fallback when no video could be fetched */
   if (!video) {
     return (

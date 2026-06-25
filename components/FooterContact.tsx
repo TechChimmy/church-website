@@ -122,7 +122,9 @@ export default function FooterContact({
           ) : (
             <>
               <div className="grid grid-cols-2 gap-2 mb-2">
-                <input type="text" placeholder="Your name" value={form.name}
+                <input
+                  suppressHydrationWarning
+                  type="text" placeholder="Your name" value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="px-3 py-[10px] font-lato text-[12.5px] border outline-none
                              placeholder:text-white/25 transition-colors duration-200 rounded-sm"
@@ -130,7 +132,9 @@ export default function FooterContact({
                   onFocus={e => Object.assign((e.target as HTMLElement).style, inputFocusStyle)}
                   onBlur={e => { (e.target as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
                 />
-                <input type="email" placeholder="Your email" value={form.email}
+                <input
+                  suppressHydrationWarning
+                  type="email" placeholder="Your email" value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="px-3 py-[10px] font-lato text-[12.5px] border outline-none
                              placeholder:text-white/25 transition-colors duration-200 rounded-sm"
@@ -139,7 +143,9 @@ export default function FooterContact({
                   onBlur={e => { (e.target as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
                 />
               </div>
-              <textarea placeholder="Your message..." rows={3} value={form.message}
+              <textarea
+                suppressHydrationWarning
+                placeholder="Your message..." rows={3} value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="w-full px-3 py-[10px] font-lato text-[12.5px] border outline-none
                            resize-y placeholder:text-white/25 transition-colors duration-200 rounded-sm mb-2"
@@ -147,7 +153,9 @@ export default function FooterContact({
                 onFocus={e => Object.assign((e.target as HTMLElement).style, inputFocusStyle)}
                 onBlur={e => { (e.target as HTMLElement).style.borderColor = "rgba(255,255,255,0.1)"; }}
               />
-              <button type="button" onClick={handleSubmit} disabled={loading}
+              <button
+                suppressHydrationWarning
+                type="button" onClick={handleSubmit} disabled={loading}
                 className="w-full py-3 font-lato text-white text-[11px] font-bold uppercase
                            tracking-[1.2px] transition-all duration-200 rounded-sm disabled:opacity-60"
                 style={{ backgroundColor: "var(--burgundy)" }}

@@ -55,7 +55,7 @@ export async function fetchEvents(opts?: { activeOnly?: boolean }) {
 }
 
 export async function fetchCalendarEvents() {
-  const q = `*[_type == "calendarEvent" && active == true]{
+  const q = `*[_type == "event" && active == true]{
     _id,
     title,
     description,

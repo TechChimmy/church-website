@@ -86,6 +86,7 @@ export default function Navbar() {
                 return (
                   <button key={label}
                     onClick={handleVisitUs}
+                    suppressHydrationWarning
                     className="font-lato text-[12px] uppercase tracking-widest no-underline transition-colors duration-200 bg-transparent border-0 p-0 cursor-pointer"
                     style={{
                       color: "#6B5B63",
@@ -147,6 +148,7 @@ export default function Navbar() {
 
           {/* Mobile Hamburger */}
           <button
+            suppressHydrationWarning
             className="md:hidden flex flex-col justify-center items-center w-10 h-10 gap-[5px] shrink-0"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? "Close menu" : "Open menu"}
@@ -184,6 +186,7 @@ export default function Navbar() {
               return (
                 <button key={label}
                   onClick={handleVisitUs}
+                  suppressHydrationWarning
                   className="font-lato text-[13px] uppercase tracking-widest px-6 py-4 no-underline
                              transition-colors duration-200 border-b border-stone-100 text-left bg-transparent border-t-0 border-l-0 border-r-0 cursor-pointer"
                   style={{

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 export type Slide = {
   id: string | number;
@@ -63,18 +64,21 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
             <motion.div
               key={slide.id}
               className={`absolute inset-0 bg-gradient-to-br ${slide.gradient ?? "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]"}`}
-              style={ {
-                backgroundImage: `url(${slide.imageUrl || `/images/hero/slide-${(i) + 1}.jpg`})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-              } }
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
             >
+              <Image
+                src={slide.imageUrl || `/images/hero/slide-${i + 1}.jpg`}
+                alt={slide.title}
+                fill
+                priority={i === 0}
+                className="object-cover"
+                sizes="100vw"
+              />
               {/* Overlay */}
-              <div className="absolute inset-0" style={{ backgroundColor: "rgba(31,5,20,0.55)" }} />
+              <div className="absolute inset-0 z-10" style={{ backgroundColor: "rgba(31,5,20,0.55)" }} />
 
               {/* Warm accent line */}
               <div className="absolute bottom-0 left-0 right-0 h-[3px]"
