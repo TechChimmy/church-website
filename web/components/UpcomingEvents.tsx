@@ -507,6 +507,7 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
                           <h4 className="font-playfair text-[16px] font-bold text-stone-800 leading-snug">{modalEvent.title}</h4>
                         </div>
                         <div className="shrink-0 bg-white p-1.5 border border-stone-200 rounded-sm">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
                             src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(
                               `CFT Church Ticket\nID: ${submittedId}\nEvent: ${modalEvent.title}\nAttendee: ${form.name}`

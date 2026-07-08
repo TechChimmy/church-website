@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ["192.168.1.51", "192.168.0.104", "192.168.0.101"],
+  allowedDevOrigins: ["192.168.1.51", "192.168.0.104", "192.168.0.101", "192.168.0.102"],
   images: {
     remotePatterns: [
       {
@@ -33,6 +33,11 @@ const nextConfig: NextConfig = {
       'react$': path.resolve(__dirname, 'lib/react-patch.js'),
     };
     return config;
+  },
+  turbopack: {
+    resolveAlias: {
+      react: "./lib/react-patch.js",
+    },
   },
 };
 
