@@ -1,46 +1,89 @@
 "use client";
+import { useState } from "react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { useLanguage } from "@/hooks/useLanguage";
 
-export type ActivityImages = Partial<{
-  fellowship: string;
-  retreat: string;
-  evangelical: string;
-}>;
+export type ActivityItem = {
+  id: string;
+  title: string;
+  titleTa?: string;
+  description: string;
+  descriptionTa?: string;
+  imageUrl?: string | null;
+  order: number;
+  active: boolean;
+};
 
 function ExpandableText({ text }: { text: string }) {
+  const { t } = useLanguage();
+  const [expanded, setExpanded] = useState(false);
+  const maxLength = 240;
+  const isLong = text.length > maxLength;
+  const previewText = isLong ? text.slice(0, maxLength) + "..." : text;
+
   return (
     <div>
-      <p
-        className="font-lato text-[13px] leading-[1.85] mb-4 sm:mb-5"
-        style={{ color: "#8A7078" }}
-      >
-        {text}
-      </p>
+      <div className="overflow-hidden">
+        <AnimatePresence initial={false} mode="wait">
+          <motion.p
+            key={expanded ? "expanded" : "collapsed"}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -5 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="font-lato text-[13px] leading-[1.85] mb-2 break-words"
+            style={{ color: "#8A7078" }}
+          >
+            {expanded ? text : previewText}
+          </motion.p>
+        </AnimatePresence>
+      </div>
+      {isLong && (
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          suppressHydrationWarning={true}
+          className="font-lato text-[11.5px] font-bold text-[var(--burgundy)] hover:underline uppercase tracking-wider mb-4 transition-all duration-200"
+        >
+          {expanded ? t("weStayActive.showLess") : t("weStayActive.readMore")}
+        </button>
+      )}
     </div>
   );
 }
 
-export default function WeStayActive({ images }: { images?: ActivityImages }) {
-  const ACTIVE_ITEMS = [
+export default function WeStayActive({ items = [] }: { items?: ActivityItem[] }) {
+  const { lang, t } = useLanguage();
+
+  const FALLBACK_ITEMS: ActivityItem[] = [
     {
-      id: 1, imageLeft: true,
-      image: images?.fellowship || "/images/activity/fellowship.jpg",
-      title: "Fellowship Groups",
-      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+      id: "fallback-1",
+      title: t("weStayActive.fallback1Title"),
+      description: t("doctrine.fallbackParagraph"),
+      imageUrl: "/images/activity/fellowship.jpg",
+      order: 0,
+      active: true,
     },
     {
-      id: 2, imageLeft: false,
-      image: images?.retreat || "/images/activity/retreat.jpg",
-      title: "Church Retreat",
-      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+      id: "fallback-2",
+      title: t("weStayActive.fallback2Title"),
+      description: t("doctrine.fallbackParagraph"),
+      imageUrl: "/images/activity/retreat.jpg",
+      order: 1,
+      active: true,
     },
     {
-      id: 3, imageLeft: true,
-      image: images?.evangelical || "/images/activity/evangelical.jpg",
-      title: "Evangelical Sunday",
-      desc: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls. It's a place where time slows down and every moment is savoured like a cherished memory.",
+      id: "fallback-3",
+      title: t("weStayActive.fallback3Title"),
+      description: t("doctrine.fallbackParagraph"),
+      imageUrl: "/images/activity/evangelical.jpg",
+      order: 2,
+      active: true,
     },
   ];
+
+  const activeItems = items.length > 0 ? items : FALLBACK_ITEMS;
 
   return (
     <section className="py-12 sm:py-16 px-4 sm:px-10 bg-white"
@@ -49,36 +92,48 @@ export default function WeStayActive({ images }: { images?: ActivityImages }) {
         <div className="flex items-center gap-4 mb-10">
           <div className="w-8 h-[2px] rounded-full" style={{ backgroundColor: "var(--burgundy)" }} />
           <h2 className="font-playfair text-[22px] sm:text-[26px] font-bold" style={{ color: "var(--text-dark)" }}>
-            We Stay Active
+            {t("weStayActive.heading")}
           </h2>
         </div>
 
         <div className="flex flex-col gap-12 sm:gap-14">
-          {ACTIVE_ITEMS.map((item) => (
-            <div key={item.id}
-              className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-start">
-              {/* Image */}
-              <div className={`${item.imageLeft ? "sm:order-1" : "sm:order-2"} order-1`}>
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  width={800}
-                  height={500}
-                  className="w-full h-[320px] object-cover rounded-sm"
-                />
-              </div>
+          {activeItems.map((item, idx) => {
+            const imageLeft = idx % 2 === 0;
+            const title = lang === "ta" && item.titleTa ? item.titleTa : item.title;
+            const description = lang === "ta" && item.descriptionTa ? item.descriptionTa : item.description;
 
-              {/* Text */}
-              <div className={`${item.imageLeft ? "sm:order-2" : "sm:order-1"} order-2`}>
-                <div className="w-6 h-[2px] rounded-full mb-4" style={{ backgroundColor: "var(--burgundy)" }} />
-                <h3 className="font-playfair text-[18px] sm:text-[20px] font-semibold mb-3 sm:mb-4"
-                  style={{ color: "var(--text-dark)" }}>
-                  {item.title}
-                </h3>
-                <ExpandableText text={item.desc} />
+            return (
+              <div key={item.id}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-start">
+                {/* Image */}
+                <div className={`${imageLeft ? "sm:order-1" : "sm:order-2"} order-1`}>
+                  {item.imageUrl ? (
+                    <Image
+                      src={item.imageUrl}
+                      alt={title}
+                      width={800}
+                      height={500}
+                      className="w-full h-[320px] object-cover rounded-sm"
+                    />
+                  ) : (
+                    <div className="w-full h-[320px] bg-stone-100 rounded-sm flex items-center justify-center">
+                      <span className="font-lato text-[12px] text-stone-400">{t("weStayActive.noImage")}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text */}
+                <div className={`${imageLeft ? "sm:order-2" : "sm:order-1"} order-2`}>
+                  <div className="w-6 h-[2px] rounded-full mb-4" style={{ backgroundColor: "var(--burgundy)" }} />
+                  <h3 className="font-playfair text-[18px] sm:text-[20px] font-semibold mb-3 sm:mb-4"
+                    style={{ color: "var(--text-dark)" }}>
+                    {title}
+                  </h3>
+                  <ExpandableText text={description} />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

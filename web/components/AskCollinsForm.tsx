@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export default function AskCollinsForm() {
+  const { t } = useLanguage();
   const [form, setForm] = useState({
     name: "",
+    phone: "",
     email: "",
     question: "",
     consent: false,
-    anonymous: false,
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -17,19 +19,25 @@ export default function AskCollinsForm() {
 
   const handleSubmit = async () => {
     setError("");
-    if (!form.question.trim()) {
-      setError("Please enter your question.");
+    if (!form.name.trim()) {
+      setError(t("askCollins.errorName"));
       return;
     }
-    if (!form.anonymous) {
-      if (!form.name.trim()) {
-        setError("Please fill in your name, or submit anonymously.");
-        return;
-      }
-      if (!form.email.trim()) {
-        setError("Please fill in your email, or submit anonymously.");
-        return;
-      }
+    if (!form.phone.trim() || form.phone.trim().length < 5) {
+      setError(t("askCollins.errorPhone"));
+      return;
+    }
+    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError(t("askCollins.errorEmail"));
+      return;
+    }
+    if (!form.question.trim() || form.question.trim().length < 5) {
+      setError(t("askCollins.errorQuestion"));
+      return;
+    }
+    if (!form.consent) {
+      setError(t("askCollins.errorConsent"));
+      return;
     }
 
     setLoading(true);
@@ -41,14 +49,14 @@ export default function AskCollinsForm() {
       });
       if (res.ok) {
         setSubmitted(true);
-        setForm({ name: "", email: "", question: "", consent: false, anonymous: false });
+        setForm({ name: "", phone: "", email: "", question: "", consent: false });
         setTimeout(() => setSubmitted(false), 4000);
       } else {
         const data = await res.json();
-        setError(data.error ?? "Something went wrong. Please try again.");
+        setError(data.error ?? t("askCollins.errorSomethingWrong"));
       }
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("askCollins.errorNetworkError"));
     } finally {
       setLoading(false);
     }
@@ -56,115 +64,123 @@ export default function AskCollinsForm() {
 
   return (
     <motion.section
-      className="py-10 sm:py-14 px-4 sm:px-10 bg-white"
+      className="py-16 sm:py-20 px-4 sm:px-10 overflow-hidden"
+      style={{ backgroundColor: "var(--accent-beige)", borderTop: "1px solid rgba(140,58,99,0.1)", borderBottom: "1px solid rgba(140,58,99,0.1)" }}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6 }}
     >
-      <div className="max-w-[1280px] mx-auto">
+      <div className="max-w-[760px] mx-auto">
         {/* Heading */}
-        <h2 className="font-playfair text-[28px] font-bold text-stone-900 mb-3">
-          Ask Collins
-        </h2>
+        <div className="flex flex-col items-center mb-8">
+          <span className="font-lato text-[11px] uppercase tracking-[3px] mb-2" style={{ color: "var(--burgundy)" }}>
+            {t("askCollins.tagline")}
+          </span>
+          <h2 className="font-playfair text-[28px] sm:text-[34px] font-bold text-stone-900 leading-tight text-center" style={{ color: "var(--text-dark)" }}>
+            {t("askCollins.heading")}
+          </h2>
+          <div className="w-12 h-[2px] rounded-full mt-4" style={{ backgroundColor: "var(--burgundy)" }} />
+        </div>
 
-        {/* Intro paragraph */}
-        <p className="font-lato text-[13.5px] text-stone-500 leading-[1.8] mb-8 max-w-[760px]">
-          Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a
-          quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly
-          brewed tea envelope the senses, creating an atmosphere of pure contentment.
-        </p>
-
-        {submitted ? (
-          <p className="font-lato text-[14px] text-[var(--burgundy)] font-medium py-4">
-            ✓ Thank you. Your message has been received.
+        {/* Card for the Form */}
+        <div className="bg-white p-6 sm:p-10 rounded-sm" style={{ border: "1px solid rgba(140,58,99,0.12)", boxShadow: "0 4px 20px rgba(140,58,99,0.06)" }}>
+          <p className="font-lato text-[14px] text-stone-500 leading-relaxed mb-8 text-center">
+            {t("askCollins.subheading")}
           </p>
-        ) : (
-          <div className="max-w-[760px]">
-            {/* Anonymous toggle */}
-            <label className="flex items-center gap-2.5 cursor-pointer select-none mb-5 w-fit">
-              <input
-                type="checkbox"
-                checked={form.anonymous}
-                onChange={(e) => setForm({ ...form, anonymous: e.target.checked })}
-                className="w-4 h-4 cursor-pointer"
-                style={{ accentColor: "var(--burgundy)" }}
-              />
-              <span className="font-lato text-[12.5px]" style={{ color: "#8A7078" }}>
-                Submit Anonymously
-              </span>
-            </label>
 
-            {/* Row 1 — Name + Email (hidden when anonymous) */}
-            {!form.anonymous && (
+          {submitted ? (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <span className="text-3xl mb-2 text-[var(--burgundy)]">✓</span>
+              <p className="font-lato text-[14px] text-[var(--burgundy)] font-bold">
+                {t("askCollins.successMessage")}
+              </p>
+            </div>
+          ) : (
+            <div className="w-full">
+              {/* Row 1 — Name + Phone */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                 <input
+                  suppressHydrationWarning
                   type="text"
-                  placeholder="Your name please"
+                  placeholder={t("askCollins.namePlaceholder")}
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="px-4 py-3 font-lato text-[13px] border border-stone-300
-                             outline-none bg-white text-stone-800
-                             focus:border-[var(--burgundy)] transition-colors
-                             placeholder:text-stone-300"
+                  className="church-input bg-white w-full"
+                  style={{ backgroundColor: "white" }}
                 />
                 <input
-                  type="email"
-                  placeholder="Your email Id"
-                  value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="px-4 py-3 font-lato text-[13px] border border-stone-300
-                             outline-none bg-white text-stone-800
-                             focus:border-[var(--burgundy)] transition-colors
-                             placeholder:text-stone-300"
+                  suppressHydrationWarning
+                  type="tel"
+                  placeholder={t("askCollins.phonePlaceholder")}
+                  value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  className="church-input bg-white w-full"
+                  style={{ backgroundColor: "white" }}
                 />
               </div>
-            )}
 
-            {/* Row 2 — Question textarea */}
-            <textarea
-              placeholder="Your question goes here..."
-              rows={5}
-              value={form.question}
-              onChange={(e) => setForm({ ...form, question: e.target.value })}
-              className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300
-                         outline-none bg-white text-stone-800 resize-y
-                         focus:border-[var(--burgundy)] transition-colors
-                         placeholder:text-stone-300 mb-4"
-            />
+              {/* Row 2 — Email */}
+              <div className="mb-4">
+                <input
+                  suppressHydrationWarning
+                  type="email"
+                  placeholder={t("askCollins.emailPlaceholder")}
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="church-input bg-white w-full"
+                  style={{ backgroundColor: "white" }}
+                />
+              </div>
 
-            {/* Row 3 — Consent checkbox (only when not anonymous) + Submit */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              {!form.anonymous && (
-                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+              {/* Row 3 — Question textarea */}
+              <textarea
+                suppressHydrationWarning
+                placeholder={t("askCollins.questionPlaceholder")}
+                rows={5}
+                value={form.question}
+                onChange={(e) => setForm({ ...form, question: e.target.value })}
+                className="church-input bg-white w-full resize-y mb-4"
+                style={{ backgroundColor: "white" }}
+              />
+
+              {/* Row 4 — Consent Checkbox */}
+              <div className="mb-6 flex flex-col gap-1">
+                <label className="flex items-start gap-2.5 cursor-pointer select-none">
                   <input
+                    suppressHydrationWarning
                     type="checkbox"
                     checked={form.consent}
                     onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-                    className="w-4 h-4 accent-[var(--burgundy)] cursor-pointer"
+                    className="w-4 h-4 mt-0.5 cursor-pointer shrink-0"
+                    style={{ accentColor: "var(--burgundy)" }}
                   />
-                  <span className="font-lato text-[12.5px] text-stone-600">
-                    I consent to using my name in the video if chosen
+                  <span className="font-lato text-[12.5px] text-stone-600 leading-normal">
+                    {t("askCollins.consentText")}
                   </span>
                 </label>
+              </div>
+
+              {/* Row 5 — Submit */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-stone-100">
+                <span className="font-lato text-[11px] text-stone-400">{t("askCollins.allFieldsRequired")}</span>
+                <button
+                  suppressHydrationWarning
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="shrink-0 btn-primary disabled:opacity-60"
+                >
+                  {loading ? t("askCollins.submitting") : t("askCollins.submit")}
+                </button>
+              </div>
+
+              {error && (
+                <p className="font-lato text-[12.5px] text-red-500 mt-3 text-center">{error}</p>
               )}
-              {form.anonymous && <span />}
-
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading}
-                className="shrink-0 btn-primary disabled:opacity-60"
-              >
-                {loading ? "Submitting…" : "Submit"}
-              </button>
             </div>
-
-            {error && (
-              <p className="font-lato text-[12.5px] text-red-500 mt-3">{error}</p>
-            )}
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </motion.section>
   );

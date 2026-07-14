@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { AdminPageHeader, Card, Toast } from "@/components/admin/AdminUI";
 
 type PR = {
-  id: string; name: string | null; email: string | null;
+  id: string; name: string | null; phone: string | null; email: string | null;
   prayerRequest: string; anonymous: boolean;
   read: boolean; archived: boolean; approved: boolean; createdAt: string;
 };
@@ -159,19 +159,19 @@ export default function AdminPrayers() {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      {p.anonymous
-                        ? <span className="font-lato text-[12px] font-bold text-stone-500 italic">Anonymous</span>
-                        : <span className={`font-lato font-bold text-[14px] ${!p.read ? "text-stone-900" : "text-stone-500"}`}>
-                            {p.name}
-                            {!p.read && <span className="ml-2 inline-block w-2 h-2 bg-[#8c3a63] rounded-full" />}
-                          </span>}
-                      {p.anonymous && <span className="font-lato text-[10px] font-bold uppercase tracking-wider bg-stone-100 text-stone-500 px-2 py-0.5 rounded-sm">Anonymous</span>}
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <span className={`font-lato font-bold text-[14px] ${!p.read ? "text-stone-900" : "text-stone-500"}`}>
+                        {p.name || "Anonymous (No Name)"}
+                        {!p.read && <span className="ml-2 inline-block w-2 h-2 bg-[#8c3a63] rounded-full" />}
+                      </span>
+                      {p.anonymous && <span className="font-lato text-[10px] font-bold uppercase tracking-wider bg-stone-100 text-stone-500 px-2 py-0.5 rounded-sm">Anonymous Publicly</span>}
                       {p.approved && <span className="font-lato text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-sm">Approved</span>}
                       {p.archived && <span className="font-lato text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-sm">Archived</span>}
                     </div>
-                    {!p.anonymous && p.email && (
-                      <p className="font-lato text-[12px] text-stone-400 mb-2">{p.email}</p>
+                    {(p.email || p.phone) && (
+                      <p className="font-lato text-[12px] text-stone-400 mb-2">
+                        {p.email ?? "No Email"} {p.phone ? `· Phone: ${p.phone}` : ""}
+                      </p>
                     )}
                     <div className="bg-stone-50 rounded-sm px-4 py-3">
                       <p className="font-lato text-[13px] text-stone-700">{p.prayerRequest}</p>

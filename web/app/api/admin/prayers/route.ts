@@ -42,6 +42,7 @@ export async function GET(req: NextRequest) {
     const qItems = `*${filterExpr} | order(createdAt desc) [${skip}...${skip + limit}] {
       _id,
       name,
+      phone,
       email,
       prayerRequest,
       anonymous,
@@ -65,6 +66,7 @@ export async function GET(req: NextRequest) {
     const mapped = items.map((p) => ({
       id: p._id,
       name: p.name ?? null,
+      phone: p.phone ?? null,
       email: p.email ?? null,
       prayerRequest: p.prayerRequest ?? "",
       anonymous: p.anonymous ?? false,
@@ -113,6 +115,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({
       id: updated._id,
       name: updated.name ?? null,
+      phone: updated.phone ?? null,
       email: updated.email ?? null,
       prayerRequest: updated.prayerRequest ?? "",
       anonymous: updated.anonymous ?? false,

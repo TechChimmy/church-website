@@ -34,6 +34,6 @@ export function getSanityClient(useCdnOverride?: boolean) {
     dataset,
     apiVersion,
     useCdn,
-    token,
+    ...(useCdn ? {} : { token }),
   });
 }

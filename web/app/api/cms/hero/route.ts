@@ -32,9 +32,14 @@ export async function GET() {
     const q = `*[_type == "heroSlide"]| order(order asc){
       _id,
       title,
+      titleTa,
       subtitle,
+      subtitleTa,
       description,
+      descriptionTa,
       "imageUrl": image.asset->url,
+      ctaText,
+      ctaHref,
       order,
       active
     }`;
@@ -55,11 +60,14 @@ export async function GET() {
       slides.map((s) => ({
         id: s._id,
         title: s.title ?? "",
+        titleTa: s.titleTa ?? "",
         subtitle: s.subtitle ?? "",
+        subtitleTa: s.subtitleTa ?? "",
         description: s.description ?? "",
+        descriptionTa: s.descriptionTa ?? "",
         imageUrl: s.imageUrl ?? "",
-        ctaText: s.order === 1 ? "About Us" : s.order === 2 ? "Visit Us" : "Join Us Live",
-        ctaHref: s.order === 1 ? "/about" : s.order === 2 ? "/about#visit" : "/join-us-live",
+        ctaText: s.ctaText ?? (s.order === 1 ? "About Us" : s.order === 2 ? "Visit Us" : "Join Us Live"),
+        ctaHref: s.ctaHref ?? (s.order === 1 ? "/about" : s.order === 2 ? "/about#visit" : "/join-us-live"),
         order: s.order ?? 0,
         active: s.active ?? true,
       }))
@@ -85,16 +93,26 @@ export async function POST(req: NextRequest) {
       }
     } : null;
 
+    const docData: Record<string, any> = {
+      title: data?.title ?? "",
+      titleTa: data?.titleTa ?? "",
+      subtitle: data?.subtitle ?? "",
+      subtitleTa: data?.subtitleTa ?? "",
+      description: data?.description ?? "",
+      descriptionTa: data?.descriptionTa ?? "",
+      ctaText: data?.ctaText ?? "",
+      ctaHref: data?.ctaHref ?? "",
+      order: typeof data?.order === "number" ? data.order : Number(data?.order ?? 0),
+      active: data?.active ?? true,
+    };
+
+    if (imageField) {
+      docData.image = imageField;
+    }
+
     const created = await sanityCreateDoc({
       type: "heroSlide",
-      data: {
-        title: data?.title ?? "",
-        subtitle: data?.subtitle ?? "",
-        description: data?.description ?? "",
-        image: imageField,
-        order: typeof data?.order === "number" ? data.order : Number(data?.order ?? 0),
-        active: data?.active ?? true,
-      },
+      data: docData,
     });
 
     revalidatePath("/");
@@ -123,18 +141,33 @@ export async function PATCH(req: NextRequest) {
       }
     } : null;
 
+    const setFields: Record<string, any> = {
+      title: data?.title ?? "",
+      titleTa: data?.titleTa ?? "",
+      subtitle: data?.subtitle ?? "",
+      subtitleTa: data?.subtitleTa ?? "",
+      description: data?.description ?? "",
+      descriptionTa: data?.descriptionTa ?? "",
+      ctaText: data?.ctaText ?? "",
+      ctaHref: data?.ctaHref ?? "",
+      order: typeof data?.order === "number" ? data.order : Number(data?.order ?? 0),
+      active: data?.active ?? true,
+    };
+
+    const unsetFields: string[] = [];
+
+    if (imageField) {
+      setFields.image = imageField;
+    } else {
+      unsetFields.push("image");
+    }
+
     const updated = await sanityPatchDoc({
       id,
       type: "heroSlide",
       patch: {
-        set: {
-          title: data?.title ?? "",
-          subtitle: data?.subtitle ?? "",
-          description: data?.description ?? "",
-          image: imageField,
-          order: typeof data?.order === "number" ? data.order : Number(data?.order ?? 0),
-          active: data?.active ?? true,
-        },
+        set: setFields,
+        ...(unsetFields.length > 0 ? { unset: unsetFields } : {}),
       },
     });
 

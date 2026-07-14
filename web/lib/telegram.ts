@@ -35,21 +35,29 @@ function ts() {
 }
 
 export async function sendPrayerRequest(opts: {
-  anonymous: boolean; name?: string; email?: string; prayerRequest: string;
+  anonymous: boolean; name: string; phone: string; email: string; prayerRequest: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  const { anonymous, name, email, prayerRequest } = opts;
+  const { anonymous, name, phone, email, prayerRequest } = opts;
   const text = anonymous
-    ? `━━━━━━━━━━━━━━\n🙏 <b>ANONYMOUS PRAYER REQUEST</b>\n\n<b>Prayer Request:</b>\n${prayerRequest}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`
-    : `━━━━━━━━━━━━━━\n🙏 <b>NEW PRAYER REQUEST</b>\n\n<b>Name:</b> ${name}\n\n<b>Email:</b> ${email}\n\n<b>Prayer Request:</b>\n${prayerRequest}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`;
+    ? `━━━━━━━━━━━━━━\n🙏 <b>ANONYMOUS PRAYER REQUEST (Publicly Anonymous)</b>\n\n<b>Name:</b> Anonymous\n\n<b>Prayer Request:</b>\n${prayerRequest}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`
+    : `━━━━━━━━━━━━━━\n🙏 <b>NEW PRAYER REQUEST</b>\n\n<b>Name:</b> ${name}\n\n<b>Phone:</b> ${phone}\n\n<b>Email:</b> ${email}\n\n<b>Prayer Request:</b>\n${prayerRequest}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`;
   return sendMessage(text);
 }
 
 export async function sendAskCollinsQuestion(opts: {
-  name: string; email: string; question: string; anonymous?: boolean;
+  name: string; phone: string; email: string; question: string; consent?: boolean; videoName?: string; timestamp?: string;
 }): Promise<{ ok: boolean; error?: string }> {
-  const text = opts.anonymous
-    ? `━━━━━━━━━━━━━━\n❓ <b>ANONYMOUS ASK COLLINS QUESTION</b>\n\n<b>Question:</b>\n${opts.question}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`
-    : `━━━━━━━━━━━━━━\n❓ <b>NEW ASK COLLINS QUESTION</b>\n\n<b>Name:</b> ${opts.name}\n\n<b>Email:</b> ${opts.email}\n\n<b>Question:</b>\n${opts.question}\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`;
+  let text = `━━━━━━━━━━━━━━\n❓ <b>NEW ASK COLLINS QUESTION</b>\n\n<b>Name:</b> ${opts.name}\n\n<b>Phone:</b> ${opts.phone}\n\n<b>Email:</b> ${opts.email}\n\n<b>Question:</b>\n${opts.question}`;
+  if (opts.videoName) {
+    text += `\n\n<b>Video Name:</b> ${opts.videoName}`;
+  }
+  if (opts.timestamp) {
+    text += `\n<b>Timestamp:</b> ${opts.timestamp}`;
+  }
+  if (opts.consent !== undefined) {
+    text += `\n\n<b>Public Review Consent:</b> ${opts.consent ? "Granted ✓" : "Denied ✗"}`;
+  }
+  text += `\n\n<b>Submitted:</b> ${ts()}\n━━━━━━━━━━━━━━`;
   return sendMessage(text);
 }
 

@@ -10,9 +10,14 @@ export async function fetchHeroSlides() {
   const q = `*[_type == "heroSlide" && active == true]| order(order asc){
     _id,
     title,
+    titleTa,
     subtitle,
+    subtitleTa,
     description,
+    descriptionTa,
     "imageUrl": image.asset->url,
+    ctaText,
+    ctaHref,
     order,
     active,
   }`;
@@ -41,11 +46,15 @@ export async function fetchEvents(opts?: { activeOnly?: boolean }) {
   const q = `*[_type == "event"${activeOnly ? " && active == true" : ""}]| order(date asc){
     _id,
     title,
+    titleTa,
     description,
+    descriptionTa,
     date,
     endDate,
     time,
+    timeTa,
     location,
+    locationTa,
     imageUrl,
     featured,
     active,
@@ -58,7 +67,9 @@ export async function fetchCalendarEvents() {
   const q = `*[_type == "event" && active == true]{
     _id,
     title,
+    titleTa,
     description,
+    descriptionTa,
     date,
     active
   }| order(date asc)`;
@@ -69,8 +80,11 @@ export async function fetchServiceTimes() {
   const q = `*[_type == "service" && active == true]| order(order asc){
     _id,
     name,
+    nameTa,
     day,
+    dayTa,
     time,
+    timeTa,
     order,
     active
   }`;
@@ -91,8 +105,11 @@ export async function fetchGalleryImages() {
 export async function fetchHomepageContent() {
   const q = `*[_type == "homepageContent"][0]{
     joinText,
+    joinTextTa,
     visitText,
-    prayerHeading
+    visitTextTa,
+    prayerHeading,
+    prayerHeadingTa
   }`;
   return sanityFetch<any>(q);
 }
@@ -100,6 +117,7 @@ export async function fetchHomepageContent() {
 export async function fetchFooter() {
   const q = `*[_type == "footer"][0]{
     address,
+    addressTa,
     phone,
     email,
     mapEmbed
@@ -143,12 +161,21 @@ export async function fetchCollinsQuestions(opts?: { status?: string; archived?:
   const qItems = `*${filter}| order(createdAt desc)[${skip}...${skip + limit}]{
     _id,
     name,
+    phone,
     email,
     question,
+    questionTa,
+    consent,
+    videoName,
+    timestamp,
     status,
     read,
     archived,
     createdAt,
+    answer,
+    answerTa,
+    answerTitle,
+    answerTitleTa,
   }`;
 
   const qTotal = `count(*${filter})`;
@@ -173,17 +200,79 @@ export async function fetchCollinsQuestions(opts?: { status?: string; archived?:
 
 export async function fetchAnswersFromTheWord(opts?: { activeOnly?: boolean }) {
   const activeOnly = opts?.activeOnly ?? true;
-  const q = `*[_type == "answerFromTheWord"${activeOnly ? " && active == true" : ""}]| order(_createdAt desc){
+  const q = `*[_type == "answerFromTheWord"${activeOnly ? " && active != false" : ""}]| order(order asc, publishDate desc, _createdAt desc){
     _id,
     question,
+    questionTa,
+    title,
+    titleTa,
     answer,
-    active
+    answerTa,
+    "imageUrl": featuredImage.asset->url,
+    publishDate,
+    category,
+    categoryTa,
+    excerpt,
+    excerptTa,
+    active,
+    order,
+    _createdAt
   }`;
   return sanityFetch<any[]>(q);
+}
+
+export async function fetchAnswerById(id: string) {
+  const q = `*[_type == "answerFromTheWord" && (_id == $id || _id == "drafts." + $id)][0] {
+    _id,
+    question,
+    questionTa,
+    title,
+    titleTa,
+    answer,
+    answerTa,
+    "imageUrl": featuredImage.asset->url,
+    publishDate,
+    category,
+    categoryTa,
+    excerpt,
+    excerptTa,
+    active,
+    _createdAt
+  }`;
+  return sanityFetch<any>(q, { id }, [], false);
 }
 
 export async function fetchSiteSettingsFlat() {
   const q = `*[_type == "siteSetting"]{ key, value }`;
   return sanityFetch<SanitySiteSetting[]>(q);
+}
+
+export async function fetchWeStayActive(opts?: { activeOnly?: boolean }) {
+  const activeOnly = opts?.activeOnly ?? true;
+  const q = `*[_type == "weStayActive"${activeOnly ? " && active != false" : ""}]| order(order asc){
+    _id,
+    title,
+    titleTa,
+    description,
+    descriptionTa,
+    "imageUrl": image.asset->url,
+    order,
+    active
+  }`;
+  return sanityFetch<any[]>(q);
+}
+
+export async function fetchAnnouncements(opts?: { activeOnly?: boolean }) {
+  const activeOnly = opts?.activeOnly ?? true;
+  const q = `*[_type == "announcement"${activeOnly ? " && active != false" : ""}]| order(date desc){
+    _id,
+    title,
+    titleTa,
+    content,
+    contentTa,
+    date,
+    active
+  }`;
+  return sanityFetch<any[]>(q);
 }
 

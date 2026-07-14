@@ -3,46 +3,51 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export type Slide = {
   id: string | number;
   gradient?: string;
   imageUrl?: string;
   title: string;
+  titleTa?: string;
   subtitle: string;
+  subtitleTa?: string;
   ctaText: string;
   ctaHref: string;
 };
 
-const DEFAULT_SLIDES: Slide[] = [
-  {
-    id: "default-1",
-    gradient: "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]",
-    title: "Welcome Home",
-    subtitle: "Sunday Service · 9am & 11am",
-    ctaText: "Join Us Live",
-    ctaHref: "/join-us-live",
-  },
-  {
-    id: "default-2",
-    gradient: "from-[#2A0E1C] via-[#8C3A63] to-[#4D1530]",
-    title: "Faith. Hope. Love.",
-    subtitle: "Building a community rooted in Christ",
-    ctaText: "About Us",
-    ctaHref: "/about",
-  },
-  {
-    id: "default-3",
-    gradient: "from-[#1F0D16] via-[#5C2440] to-[#3D1126]",
-    title: "Come as You Are",
-    subtitle: "You are welcome here, always",
-    ctaText: "Visit Us",
-    ctaHref: "/",
-  },
-];
-
-export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide[] }) {
+export default function HeroSlider({ slides = [] }: { slides?: Slide[] }) {
+  const { lang, t } = useLanguage();
   const [current, setCurrent] = useState(0);
+
+  const DEFAULT_SLIDES: Slide[] = [
+    {
+      id: "default-1",
+      gradient: "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]",
+      title: t("hero.defaultTitle1"),
+      subtitle: t("hero.defaultSubtitle1"),
+      ctaText: t("hero.defaultCta1"),
+      ctaHref: "/join-us-live",
+    },
+    {
+      id: "default-2",
+      gradient: "from-[#2A0E1C] via-[#8C3A63] to-[#4D1530]",
+      title: t("hero.defaultTitle2"),
+      subtitle: t("hero.defaultSubtitle2"),
+      ctaText: t("hero.defaultCta2"),
+      ctaHref: "/about",
+    },
+    {
+      id: "default-3",
+      gradient: "from-[#1F0D16] via-[#5C2440] to-[#3D1126]",
+      title: t("hero.defaultTitle3"),
+      subtitle: t("hero.defaultSubtitle3"),
+      ctaText: t("hero.defaultCta3"),
+      ctaHref: "/",
+    },
+  ];
+
   const slidesToUse = slides.length > 0 ? slides : DEFAULT_SLIDES;
   const slideCount = slidesToUse.length;
 
@@ -56,11 +61,22 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
     return () => clearInterval(t);
   }, [current, go]);
 
+  function getLocalizedCta(ctaText: string) {
+    if (ctaText === "About Us") return t("nav.about");
+    if (ctaText === "Visit Us") return t("nav.visitUs");
+    if (ctaText === "Join Us Live") return t("nav.joinUsLive");
+    return ctaText;
+  }
+
   return (
     <section className="relative w-full h-[420px] sm:h-[480px] overflow-hidden" style={{ backgroundColor: "#3D1126" }}>
       <AnimatePresence mode="wait">
-        {slidesToUse.map((slide, i) =>
-          i === current ? (
+        {slidesToUse.map((slide, i) => {
+          const title = lang === "ta" && slide.titleTa ? slide.titleTa : slide.title;
+          const subtitle = lang === "ta" && slide.subtitleTa ? slide.subtitleTa : slide.subtitle;
+          const ctaText = getLocalizedCta(slide.ctaText);
+
+          return i === current ? (
             <motion.div
               key={slide.id}
               className={`absolute inset-0 bg-gradient-to-br ${slide.gradient ?? "from-[#3D1126] via-[#6D2C4E] to-[#4A1A35]"}`}
@@ -70,8 +86,8 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
               transition={{ duration: 0.6 }}
             >
               <Image
-                src={slide.imageUrl || `/images/hero/slide-${i + 1}.jpg`}
-                alt={slide.title}
+                src={slide.imageUrl || `/images/hero/slide-${(i % 3) + 1}.jpg`}
+                alt={title}
                 fill
                 priority={i === 0}
                 className="object-cover"
@@ -103,11 +119,11 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
                 <h1 className="font-playfair text-[30px] sm:text-[42px] font-bold tracking-wide
                                leading-tight mb-3"
                   style={{ textShadow: "0 2px 20px rgba(0,0,0,0.4)" }}>
-                  {slide.title}
+                  {title}
                 </h1>
                 <p className="font-lato text-[13px] uppercase tracking-[2.5px]
                              mb-7" style={{ color: "rgba(243,233,229,0.85)" }}>
-                  {slide.subtitle}
+                  {subtitle}
                 </p>
                 <a
                   href={slide.ctaHref}
@@ -126,16 +142,16 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
                     (e.currentTarget as HTMLElement).style.boxShadow = "";
                   }}
                 >
-                  {slide.ctaText}
+                  {ctaText}
                 </a>
               </motion.div>
             </motion.div>
-          ) : null
-        )}
+          ) : null;
+        })}
       </AnimatePresence>
 
       {/* Arrows */}
-      <button onClick={() => go(current - 1)} aria-label="Previous slide"
+      <button suppressHydrationWarning onClick={() => go(current - 1)} aria-label={t("hero.prevSlide")}
         className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10
                    border border-white/25 text-white text-xl
                    flex items-center justify-center
@@ -150,7 +166,7 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
           (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.25)";
         }}
       >‹</button>
-      <button onClick={() => go(current + 1)} aria-label="Next slide"
+      <button suppressHydrationWarning onClick={() => go(current + 1)} aria-label={t("hero.nextSlide")}
         className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10
                    border border-white/25 text-white text-xl
                    flex items-center justify-center
@@ -169,12 +185,26 @@ export default function HeroSlider({ slides = DEFAULT_SLIDES }: { slides?: Slide
       {/* Dots */}
       <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex gap-2">
         {slidesToUse.map((_, i) => (
-          <button key={i} onClick={() => go(i)} aria-label={`Go to slide ${i + 1}`}
+          <button suppressHydrationWarning key={i} onClick={() => go(i)} aria-label={`${t("hero.goToSlide")} ${i + 1}`}
             className="w-2 h-2 rounded-full transition-all duration-300"
             style={{
               backgroundColor: i === current ? "var(--accent-beige)" : "rgba(255,255,255,0.3)",
               transform: i === current ? "scale(1.3)" : "scale(1)",
             }}
+          />
+        ))}
+      </div>
+
+      {/* Preload images to prevent transition lag */}
+      <div className="hidden" aria-hidden="true">
+        {slidesToUse.map((slide, i) => (
+          <Image
+            key={`preload-${slide.id}`}
+            src={slide.imageUrl || `/images/hero/slide-${(i % 3) + 1}.jpg`}
+            alt=""
+            width={10}
+            height={10}
+            priority={i < 3}
           />
         ))}
       </div>

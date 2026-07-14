@@ -6,6 +6,7 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({ name: 'name', title: 'Name', type: 'string' }),
+    defineField({ name: 'phone', title: 'Phone Number', type: 'string' }),
     defineField({ name: 'email', title: 'Email', type: 'string' }),
     defineField({ name: 'prayerRequest', title: 'Prayer Request', type: 'text', validation: (Rule) => Rule.required() }),
     defineField({ name: 'anonymous', title: 'Anonymous', type: 'boolean', initialValue: false }),

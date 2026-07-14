@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 // SVG icon components
 const Icons = {
@@ -121,26 +122,41 @@ const Icons = {
       <line x1="3" y1="12" x2="21" y2="12" />
     </svg>
   ),
+  Gallery: () => (
+    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <polyline points="21 15 16 10 5 21" />
+    </svg>
+  ),
+  Announcements: () => (
+    <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a4 4 0 010 7M19 6a8.5 8.5 0 010 12" />
+    </svg>
+  ),
 };
 
 const NAV = [
-  { href: process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "http://localhost:3333", label: "CMS Studio",      Icon: Icons.ExternalLink, target: "_blank" },
-  { href: "/admin",               label: "Dashboard",       Icon: Icons.Dashboard },
-  { href: "/admin/homepage",      label: "Homepage",         Icon: Icons.Home },
-  { href: "/admin/about",         label: "About Page",       Icon: Icons.About },
-  { href: "/admin/events",        label: "Events",           Icon: Icons.Events },
-  { href: "/admin/calendar",      label: "Calendar",         Icon: Icons.Calendar },
-  { href: "/admin/ask-collins",   label: "Ask Collins",      Icon: Icons.AskCollins },
-  { href: "/admin/join-us-live",  label: "Join Us Live",     Icon: Icons.JoinLive },
-  { href: "/admin/service-times", label: "Service Times",    Icon: Icons.ServiceTimes },
-  { href: "/admin/community",     label: "Community",        Icon: Icons.Community },
-  { href: "/admin/media",         label: "Media Library",    Icon: Icons.Media },
-  { href: "/admin/settings",      label: "Site Settings",    Icon: Icons.Settings },
-  { href: "/admin/prayers",         label: "Prayer Requests",  Icon: Icons.Prayers },
-  { href: "/admin/messages",        label: "Contact Messages", Icon: Icons.Messages },
+  { href: "/studio/", translationKey: "cmsStudio", Icon: Icons.ExternalLink, target: "_blank" },
+  { href: "/admin", translationKey: "dashboard", Icon: Icons.Dashboard },
+  { href: "/admin/homepage", translationKey: "homepage", Icon: Icons.Home },
+  { href: "/admin/about", translationKey: "aboutPage", Icon: Icons.About },
+  { href: "/admin/events", translationKey: "events", Icon: Icons.Events },
+  { href: "/admin/calendar", translationKey: "calendar", Icon: Icons.Calendar },
+  { href: "/admin/ask-collins", translationKey: "askCollins", Icon: Icons.AskCollins },
+  { href: "/admin/join-us-live", translationKey: "joinUsLive", Icon: Icons.JoinLive },
+  { href: "/admin/service-times", translationKey: "serviceTimes", Icon: Icons.ServiceTimes },
+  { href: "/admin/community", translationKey: "community", Icon: Icons.Community },
+  { href: "/admin/gallery", translationKey: "gallery", Icon: Icons.Gallery },
+  { href: "/admin/announcements", translationKey: "announcements", Icon: Icons.Announcements },
+  { href: "/admin/media", translationKey: "mediaLibrary", Icon: Icons.Media },
+  { href: "/admin/settings", translationKey: "siteSettings", Icon: Icons.Settings },
+  { href: "/admin/prayers", translationKey: "prayerRequests", Icon: Icons.Prayers },
+  { href: "/admin/messages", translationKey: "contactMessages", Icon: Icons.Messages },
 ];
 
 export default function AdminSidebar() {
+  const { lang, t } = useLanguage();
   const path = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -169,7 +185,7 @@ export default function AdminSidebar() {
               </p>
               <p className="font-lato text-[9px] font-bold uppercase tracking-widest"
                 style={{ color: "rgba(255,255,255,0.35)" }}>
-                Admin CMS
+                {t("admin.adminCms")}
               </p>
             </div>
           </div>
@@ -177,7 +193,7 @@ export default function AdminSidebar() {
         <button
           className="lg:hidden text-white/40 hover:text-white transition-colors p-1"
           onClick={() => setMobileOpen(false)}
-          aria-label="Close menu"
+          aria-label={t("admin.closeMenu")}
         >
           <Icons.X />
         </button>
@@ -186,9 +202,10 @@ export default function AdminSidebar() {
       {/* Nav */}
       <nav className="flex-1 py-3 overflow-y-auto">
         <div className="px-2 space-y-0.5">
-          {NAV.map(({ href, label, Icon, target }) => {
+          {NAV.map(({ href, translationKey, Icon, target }) => {
             const exact = href === "/admin";
             const active = exact ? path === href : path.startsWith(href);
+            const label = t(`admin.${translationKey}`);
             return (
               <Link
                 key={href}
@@ -249,7 +266,7 @@ export default function AdminSidebar() {
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.3)"; }}
         >
           <Icons.ExternalLink />
-          View public site
+          {t("admin.viewPublicSite")}
         </Link>
       </div>
     </>
@@ -263,7 +280,7 @@ export default function AdminSidebar() {
         <button
           onClick={() => setMobileOpen(true)}
           className="text-white/60 hover:text-white transition-colors p-1"
-          aria-label="Open navigation"
+          aria-label={t("admin.openNavigation")}
         >
           <Icons.Menu />
         </button>
@@ -278,7 +295,7 @@ export default function AdminSidebar() {
             </svg>
           </div>
           <p className="font-playfair text-[13px] font-semibold text-white leading-none">
-            CFT Church Admin
+            {lang === "ta" ? "CFT திருச்சபை நிர்வாகம்" : "CFT Church Admin"}
           </p>
         </div>
       </div>

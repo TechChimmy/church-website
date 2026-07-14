@@ -27,11 +27,8 @@ async function ytFetch(
 
   try {
     const res = await fetch(url.toString(), {
-      cache: "no-store",
-      headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        "Pragma": "no-cache",
-      }
+      signal: AbortSignal.timeout(3000), // Timeout after 3 seconds
+      next: { revalidate: 300 } // Cache YouTube API requests for 5 minutes
     });
 
     if (!res.ok) {
@@ -57,7 +54,7 @@ async function ytFetch(
 const channelIdCache = new Map<string, string>();
 let cachedVideoData: YouTubeLiveResult | null = null;
 let lastFetchTime = 0;
-const CACHE_DURATION = 15000; // 15 seconds TTL to balance performance, rate limit, and real-time updates
+const CACHE_DURATION = 60000; // 60 seconds TTL to balance performance and real-time updates
 
 /** Map a YouTube search/videos item to our YouTubeVideo shape. */
 function mapItem(item: {
@@ -226,7 +223,8 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
           "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
           "Accept-Language": "en-US,en;q=0.9",
         },
-        next: { revalidate: 15 } // Cache the fetch response for 15 seconds
+        signal: AbortSignal.timeout(2500), // Timeout after 2.5 seconds to avoid slow load
+        next: { revalidate: 60 } // Cache the fetch response for 60 seconds
       });
       if (res.ok) {
         const text = await res.text();

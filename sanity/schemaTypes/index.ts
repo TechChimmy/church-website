@@ -14,6 +14,7 @@ import contactMessage from './contactMessage';
 import community from './community';
 import announcement from './announcement';
 import adminUser from './adminUser';
+import weStayActive from './weStayActive';
 
 export const schemaTypes = [
   heroSlide,
@@ -32,6 +33,7 @@ export const schemaTypes = [
   community,
   announcement,
   adminUser,
+  weStayActive,
 ];
 
 

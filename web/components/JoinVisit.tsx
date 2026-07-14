@@ -5,16 +5,20 @@ import { useState } from "react";
 import Image from "next/image";
 import VideoModal from "@/components/video-modal";
 import type { YouTubeVideo } from "@/types/youtube";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type JoinVisitProps = {
   joinUsText: string;
+  joinUsTextTa?: string;
   visitUsText: string;
+  visitUsTextTa?: string;
   mainVideo: YouTubeVideo | null;
 };
 
-export default function JoinVisit({ joinUsText, visitUsText, mainVideo }: JoinVisitProps) {
+export default function JoinVisit({ joinUsText, joinUsTextTa, visitUsText, visitUsTextTa, mainVideo }: JoinVisitProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { lang, t } = useLanguage();
   const [isPlaying, setIsPlaying] = useState(false);
 
   // Smoothly scroll to the Footer section (id="footer-visit") instead of
@@ -32,9 +36,12 @@ export default function JoinVisit({ joinUsText, visitUsText, mainVideo }: JoinVi
     }
   }
 
+  const activeJoinText = lang === "ta" && joinUsTextTa ? joinUsTextTa : joinUsText;
+  const activeVisitText = lang === "ta" && visitUsTextTa ? visitUsTextTa : visitUsText;
+
   const cards = [
-    { title: "Join Us Live", body: joinUsText,  cta: "Watch Now",       href: "/join-us-live", onClick: undefined },
-    { title: "Visit Us",     body: visitUsText, cta: "Get Directions",  href: "/",              onClick: handleGetDirections },
+    { title: t("joinVisit.joinTitle"), body: activeJoinText,  cta: t("joinVisit.watchNow"),       href: "/join-us-live", onClick: undefined },
+    { title: t("joinVisit.visitTitle"),     body: activeVisitText, cta: t("joinVisit.getDirections"),  href: "/",              onClick: handleGetDirections },
   ];
 
   return (
@@ -43,13 +50,14 @@ export default function JoinVisit({ joinUsText, visitUsText, mainVideo }: JoinVi
         style={{ borderBottom: "1px solid rgba(140,58,99,0.1)" }}>
         {/* Thumbnail */}
         <div 
+          suppressHydrationWarning
           onClick={mainVideo ? () => setIsPlaying(true) : undefined}
           className={`relative min-h-[100px] sm:min-h-[130px] flex items-center justify-center overflow-hidden ${
             mainVideo ? "cursor-pointer group" : ""
           }`}
           style={{ background: "linear-gradient(135deg, #3D1126, #6D2C4E)" }}
           role={mainVideo ? "button" : undefined}
-          aria-label={mainVideo ? `Play: ${mainVideo.title}` : undefined}
+          aria-label={mainVideo ? `${t("joinVisit.watchNow")}: ${mainVideo.title}` : undefined}
           tabIndex={mainVideo ? 0 : undefined}
           onKeyDown={mainVideo ? (e) => e.key === "Enter" && setIsPlaying(true) : undefined}
         >
@@ -58,6 +66,7 @@ export default function JoinVisit({ joinUsText, visitUsText, mainVideo }: JoinVi
               src={mainVideo.thumbnail}
               alt={mainVideo.title}
               fill
+              priority
               className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width:768px) 100vw, 180px"
             />

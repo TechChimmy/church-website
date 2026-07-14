@@ -2,34 +2,54 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type CalEv = {
-  id: string; title: string; description?: string;
-  date: string; time?: string; endTime?: string; color: string;
+  id: string;
+  title: string;
+  titleTa?: string;
+  description?: string;
+  descriptionTa?: string;
+  date: string;
+  time?: string;
+  timeTa?: string;
+  endTime?: string;
+  color: string;
 };
 
 type ModalData = { date: string; events: CalEv[] };
 
 // Shape returned by /api/cms/events (Event model — single source of truth)
 type RawEvent = {
-  id: string; title: string; description: string;
-  date: string; time?: string | null; active: boolean;
+  id: string;
+  title: string;
+  titleTa?: string;
+  description: string;
+  descriptionTa?: string;
+  date: string;
+  time?: string | null;
+  timeTa?: string | null;
+  active: boolean;
 };
-
-const DAY_LABELS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-const MONTH_NAMES = ["January","February","March","April","May","June",
-  "July","August","September","October","November","December"];
 
 function dateKey(y: number, m: number, d: number) {
   return `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 }
 
 export default function CalendarOfEvents() {
+  const { lang, t } = useLanguage();
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [events, setEvents] = useState<CalEv[]>([]);
   const [modal, setModal] = useState<ModalData | null>(null);
+
+  const dayLabels = t("calendar.days", { returnObjects: true }) as unknown as string[];
+  const monthNames = t("calendar.months", { returnObjects: true }) as unknown as string[];
+
+  const DAY_LABELS = Array.isArray(dayLabels) ? dayLabels : ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const MONTH_NAMES = Array.isArray(monthNames) ? monthNames : ["January","February","March","April","May","June",
+    "July","August","September","October","November","December"];
 
   useEffect(() => {
     // Single source of truth: Event table via /api/cms/events?active=true
@@ -40,9 +60,12 @@ export default function CalendarOfEvents() {
         const mapped: CalEv[] = data.map(ev => ({
           id:          ev.id,
           title:       ev.title,
+          titleTa:     ev.titleTa,
           description: ev.description || undefined,
+          descriptionTa: ev.descriptionTa || undefined,
           date:        ev.date,
           time:        ev.time ?? undefined,
+          timeTa:      ev.timeTa ?? undefined,
           endTime:     undefined,
           color:       "#8c3a63",
         }));
@@ -76,7 +99,7 @@ export default function CalendarOfEvents() {
     const evs = eventsForDay(day);
     if (evs.length > 0) {
       setModal({
-        date: new Date(year, month, day).toLocaleDateString("en-US", {
+        date: new Date(year, month, day).toLocaleDateString(lang === "ta" ? "ta-IN" : "en-US", {
           weekday:"long", year:"numeric", month:"long", day:"numeric",
         }),
         events: evs,
@@ -91,12 +114,13 @@ export default function CalendarOfEvents() {
         <div className="flex flex-col items-center mb-8">
           <div className="w-8 h-[2px] rounded-full mb-3" style={{ backgroundColor: "var(--burgundy)" }} />
           <h2 className="font-playfair text-[26px] font-bold text-center" style={{ color: "var(--text-dark)" }}>
-            Calendar Of Events
+            {t("calendar.heading")}
           </h2>
         </div>
 
         <div className="flex items-center justify-between mb-4 max-w-[860px] mx-auto">
-          <button onClick={() => changeMonth(-1)} aria-label="Previous month"
+          <button onClick={() => changeMonth(-1)} aria-label={t("calendar.prevMonth")}
+            suppressHydrationWarning={true}
             className="w-8 h-8 border flex items-center justify-center text-xl
                        transition-all duration-200 rounded-sm leading-none"
             style={{ borderColor: "rgba(140,58,99,0.25)", color: "var(--burgundy)" }}
@@ -114,7 +138,8 @@ export default function CalendarOfEvents() {
           <span className="font-playfair text-[17px] font-semibold" style={{ color: "var(--text-dark)" }}>
             {MONTH_NAMES[month]} {year}
           </span>
-          <button onClick={() => changeMonth(1)} aria-label="Next month"
+          <button onClick={() => changeMonth(1)} aria-label={t("calendar.nextMonth")}
+            suppressHydrationWarning={true}
             className="w-8 h-8 border flex items-center justify-center text-xl
                        transition-all duration-200 rounded-sm leading-none"
             style={{ borderColor: "rgba(140,58,99,0.25)", color: "var(--burgundy)" }}
@@ -183,16 +208,19 @@ export default function CalendarOfEvents() {
                           } : { color: "#5A4050" }}>
                           {day}
                         </span>
-                        {evs.map((ev,ei) => (
-                          <span key={ei}
-                            className="block font-lato text-[10px] font-bold px-1.5 py-0.5 rounded-sm mt-0.5 truncate"
-                            style={{
-                              background: "rgba(140,58,99,0.12)",
-                              color: "var(--burgundy)",
-                            }}>
-                            {ev.title}
-                          </span>
-                        ))}
+                        {evs.map((ev,ei) => {
+                          const eventTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
+                          return (
+                            <span key={ei}
+                              className="block font-lato text-[10px] font-bold px-1.5 py-0.5 rounded-sm mt-0.5 truncate"
+                              style={{
+                                background: "rgba(140,58,99,0.12)",
+                                color: "var(--burgundy)",
+                              }}>
+                              {eventTitle}
+                            </span>
+                          );
+                        })}
                       </td>
                     );
                   })}
@@ -225,24 +253,34 @@ export default function CalendarOfEvents() {
                 className="absolute top-4 right-4 w-7 h-7 flex items-center justify-center
                            text-xl leading-none transition-colors duration-200"
                 style={{ color: "#8A7078" }}
-                aria-label="Close">×</button>
+                aria-label={t("events.close")}>×</button>
               <p className="font-lato text-[11px] uppercase tracking-widest mb-1"
                 style={{ color: "var(--burgundy)" }}>
                 {modal.date}
               </p>
-              <h3 className="font-playfair text-[20px] font-bold mb-5" style={{ color: "var(--text-dark)" }}>Events</h3>
+              <h3 className="font-playfair text-[20px] font-bold mb-5" style={{ color: "var(--text-dark)" }}>
+                {lang === "ta" ? "நிகழ்வுகள்" : "Events"}
+              </h3>
               <div className="flex flex-col gap-4">
-                {modal.events.map((ev,i) => (
-                  <div key={i} className="pl-4" style={{ borderLeft: "2px solid var(--burgundy)" }}>
-                    <p className="font-playfair text-[15px] font-semibold" style={{ color: "var(--text-dark)" }}>{ev.title}</p>
-                    {ev.time && <p className="font-lato text-[12px] mb-1" style={{ color: "var(--burgundy)" }}>{ev.time}</p>}
-                    {ev.description && (
-                      <p className="font-lato text-[12.5px] leading-relaxed" style={{ color: "#8A7078" }}>{ev.description}</p>
-                    )}
-                  </div>
-                ))}
+                {modal.events.map((ev,i) => {
+                  const eventTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
+                  const eventTime = lang === "ta" && ev.timeTa ? ev.timeTa : ev.time;
+                  const eventDesc = lang === "ta" && ev.descriptionTa ? ev.descriptionTa : ev.description;
+
+                  return (
+                    <div key={i} className="pl-4" style={{ borderLeft: "2px solid var(--burgundy)" }}>
+                      <p className="font-playfair text-[15px] font-semibold" style={{ color: "var(--text-dark)" }}>{eventTitle}</p>
+                      {eventTime && <p className="font-lato text-[12px] mb-1" style={{ color: "var(--burgundy)" }}>{eventTime}</p>}
+                      {eventDesc && (
+                        <p className="font-lato text-[12.5px] leading-relaxed" style={{ color: "#8A7078" }}>{eventDesc}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-              <button onClick={() => setModal(null)} className="mt-6 btn-primary w-full text-center">Close</button>
+              <button onClick={() => setModal(null)} className="mt-6 btn-primary w-full text-center">
+                {t("events.close")}
+              </button>
             </motion.div>
           </>
         )}

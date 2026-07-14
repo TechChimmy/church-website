@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useLanguage } from "@/hooks/useLanguage";
 
-type T = { id: string; name: string; body: string; imageUrl?: string | null };
-
-const FALLBACK: T[] = [
-  { id:"f1", name:"Blake & Kay", body:"Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The gentle nature accompanies the scene, with birds chirping melodiously and bees buzzing from flower to flower in the vibrant garden." },
-  { id:"f2", name:"James & Ruth", body:"Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside village. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses." },
-  { id:"f3", name:"Michael & Sarah", body:"Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon. The gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers." },
-];
+type T = { id: string; name: string; nameTa?: string; body: string; bodyTa?: string; imageUrl?: string | null };
 
 export default function OurCommunity({ testimonials: initialTestimonials = null }: { testimonials?: T[] | null }) {
+  const { lang, t } = useLanguage();
+
+  const FALLBACK: T[] = [
+    { id:"f1", name:"Blake & Kay", body: t("community.fallbackParagraph") },
+    { id:"f2", name:"James & Ruth", body: t("community.fallbackParagraph") },
+    { id:"f3", name:"Michael & Sarah", body: t("community.fallbackParagraph") },
+  ];
+
   const [testimonials, setTestimonials] = useState<T[]>(initialTestimonials ?? FALLBACK);
   const [current, setCurrent] = useState(0);
 
@@ -28,6 +31,10 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
 
   const go = (n: number) => setCurrent((n + testimonials.length) % testimonials.length);
 
+  const activeTestimonial = testimonials[current];
+  const name = lang === "ta" && activeTestimonial?.nameTa ? activeTestimonial.nameTa : activeTestimonial?.name;
+  const body = lang === "ta" && activeTestimonial?.bodyTa ? activeTestimonial.bodyTa : activeTestimonial?.body;
+
   return (
     <section className="py-12 sm:py-16 px-4 sm:px-10"
       style={{ backgroundColor: "var(--accent-beige)", borderTop: "1px solid rgba(140,58,99,0.1)", borderBottom: "1px solid rgba(140,58,99,0.1)" }}>
@@ -37,7 +44,7 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
           <div className="w-8 h-[2px] rounded-full mb-3" style={{ backgroundColor: "var(--burgundy)" }} />
           <h2 className="font-playfair text-[24px] sm:text-[26px] font-bold text-center"
             style={{ color: "var(--text-dark)" }}>
-            Our Community
+            {t("community.heading")}
           </h2>
         </div>
 
@@ -45,7 +52,8 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
         <div className="text-center text-[48px] leading-none mb-2 font-playfair" style={{ color: "rgba(140,58,99,0.2)" }}>&ldquo;</div>
 
         <div className="flex items-center gap-4 sm:gap-6">
-          <button onClick={() => go(current - 1)} aria-label="Previous testimonial"
+          <button onClick={() => go(current - 1)} aria-label={t("community.prevTestimonial")}
+            suppressHydrationWarning={true}
             className="shrink-0 w-9 h-9 border flex items-center justify-center
                        text-xl transition-all duration-200 rounded-sm leading-none will-change-transform"
             style={{ borderColor: "rgba(140,58,99,0.3)", color: "var(--burgundy)" }}
@@ -74,16 +82,17 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
               >
                 <p className="font-playfair text-[16px] font-semibold mb-2"
                   style={{ color: "var(--burgundy)" }}>
-                  — {testimonials[current]?.name}
+                  — {name}
                 </p>
                 <p className="font-lato text-[13.5px] leading-[1.9]" style={{ color: "#5A4050" }}>
-                  {testimonials[current]?.body}
+                  {body}
                 </p>
               </motion.div>
             </AnimatePresence>
           </div>
 
-          <button onClick={() => go(current + 1)} aria-label="Next testimonial"
+          <button onClick={() => go(current + 1)} aria-label={t("community.nextTestimonial")}
+            suppressHydrationWarning={true}
             className="shrink-0 w-9 h-9 border flex items-center justify-center
                        text-xl transition-all duration-200 rounded-sm leading-none will-change-transform"
             style={{ borderColor: "rgba(140,58,99,0.3)", color: "var(--burgundy)" }}
@@ -105,7 +114,8 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
         {/* Dots */}
         <div className="flex justify-center gap-2 mt-6">
           {testimonials.map((_, i) => (
-            <button key={i} onClick={() => go(i)} aria-label={`Testimonial ${i + 1}`}
+            <button key={i} onClick={() => go(i)} aria-label={`${t("community.testimonialN")} ${i + 1}`}
+              suppressHydrationWarning={true}
               className="w-2 h-2 rounded-full transition-all duration-300"
               style={{
                 backgroundColor: i === current ? "var(--burgundy)" : "rgba(140,58,99,0.25)",

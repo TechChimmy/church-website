@@ -1,13 +1,20 @@
 "use client";
 
+import { useLanguage } from "@/hooks/useLanguage";
+
 type OurShepherdProps = {
   heading: string;
+  headingTa?: string;
   body: string;
+  bodyTa?: string;
   imageUrl?: string;
 };
 
-export default function OurShepherd({ heading, body, imageUrl }: OurShepherdProps) {
-  const [firstWord, ...restWords] = heading.split(" ");
+export default function OurShepherd({ heading, headingTa, body, bodyTa, imageUrl }: OurShepherdProps) {
+  const { lang } = useLanguage();
+  const activeHeading = lang === "ta" && headingTa ? headingTa : heading;
+  const activeBody = lang === "ta" && bodyTa ? bodyTa : body;
+  const [firstWord, ...restWords] = activeHeading.split(" ");
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2 w-full" style={{ minHeight: "420px" }}>
       {/* Left: dark card */}
@@ -20,7 +27,7 @@ export default function OurShepherd({ heading, body, imageUrl }: OurShepherdProp
         </h2>
         <p className="font-lato text-[13px] leading-[1.85] mb-3"
           style={{ color: "rgba(243,233,229,0.75)" }}>
-          {body}
+          {activeBody}
         </p>
         <a href="#"
           className="font-lato text-[11px] font-bold uppercase tracking-[1.4px] px-6 py-[10px]
@@ -39,7 +46,7 @@ export default function OurShepherd({ heading, body, imageUrl }: OurShepherdProp
             el.style.boxShadow = "";
           }}
         >
-          Learn More
+          {lang === "ta" ? "மேலும் அறிய" : "Learn More"}
         </a>
       </div>
 

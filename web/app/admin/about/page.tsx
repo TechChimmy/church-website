@@ -10,8 +10,12 @@ import {
 type S = Record<string, string>;
 
 const ABOUT_KEYS = [
-  "about_heading","about_body","about_image",
-  "shepherd_heading","shepherd_body","shepherd_image",
+  "about_heading", "about_heading_ta",
+  "about_body", "about_body_ta",
+  "about_image",
+  "shepherd_heading", "shepherd_heading_ta",
+  "shepherd_body", "shepherd_body_ta",
+  "shepherd_image",
   "doctrine_word_image","doctrine_faith_image","doctrine_spirit_image","doctrine_church_image",
 ];
 
@@ -52,19 +56,41 @@ export default function AdminAbout() {
       {/* About Us */}
       <Card className="mb-6">
         <CardSection title="About Us Section">
-          <Field label="Heading">
-            <Input value={settings.about_heading ?? ""}
-              onChange={e => set("about_heading", e.target.value)} />
-          </Field>
-          <SaveButton loading={saving === "about_heading"} onClick={() => save("about_heading")} />
-          <div className="mt-4">
-            <Field label="Body Text">
-              <Textarea rows={8} value={settings.about_body ?? ""}
-                onChange={e => set("about_body", e.target.value)} />
-            </Field>
-            <SaveButton loading={saving === "about_body"} onClick={() => save("about_body")} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Heading (English)">
+                <Input value={settings.about_heading ?? ""}
+                  onChange={e => set("about_heading", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "about_heading"} onClick={() => save("about_heading")} />
+            </div>
+            <div>
+              <Field label="Heading (Tamil)">
+                <Input value={settings.about_heading_ta ?? ""}
+                  onChange={e => set("about_heading_ta", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "about_heading_ta"} onClick={() => save("about_heading_ta")} />
+            </div>
           </div>
-          <div className="mt-4">
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-stone-100">
+            <div>
+              <Field label="Body Text (English)">
+                <Textarea rows={6} value={settings.about_body ?? ""}
+                  onChange={e => set("about_body", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "about_body"} onClick={() => save("about_body")} />
+            </div>
+            <div>
+              <Field label="Body Text (Tamil)">
+                <Textarea rows={6} value={settings.about_body_ta ?? ""}
+                  onChange={e => set("about_body_ta", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "about_body_ta"} onClick={() => save("about_body_ta")} />
+            </div>
+          </div>
+          
+          <div className="mt-6 pt-6 border-t border-stone-100">
             <ImageUploader
               label="About Section Image"
               currentUrl={settings.about_image}
@@ -78,19 +104,41 @@ export default function AdminAbout() {
       {/* Our Shepherd */}
       <Card>
         <CardSection title="Our Shepherd Section">
-          <Field label="Heading">
-            <Input value={settings.shepherd_heading ?? ""}
-              onChange={e => set("shepherd_heading", e.target.value)} />
-          </Field>
-          <SaveButton loading={saving === "shepherd_heading"} onClick={() => save("shepherd_heading")} />
-          <div className="mt-4">
-            <Field label="Bio Text">
-              <Textarea rows={8} value={settings.shepherd_body ?? ""}
-                onChange={e => set("shepherd_body", e.target.value)} />
-            </Field>
-            <SaveButton loading={saving === "shepherd_body"} onClick={() => save("shepherd_body")} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Heading (English)">
+                <Input value={settings.shepherd_heading ?? ""}
+                  onChange={e => set("shepherd_heading", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "shepherd_heading"} onClick={() => save("shepherd_heading")} />
+            </div>
+            <div>
+              <Field label="Heading (Tamil)">
+                <Input value={settings.shepherd_heading_ta ?? ""}
+                  onChange={e => set("shepherd_heading_ta", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "shepherd_heading_ta"} onClick={() => save("shepherd_heading_ta")} />
+            </div>
           </div>
-          <div className="mt-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-stone-100">
+            <div>
+              <Field label="Bio Text (English)">
+                <Textarea rows={6} value={settings.shepherd_body ?? ""}
+                  onChange={e => set("shepherd_body", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "shepherd_body"} onClick={() => save("shepherd_body")} />
+            </div>
+            <div>
+              <Field label="Bio Text (Tamil)">
+                <Textarea rows={6} value={settings.shepherd_body_ta ?? ""}
+                  onChange={e => set("shepherd_body_ta", e.target.value)} />
+              </Field>
+              <SaveButton loading={saving === "shepherd_body_ta"} onClick={() => save("shepherd_body_ta")} />
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-stone-100">
             <ImageUploader
               label="Shepherd Photo"
               currentUrl={settings.shepherd_image}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type FooterContactProps = {
   address?: string;
@@ -22,6 +23,7 @@ export default function FooterContact({
   email = DEFAULT_EMAIL,
   mapUrl = DEFAULT_MAP_URL,
 }: FooterContactProps) {
+  const { lang, t } = useLanguage();
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -30,7 +32,7 @@ export default function FooterContact({
   const handleSubmit = async () => {
     setError("");
     if (!form.name || !form.email || !form.message) {
-      setError("Please fill in all fields.");
+      setError(t("footer.errorFillAll"));
       return;
     }
     setLoading(true);
@@ -46,10 +48,10 @@ export default function FooterContact({
         setTimeout(() => setSent(false), 3000);
       } else {
         const data = await res.json();
-        setError(data.error ?? "Something went wrong. Please try again.");
+        setError(data.error ?? t("footer.errorSomethingWrong"));
       }
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("footer.errorNetworkError"));
     } finally {
       setLoading(false);
     }
@@ -62,6 +64,10 @@ export default function FooterContact({
   };
   const inputFocusStyle = { borderColor: "var(--burgundy-secondary)" };
 
+  const displayAddress = address === DEFAULT_ADDRESS
+    ? (lang === "ta" ? "75, அண்ணா சாலை, சென்னை,\nதமிழ்நாடு 600002, இந்தியா." : DEFAULT_ADDRESS)
+    : address;
+
   return (
     <footer style={{ backgroundColor: "var(--bg-footer)" }} id="footer-visit">
       {/* Top burgundy accent line */}
@@ -73,9 +79,9 @@ export default function FooterContact({
         <div className="px-6 sm:px-10 py-10 sm:py-12 border-b md:border-b-0 md:border-r"
           style={{ borderColor: "rgba(255,255,255,0.06)" }}>
           <div className="w-6 h-[2px] rounded-full mb-4" style={{ backgroundColor: "var(--burgundy-secondary)" }} />
-          <h3 className="font-playfair text-[18px] font-semibold text-white mb-4">Visit us</h3>
+          <h3 className="font-playfair text-[18px] font-semibold text-white mb-4">{t("footer.visitUs")}</h3>
           <p className="font-lato text-[13px] leading-loose" style={{ color: "rgba(255,255,255,0.45)" }}>
-            {address.split("\n").map((line, i) => (
+            {displayAddress.split("\n").map((line, i) => (
               <span key={i}>{line}<br /></span>
             ))}
             <span>{phone}</span><br />
@@ -99,32 +105,21 @@ export default function FooterContact({
 
         {/* Column 3: Write To Us */}
         <div className="px-6 sm:px-10 py-10 sm:py-12">
-          <div className="flex items-center justify-between mb-4 gap-3">
-            <div>
-              <div className="w-6 h-[2px] rounded-full mb-3" style={{ backgroundColor: "var(--burgundy-secondary)" }} />
-              <h3 className="font-playfair text-[18px] font-semibold text-white">Write to us</h3>
-            </div>
-            <Link href="/admin/login"
-              className="inline-flex items-center justify-center rounded-sm px-3 py-2 text-[11px]
-                         font-bold uppercase tracking-[1.2px] whitespace-nowrap transition-all duration-200"
-              style={{ backgroundColor: "var(--burgundy)", color: "white" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--burgundy-secondary)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--burgundy)"; }}
-            >
-              Admin Login
-            </Link>
+          <div className="mb-4">
+            <div className="w-6 h-[2px] rounded-full mb-3" style={{ backgroundColor: "var(--burgundy-secondary)" }} />
+            <h3 className="font-playfair text-[18px] font-semibold text-white">{t("footer.writeToUs")}</h3>
           </div>
 
           {sent ? (
             <p className="font-lato text-[13px] py-2" style={{ color: "rgba(243,233,229,0.85)" }}>
-              ✓ Message sent! We&apos;ll get back to you soon.
+              {t("footer.successMessage")}
             </p>
           ) : (
             <>
               <div className="grid grid-cols-2 gap-2 mb-2">
                 <input
                   suppressHydrationWarning
-                  type="text" placeholder="Your name" value={form.name}
+                  type="text" placeholder={t("footer.namePlaceholder")} value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="px-3 py-[10px] font-lato text-[12.5px] border outline-none
                              placeholder:text-white/25 transition-colors duration-200 rounded-sm"
@@ -134,7 +129,7 @@ export default function FooterContact({
                 />
                 <input
                   suppressHydrationWarning
-                  type="email" placeholder="Your email" value={form.email}
+                  type="email" placeholder={t("footer.emailPlaceholder")} value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="px-3 py-[10px] font-lato text-[12.5px] border outline-none
                              placeholder:text-white/25 transition-colors duration-200 rounded-sm"
@@ -145,7 +140,7 @@ export default function FooterContact({
               </div>
               <textarea
                 suppressHydrationWarning
-                placeholder="Your message..." rows={3} value={form.message}
+                placeholder={t("footer.messagePlaceholder")} rows={3} value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="w-full px-3 py-[10px] font-lato text-[12.5px] border outline-none
                            resize-y placeholder:text-white/25 transition-colors duration-200 rounded-sm mb-2"
@@ -162,7 +157,7 @@ export default function FooterContact({
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--burgundy-secondary)"; }}
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--burgundy)"; }}
               >
-                {loading ? "..." : "Submit"}
+                {loading ? t("footer.submitting") : t("footer.submit")}
               </button>
               {error && <p className="font-lato text-[12px] text-red-400 mt-2">{error}</p>}
             </>

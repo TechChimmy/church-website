@@ -9,14 +9,14 @@ export default async function EventsCalendarServer() {
   try {
     const events = await fetchCalendarEvents();
 
-    const eventsMap: Record<string, string[]> = {};
-    events.forEach((ev: { title: string; date: string | Date }) => {
+    const eventsMap: Record<string, { title: string; titleTa?: string }[]> = {};
+    events.forEach((ev: { title: string; titleTa?: string; date: string | Date }) => {
       if (!ev.date) return;
       try {
         const d = typeof ev.date === "string" ? new Date(ev.date) : ev.date;
         if (isNaN(d.getTime())) return;
         const key = d.toISOString().split("T")[0];
-        (eventsMap[key] ??= []).push(ev.title);
+        (eventsMap[key] ??= []).push({ title: ev.title, titleTa: ev.titleTa });
       } catch (e) {
         console.error("[EventsCalendarServer] Error parsing date:", e);
       }

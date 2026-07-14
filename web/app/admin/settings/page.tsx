@@ -25,6 +25,7 @@ export default function AdminSettings() {
   const [toast, setToast]       = useState("");
 
   const [footerAddress, setFooterAddress] = useState("");
+  const [footerAddressTa, setFooterAddressTa] = useState("");
   const [footerPhone, setFooterPhone] = useState("");
   const [footerEmail, setFooterEmail] = useState("");
   const [footerMapEmbed, setFooterMapEmbed] = useState("");
@@ -41,6 +42,7 @@ export default function AdminSettings() {
 
     const footerData = await resFooter.json();
     setFooterAddress(footerData.address || "");
+    setFooterAddressTa(footerData.addressTa || "");
     setFooterPhone(footerData.phone || "");
     setFooterEmail(footerData.email || "");
     setFooterMapEmbed(footerData.mapEmbed || "");
@@ -65,6 +67,7 @@ export default function AdminSettings() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         address: footerAddress,
+        addressTa: footerAddressTa,
         phone: footerPhone,
         email: footerEmail,
         mapEmbed: footerMapEmbed
@@ -89,9 +92,12 @@ export default function AdminSettings() {
       {/* ── Footer Contact Information ── */}
       <Card className="mb-5">
         <CardSection title="Footer Contact Details">
-          <div className="mb-5">
-            <Field label="Church Address">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
+            <Field label="Church Address (English)">
               <Textarea rows={3} value={footerAddress} onChange={e => setFooterAddress(e.target.value)} />
+            </Field>
+            <Field label="Church Address (Tamil)">
+              <Textarea rows={3} value={footerAddressTa} onChange={e => setFooterAddressTa(e.target.value)} />
             </Field>
           </div>
           <div className="mb-5">

@@ -3,35 +3,40 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/hooks/useLanguage";
+import LanguageToggle from "@/components/LanguageToggle";
 
 interface Props {
   user: { name?: string | null; email?: string | null };
 }
 
-function pageTitleFromPath(path: string): string {
+function pageTitleFromPath(path: string, t: any): string {
   const map: Record<string, string> = {
-    "/admin": "Dashboard",
-    "/admin/homepage": "Homepage",
-    "/admin/about": "About Page",
-    "/admin/events": "Events",
-    "/admin/calendar": "Calendar",
-    "/admin/ask-collins": "Ask Collins",
-    "/admin/join-us-live": "Join Us Live",
-    "/admin/service-times": "Service Times",
-    "/admin/community": "Community",
-    "/admin/media": "Media Library",
-    "/admin/settings": "Site Settings",
-    "/admin/prayers": "Prayer Requests",
-    "/admin/messages": "Contact Messages",
+    "/admin": t("admin.dashboard"),
+    "/admin/homepage": t("admin.homepage"),
+    "/admin/about": t("admin.aboutPage"),
+    "/admin/events": t("admin.events"),
+    "/admin/calendar": t("admin.calendar"),
+    "/admin/ask-collins": t("admin.askCollins"),
+    "/admin/join-us-live": t("admin.joinUsLive"),
+    "/admin/service-times": t("admin.serviceTimes"),
+    "/admin/community": t("admin.community"),
+    "/admin/media": t("admin.mediaLibrary"),
+    "/admin/settings": t("admin.siteSettings"),
+    "/admin/prayers": t("admin.prayerRequests"),
+    "/admin/messages": t("admin.contactMessages"),
+    "/admin/gallery": t("admin.gallery"),
+    "/admin/announcements": t("admin.announcements"),
   };
   return map[path] ?? "Admin";
 }
 
 export default function AdminTopBar({ user }: Props) {
+  const { t } = useLanguage();
   const { data: session } = useSession();
   const pathname = usePathname();
   const displayName = session?.user?.name ?? session?.user?.email ?? user.name ?? user.email ?? "Admin";
-  const pageTitle = pageTitleFromPath(pathname ?? "");
+  const pageTitle = pageTitleFromPath(pathname ?? "", t);
 
   return (
     <header
@@ -45,6 +50,8 @@ export default function AdminTopBar({ user }: Props) {
 
       {/* Right side */}
       <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+        <LanguageToggle />
+
         {/* User chip */}
         <div
           className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-sm"
@@ -77,18 +84,18 @@ export default function AdminTopBar({ user }: Props) {
             <polyline points="15 3 21 3 21 9" />
             <line x1="10" y1="14" x2="21" y2="3" />
           </svg>
-          Site
+          {t("admin.site")}
         </Link>
 
         <button
-          onClick={() => signOut({ callbackUrl: "/admin/login" })}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className="font-lato text-[10px] font-bold uppercase tracking-widest
                      px-3 py-1.5 rounded-sm transition-all whitespace-nowrap"
           style={{ backgroundColor: "var(--text-dark)", color: "white" }}
           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--burgundy)"; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "var(--text-dark)"; }}
         >
-          Sign Out
+          {t("admin.signOut")}
         </button>
       </div>
     </header>

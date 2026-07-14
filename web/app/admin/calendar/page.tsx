@@ -1,22 +1,24 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 import {
   AdminPageHeader, Card, Field, Input, Textarea,
   SaveButton, DangerButton, Toast,
 } from "@/components/admin/AdminUI";
 
 type CalEv = {
-  id: string; title: string; description?: string;
+  id: string; title: string; titleTa?: string; description?: string; descriptionTa?: string;
   date: string; time?: string; endTime?: string; color: string;
 };
 
 const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MONTHS = ["January","February","March","April","May","June",
   "July","August","September","October","November","December"];
-const EMPTY_FORM: Omit<CalEv,"id"> = { title:"", description:"", date:"", time:"", endTime:"", color:"#c9a84c" };
+const EMPTY_FORM: Omit<CalEv,"id"> = { title:"", titleTa:"", description:"", descriptionTa:"", date:"", time:"", endTime:"", color:"#c9a84c" };
 
 export default function AdminCalendar() {
+  const { lang, t } = useLanguage();
   const [events, setEvents]   = useState<CalEv[]>([]);
   const [year, setYear]       = useState(new Date().getFullYear());
   const [month, setMonth]     = useState(new Date().getMonth());
@@ -108,7 +110,11 @@ export default function AdminCalendar() {
               ‹
             </button>
             <span className="font-playfair text-[16px] font-semibold text-stone-900">
-              {MONTHS[month]} {year}
+              {(() => {
+                const monthsList = t("calendar.months");
+                const currentMonthName = Array.isArray(monthsList) ? monthsList[month] : MONTHS[month];
+                return `${currentMonthName} ${year}`;
+              })()}
             </span>
             <button onClick={() => changeMonth(1)}
               className="w-8 h-8 border border-stone-300 flex items-center justify-center
@@ -120,12 +126,16 @@ export default function AdminCalendar() {
           <table className="w-full border-collapse border border-stone-200 table-fixed">
             <thead>
               <tr>
-                {DAYS.map(d => (
-                  <th key={d} className="py-2 font-lato text-[11px] uppercase tracking-widest
-                                         text-stone-400 bg-stone-50 border border-stone-200 text-center">
-                    {d}
-                  </th>
-                ))}
+                {Array.from({ length: 7 }).map((_, i) => {
+                  const dayLabels = t("calendar.days");
+                  const label = Array.isArray(dayLabels) ? dayLabels[i] : DAYS[i];
+                  return (
+                    <th key={i} className="py-2 font-lato text-[11px] uppercase tracking-widest
+                                           text-stone-400 bg-stone-50 border border-stone-200 text-center">
+                      {label}
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
@@ -149,15 +159,18 @@ export default function AdminCalendar() {
                                             ${isToday ? "bg-stone-900 text-white" : "text-stone-700"}`}>
                               {day}
                             </span>
-                            {evs.map(ev => (
-                              <button key={ev.id}
-                                onClick={e => { e.stopPropagation(); startEdit(ev); }}
-                                className="block w-full text-left font-lato text-[9px] font-bold
-                                           px-1 py-0.5 rounded-sm mb-0.5 truncate"
-                                style={{ background: ev.color + "33", color: ev.color }}>
-                                {ev.title}
-                              </button>
-                            ))}
+                            {evs.map(ev => {
+                              const displayTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
+                              return (
+                                <button key={ev.id}
+                                  onClick={e => { e.stopPropagation(); startEdit(ev); }}
+                                  className="block w-full text-left font-lato text-[9px] font-bold
+                                             px-1 py-0.5 rounded-sm mb-0.5 truncate"
+                                  style={{ background: ev.color + "33", color: ev.color }}>
+                                  {displayTitle}
+                                </button>
+                              );
+                            })}
                           </>
                         )}
                       </td>
@@ -168,7 +181,7 @@ export default function AdminCalendar() {
             </tbody>
           </table>
           <p className="font-lato text-[11px] text-stone-400 mt-3 text-center">
-            Click a date to add an event. Click an event to edit it.
+            {lang === "ta" ? "ஒரு தேதியைத் தேர்ந்தெடுத்து நிகழ்வைச் சேர்க்கவும். திருத்த நிகழ்வை கிளிக் செய்யவும்." : "Click a date to add an event. Click an event to edit it."}
           </p>
         </Card>
 
@@ -177,8 +190,11 @@ export default function AdminCalendar() {
           <h3 className="font-lato text-[12px] font-bold uppercase tracking-widest text-stone-500 mb-5">
             {editing ? "Edit Event" : "Add Event"}
           </h3>
-          <Field label="Title">
+          <Field label="Title (English)">
             <Input value={form.title} onChange={e => set("title", e.target.value)} />
+          </Field>
+          <Field label="Title (Tamil)">
+            <Input value={form.titleTa ?? ""} onChange={e => set("titleTa", e.target.value)} />
           </Field>
           <Field label="Date">
             <Input type="date" value={form.date} onChange={e => set("date", e.target.value)} />
@@ -189,8 +205,11 @@ export default function AdminCalendar() {
           <Field label="End Time">
             <Input value={form.endTime ?? ""} onChange={e => set("endTime", e.target.value)} placeholder="e.g. 11:00 AM" />
           </Field>
-          <Field label="Description">
+          <Field label="Description (English)">
             <Textarea rows={3} value={form.description ?? ""} onChange={e => set("description", e.target.value)} />
+          </Field>
+          <Field label="Description (Tamil)">
+            <Textarea rows={3} value={form.descriptionTa ?? ""} onChange={e => set("descriptionTa", e.target.value)} />
           </Field>
           <Field label="Color">
             <div className="flex items-center gap-3">

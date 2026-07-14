@@ -29,7 +29,9 @@ export async function GET() {
       `*[_type == "community"] | order(order asc) {
         _id,
         name,
+        nameTa,
         quote,
+        quoteTa,
         "imageUrl": image.asset->url,
         order,
         active
@@ -38,7 +40,9 @@ export async function GET() {
     const mapped = items.map((t) => ({
       id: t._id,
       name: t.name ?? "",
+      nameTa: t.nameTa ?? "",
       body: t.quote ?? "",
+      bodyTa: t.quoteTa ?? "",
       imageUrl: t.imageUrl ?? null,
       order: t.order ?? 0,
       active: t.active ?? true,
@@ -64,22 +68,31 @@ export async function POST(req: NextRequest) {
       }
     } : null;
 
+    const docData: Record<string, any> = {
+      name: data.name,
+      nameTa: data.nameTa,
+      quote: data.body,
+      quoteTa: data.bodyTa,
+      order: data.order ?? 0,
+      active: data.active ?? true,
+    };
+
+    if (imageField) {
+      docData.image = imageField;
+    }
+
     const result = await sanityCreateDoc({
       type: "community",
-      data: {
-        name: data.name,
-        quote: data.body,
-        image: imageField,
-        order: data.order ?? 0,
-        active: data.active ?? true,
-      },
+      data: docData,
     });
 
     const createdId = result.results?.[0]?.id;
     const item = {
       id: createdId,
       name: data.name,
+      nameTa: data.nameTa,
       body: data.body,
+      bodyTa: data.bodyTa,
       imageUrl: data.imageUrl ?? null,
       order: data.order ?? 0,
       active: data.active ?? true,
@@ -106,24 +119,38 @@ export async function PATCH(req: NextRequest) {
       }
     } : null;
 
+    const setFields: Record<string, any> = {
+      name: data.name,
+      nameTa: data.nameTa,
+      quote: data.body,
+      quoteTa: data.bodyTa,
+      order: data.order ?? 0,
+      active: data.active ?? true,
+    };
+
+    const unsetFields: string[] = [];
+
+    if (imageField) {
+      setFields.image = imageField;
+    } else {
+      unsetFields.push("image");
+    }
+
     await sanityPatchDoc({
       id,
       type: "community",
       patch: {
-        set: {
-          name: data.name,
-          quote: data.body,
-          image: imageField,
-          order: data.order ?? 0,
-          active: data.active ?? true,
-        },
+        set: setFields,
+        ...(unsetFields.length > 0 ? { unset: unsetFields } : {}),
       },
     });
 
     const item = {
       id,
       name: data.name,
+      nameTa: data.nameTa,
       body: data.body,
+      bodyTa: data.bodyTa,
       imageUrl: data.imageUrl ?? null,
       order: data.order ?? 0,
       active: data.active ?? true,

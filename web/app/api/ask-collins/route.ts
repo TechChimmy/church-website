@@ -28,35 +28,45 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
-  const { name, email, question, consent, anonymous } = body as Record<string, unknown>;
+  const { name, phone, email, question, consent, videoName, timestamp, source } = body as Record<string, unknown>;
 
-  const isAnonymous = Boolean(anonymous);
-
-  // For non-anonymous, require name and valid email
-  if (!isAnonymous) {
-    if (typeof name !== "string" || name.trim().length < 2) {
-      return NextResponse.json({ error: "Name is required." }, { status: 400 });
-    }
-    if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
-    }
+  if (typeof name !== "string" || name.trim().length < 2) {
+    return NextResponse.json({ error: "Name is required (min 2 characters)." }, { status: 400 });
   }
-
+  if (typeof phone !== "string" || phone.trim().length < 5) {
+    return NextResponse.json({ error: "Phone number is required (min 5 digits)." }, { status: 400 });
+  }
+  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
+  }
   if (typeof question !== "string" || question.trim().length < 5) {
-    return NextResponse.json({ error: "Question is required (min 5 chars)." }, { status: 400 });
+    return NextResponse.json({ error: "Question is required (min 5 characters)." }, { status: 400 });
   }
   if (question.trim().length > 2000) {
-    return NextResponse.json({ error: "Question is too long (max 2000 chars)." }, { status: 400 });
+    return NextResponse.json({ error: "Question is too long (max 2000 characters)." }, { status: 400 });
   }
 
-  const safeName = isAnonymous ? "Anonymous" : (typeof name === "string" ? name.trim() : "Anonymous");
-  const safeEmail = isAnonymous ? null : (typeof email === "string" ? email.trim().toLowerCase() : null);
+  // If NOT submitted from Join Us Live, consent is required.
+  const isJoinLive = source === "join-us-live";
+  if (!isJoinLive && !consent) {
+    return NextResponse.json({ error: "You must consent to public review to submit." }, { status: 400 });
+  }
+
+  // If timestamp is provided, validate format
+  if (isJoinLive && timestamp && typeof timestamp === "string" && timestamp.trim()) {
+    if (!/^\d{1,2}:\d{2}(:\d{2})?$/.test(timestamp.trim())) {
+      return NextResponse.json({ error: "Please enter timestamp in format MM:SS or HH:MM:SS (e.g. 12:31 or 01:15:40)." }, { status: 400 });
+    }
+  }
 
   const createData = {
-    name: safeName,
-    email: safeEmail,
+    name: name.trim(),
+    phone: phone.trim(),
+    email: email.trim().toLowerCase(),
     question: question.trim(),
-    consent: isAnonymous ? false : Boolean(consent),
+    consent: Boolean(consent),
+    videoName: isJoinLive && typeof videoName === "string" ? videoName.trim() : null,
+    timestamp: isJoinLive && typeof timestamp === "string" ? timestamp.trim() : null,
     status: "PENDING",
     read: false,
     archived: false,
@@ -75,10 +85,13 @@ export async function POST(req: NextRequest) {
 
   // Fire Telegram notification — don't await to avoid blocking response
   sendAskCollinsQuestion({
-    name: safeName,
-    email: safeEmail ?? "",
+    name: name.trim(),
+    phone: phone.trim(),
+    email: email.trim().toLowerCase(),
     question: question.trim(),
-    anonymous: isAnonymous,
+    consent: isJoinLive ? undefined : Boolean(consent),
+    videoName: isJoinLive && typeof videoName === "string" ? videoName.trim() : undefined,
+    timestamp: isJoinLive && typeof timestamp === "string" ? timestamp.trim() : undefined,
   }).catch((err) => console.error("[AskCollins] Telegram error:", err));
 
   return NextResponse.json({ success: true });

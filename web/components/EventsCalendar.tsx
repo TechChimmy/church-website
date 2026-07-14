@@ -2,21 +2,26 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-
-const DAY_LABELS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const MONTH_NAMES = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
-];
+import { useLanguage } from "@/hooks/useLanguage";
 
 function dateKey(y: number, m: number, d: number) {
   return `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 }
 
-export default function EventsCalendar({ events = {} }: { events?: Record<string, string[]> }) {
+export default function EventsCalendar({ events = {} }: { events?: Record<string, { title: string; titleTa?: string }[]> }) {
+  const { lang, t } = useLanguage();
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
+
+  const dayLabels = t("calendar.daysLong", { returnObjects: true }) as unknown as string[];
+  const monthNames = t("calendar.months", { returnObjects: true }) as unknown as string[];
+
+  const DAY_LABELS = Array.isArray(dayLabels) ? dayLabels : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const MONTH_NAMES = Array.isArray(monthNames) ? monthNames : [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
 
   function changeMonth(dir: number) {
     let m = month + dir, y = year;
@@ -25,7 +30,6 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
     setMonth(m);
     setYear(y);
   }
-
 
   const firstDay     = new Date(year, month, 1).getDay();
   const daysInMonth  = new Date(year, month + 1, 0).getDate();
@@ -49,15 +53,16 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
       transition={{ duration: 0.6 }}
     >
       <h2 className="font-playfair text-[24px] font-bold text-stone-900 text-center mb-7">
-        Our Events
+        {t("calendar.ourEvents")}
       </h2>
 
       <div className="max-w-[740px] mx-auto">
         {/* Month navigation */}
         <div className="flex items-center justify-between mb-4">
           <button
+            suppressHydrationWarning
             onClick={() => changeMonth(-1)}
-            aria-label="Previous month"
+            aria-label={t("calendar.prevMonth")}
             className="w-8 h-8 border border-stone-300 flex items-center justify-center
                        text-xl text-stone-600 hover:bg-stone-900 hover:text-white
                        hover:border-stone-900 transition-colors rounded-sm leading-none"
@@ -68,8 +73,9 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
             {MONTH_NAMES[month]} {year}
           </span>
           <button
+            suppressHydrationWarning
             onClick={() => changeMonth(1)}
-            aria-label="Next month"
+            aria-label={t("calendar.nextMonth")}
             className="w-8 h-8 border border-stone-300 flex items-center justify-center
                        text-xl text-stone-600 hover:bg-stone-900 hover:text-white
                        hover:border-stone-900 transition-colors rounded-sm leading-none"
@@ -86,7 +92,7 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
                 <th key={d}
                   className="py-2 font-lato text-[11px] font-bold uppercase tracking-widest
                              text-stone-400 bg-stone-50 border border-stone-200 text-center">
-                  {d}
+                  {d.slice(0, 3)}
                 </th>
               ))}
             </tr>
@@ -123,14 +129,17 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
                       `}>
                         {day}
                       </span>
-                      {evs.map((ev, ei) => (
-                        <span key={ei}
-                          className="block font-lato text-[10px] font-bold bg-[var(--burgundy)]
-                                     text-white px-1.5 py-0.5 rounded-sm mt-0.5
-                                     truncate tracking-[0.2px]">
-                          {ev}
-                        </span>
-                      ))}
+                      {evs.map((ev, ei) => {
+                        const eventTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
+                        return (
+                          <span key={ei}
+                            className="block font-lato text-[10px] font-bold bg-[var(--burgundy)]
+                                       text-white px-1.5 py-0.5 rounded-sm mt-0.5
+                                       truncate tracking-[0.2px]">
+                            {eventTitle}
+                          </span>
+                        );
+                      })}
                     </td>
                   );
                 })}

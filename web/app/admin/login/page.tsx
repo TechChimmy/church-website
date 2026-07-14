@@ -20,7 +20,11 @@ export default function AdminLoginPage() {
     });
     setLoading(false);
     if (res?.error) {
-      setError("Invalid email or password.");
+      if (res.error.includes("too_many_attempts")) {
+        setError("Too many failed login attempts. Please try again in 15 minutes.");
+      } else {
+        setError("Invalid email or password.");
+      }
     } else {
       router.push("/admin");
     }
@@ -79,6 +83,7 @@ export default function AdminLoginPage() {
               type="email" required
               value={email} onChange={e => setEmail(e.target.value)}
               placeholder="Enter your email"
+              suppressHydrationWarning={true}
               className="w-full px-4 py-3 font-lato text-[13px] border outline-none
                          bg-white transition-colors duration-200 rounded-sm
                          placeholder:text-stone-300"
@@ -97,6 +102,7 @@ export default function AdminLoginPage() {
               type="password" required
               value={password} onChange={e => setPassword(e.target.value)}
               placeholder="••••••••"
+              suppressHydrationWarning={true}
               className="w-full px-4 py-3 font-lato text-[13px] border outline-none
                          bg-white transition-colors duration-200 rounded-sm
                          placeholder:text-stone-300"
@@ -108,6 +114,7 @@ export default function AdminLoginPage() {
 
           <button
             type="submit" disabled={loading}
+            suppressHydrationWarning={true}
             className="btn-primary w-full text-center disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
