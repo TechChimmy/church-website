@@ -157,7 +157,7 @@ export default function AnnouncementsDrawer() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="fixed md:absolute right-4 md:right-0 top-16 md:top-10 w-[calc(100vw-32px)] md:w-[360px] max-h-[480px] rounded-xl shadow-2xl border flex flex-col z-50 overflow-hidden"
+              className="fixed md:absolute left-4 right-4 md:left-auto md:right-0 top-16 md:top-10 md:w-[360px] max-h-[480px] rounded-xl shadow-2xl border flex flex-col z-50 overflow-hidden"
               style={{
                 backgroundColor: "rgba(255, 255, 255, 0.92)",
                 backdropFilter: "blur(18px)",

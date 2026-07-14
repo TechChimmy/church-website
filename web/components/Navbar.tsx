@@ -369,7 +369,7 @@ export default function Navbar() {
                 style={{
                   opacity:       isCollapsed ? 0 : 1,
                   visibility:    isCollapsed ? "hidden" : "visible",
-                  transform:     isCollapsed ? "scale(0.88)" : "scale(1)",
+                  transform:     isCollapsed ? "scale(0.88)" : "none",
                   pointerEvents: isCollapsed ? "none" : "auto",
                   transition:    "opacity 0.22s ease, visibility 0.22s, transform 0.22s ease",
                   display:       "flex",

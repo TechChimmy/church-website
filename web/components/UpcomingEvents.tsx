@@ -414,18 +414,8 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
                           <h4 className="font-playfair text-[16px] font-bold text-stone-800 leading-snug">{lang === "ta" && modalEvent.titleTa ? modalEvent.titleTa : modalEvent.title}</h4>
                         </div>
                         <div className="shrink-0 bg-white p-1.5 border border-stone-200 rounded-sm">
-<<<<<<< Updated upstream
-                          <img
-                            src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(
-                              `CFT Church Ticket\nID: ${submittedId}\nEvent: ${modalEvent.title}\nAttendee: ${form.name}`
-                            )}`}
-                            alt="QR Code Ticket"
-                            className="w-16 h-16"
-                          />
-=======
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={`https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=${encodeURIComponent(`CFT Church Ticket\nID: ${submittedId}\nEvent: ${lang === "ta" && modalEvent.titleTa ? modalEvent.titleTa : modalEvent.title}\nAttendee: ${form.name}`)}`} alt="QR Code" className="w-16 h-16" />
->>>>>>> Stashed changes
                         </div>
                       </div>
                       <div className="border-t border-dashed border-stone-200 my-3" />
