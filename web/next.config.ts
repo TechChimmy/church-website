@@ -2,12 +2,8 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
-<<<<<<< Updated upstream
-  allowedDevOrigins: ["192.168.1.51", "192.168.0.104", "192.168.0.101"],
-=======
   skipTrailingSlashRedirect: true,
   allowedDevOrigins: ["192.168.1.51", "192.168.0.104", "192.168.0.101", "192.168.0.102"],
->>>>>>> Stashed changes
   images: {
     remotePatterns: [
       {
@@ -39,8 +35,6 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
-<<<<<<< Updated upstream
-=======
   turbopack: {
     resolveAlias: {
       react: "./lib/react-patch.js",
@@ -54,7 +48,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
->>>>>>> Stashed changes
 };
 
 export default nextConfig;
