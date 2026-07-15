@@ -12,6 +12,7 @@ const DEFAULT_FOOTER = {
   _id: "footer-global",
   _type: "footer",
   address: "75, Anna Salai, Chennai,\nTamil Nadu 600002, India.",
+  addressTa: "75, அண்ணா சாலை, சென்னை,\nதமிழ்நாடு 600002, இந்தியா.",
   phone: "+91 98876 54321",
   email: "info@cftchurch.com",
   mapEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.991!2d80.2707!3d13.0827!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDA0JzU3LjciTiA4MMKwMTYnMTQuNiJF!5e0!3m2!1sen!2sin!4v1716000000000",
@@ -29,6 +30,7 @@ export async function GET() {
 
     return NextResponse.json({
       address: footer.address ?? "",
+      addressTa: footer.addressTa ?? "",
       phone: footer.phone ?? "",
       email: footer.email ?? "",
       mapEmbed: footer.mapEmbed ?? "",
@@ -38,6 +40,7 @@ export async function GET() {
     return NextResponse.json(
       {
         address: DEFAULT_FOOTER.address,
+        addressTa: DEFAULT_FOOTER.addressTa,
         phone: DEFAULT_FOOTER.phone,
         email: DEFAULT_FOOTER.email,
         mapEmbed: DEFAULT_FOOTER.mapEmbed,
@@ -58,6 +61,7 @@ export async function PATCH(req: NextRequest) {
       _id: "footer-global",
       _type: "footer",
       address: data.address ?? "",
+      addressTa: data.addressTa ?? "",
       phone: data.phone ?? "",
       email: data.email ?? "",
       mapEmbed: data.mapEmbed ?? "",
@@ -71,6 +75,7 @@ export async function PATCH(req: NextRequest) {
 
     return NextResponse.json({
       address: updated.address ?? "",
+      addressTa: updated.addressTa ?? "",
       phone: updated.phone ?? "",
       email: updated.email ?? "",
       mapEmbed: updated.mapEmbed ?? "",

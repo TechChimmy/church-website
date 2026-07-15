@@ -5,16 +5,17 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import VideoModal from "@/components/video-modal";
 import type { YouTubeVideo } from "@/types/youtube";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Props {
   sermons: YouTubeVideo[];
   title?: string;
 }
 
-function formatDate(iso: string): string {
+function formatDate(iso: string, lang: string): string {
   if (!iso) return "";
   try {
-    return new Date(iso).toLocaleDateString("en-US", {
+    return new Date(iso).toLocaleDateString(lang === "ta" ? "ta-IN" : "en-US", {
       year: "numeric", month: "short", day: "numeric",
     });
   } catch {
@@ -24,6 +25,7 @@ function formatDate(iso: string): string {
 
 /* Fallback card when no real data */
 function PlaceholderCard({ index }: { index: number }) {
+  const { t } = useLanguage();
   return (
     <div
       className="relative rounded-lg overflow-hidden bg-stone-300 cursor-default"
@@ -38,44 +40,47 @@ function PlaceholderCard({ index }: { index: number }) {
           </svg>
         </div>
         <span className="font-lato text-[10px] text-stone-500 uppercase tracking-wider">
-          Sermon {index + 1}
+          {t("sermons.sermon")} {index + 1}
         </span>
       </div>
     </div>
   );
 }
 
-export default function PreviousSermons({ sermons, title = "Previous Sermons" }: Props) {
+export default function PreviousSermons({ sermons, title }: Props) {
+  const { lang, t } = useLanguage();
   const [activeVideo, setActiveVideo] = useState<YouTubeVideo | null>(null);
+
+  const displayTitle = title ?? t("sermons.previousSermons");
 
   return (
     <section className="py-8 sm:py-10 px-4 sm:px-10 bg-white">
       <div className="max-w-[1280px] mx-auto">
         <h3 className="font-playfair text-[20px] font-semibold text-stone-900 mb-5">
-          {title}
+          {displayTitle}
         </h3>
 
         {/* 4-column grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {sermons.length > 0
-            ? sermons.map((sermon, i) => (
+            ? sermons.map((vid, i) => (
                 <motion.div
-                  key={sermon.videoId}
+                  key={vid.videoId}
                   className="relative rounded-lg overflow-hidden cursor-pointer group bg-stone-200"
                   style={{ aspectRatio: "16/9" }}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: i * 0.08 }}
-                  onClick={() => setActiveVideo(sermon)}
+                  onClick={() => setActiveVideo(vid)}
                   role="button"
-                  aria-label={`Play: ${sermon.title}`}
+                  aria-label={`Play: ${vid.title}`}
                   tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && setActiveVideo(sermon)}
+                  onKeyDown={(e) => e.key === "Enter" && setActiveVideo(vid)}
                 >
                   {/* Thumbnail */}
                   <Image
-                    src={sermon.thumbnail}
-                    alt={sermon.title}
+                    src={vid.thumbnail}
+                    alt={vid.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width:768px) 50vw, 25vw"
@@ -108,14 +113,14 @@ export default function PreviousSermons({ sermons, title = "Previous Sermons" }:
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90
                                   via-black/70 to-transparent px-3 py-2.5 z-10">
                     <p className="font-lato text-[11px] text-white font-bold truncate leading-tight mb-1">
-                      {sermon.title}
+                      {vid.title}
                     </p>
                     <div className="flex items-center justify-between gap-1">
                       <p className="font-lato text-[9px] text-white/60 shrink-0">
-                        {formatDate(sermon.publishedAt)}
+                        {formatDate(vid.publishedAt ?? "", lang)}
                       </p>
                       <a
-                        href={`https://www.youtube.com/watch?v=${sermon.videoId}`}
+                        href={`https://www.youtube.com/watch?v=${vid.videoId}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-lato text-[8px] font-bold uppercase tracking-wider
@@ -123,7 +128,7 @@ export default function PreviousSermons({ sermons, title = "Previous Sermons" }:
                                    transition-colors duration-150 no-underline whitespace-nowrap"
                         onClick={(e) => e.stopPropagation()}
                       >
-                        Watch on YouTube
+                        {lang === "ta" ? "யூடியூபில் காண்க" : "Watch on YouTube"}
                       </a>
                     </div>
                   </div>
@@ -137,11 +142,13 @@ export default function PreviousSermons({ sermons, title = "Previous Sermons" }:
       </div>
 
       {/* Video modal */}
-      <VideoModal
-        videoId={activeVideo?.videoId ?? null}
-        title={activeVideo?.title ?? ""}
-        onClose={() => setActiveVideo(null)}
-      />
+      {activeVideo && (
+        <VideoModal
+          videoId={activeVideo.videoId}
+          title={activeVideo.title}
+          onClose={() => setActiveVideo(null)}
+        />
+      )}
     </section>
   );
 }

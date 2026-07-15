@@ -22,7 +22,9 @@ export async function GET() {
     const q = `*[_type == "event"]| order(date asc){
       _id,
       title,
+      titleTa,
       description,
+      descriptionTa,
       date,
       active
     }`;
@@ -33,7 +35,9 @@ export async function GET() {
       events.map((ev) => ({
         id: ev._id,
         title: ev.title ?? "",
+        titleTa: ev.titleTa ?? "",
         description: ev.description ?? undefined,
+        descriptionTa: ev.descriptionTa ?? undefined,
         date: ev.date,
       }))
     );
@@ -56,7 +60,9 @@ export async function POST(req: NextRequest) {
       type: "event",
       data: {
         title: data.title.trim(),
+        titleTa: typeof data.titleTa === "string" ? data.titleTa.trim() : "",
         description: typeof data.description === "string" ? data.description : "",
+        descriptionTa: typeof data.descriptionTa === "string" ? data.descriptionTa : "",
         date: new Date(data.date).toISOString(),
         active: data.active !== false,
       },
@@ -85,7 +91,9 @@ export async function PATCH(req: NextRequest) {
       patch: {
         set: {
           title: typeof data.title === "string" ? data.title.trim() : undefined,
+          titleTa: typeof data.titleTa === "string" ? data.titleTa.trim() : undefined,
           description: typeof data.description === "string" ? data.description : undefined,
+          descriptionTa: typeof data.descriptionTa === "string" ? data.descriptionTa : undefined,
           date: data.date ? new Date(data.date).toISOString() : undefined,
           active: typeof data.active === "boolean" ? data.active : undefined,
         },

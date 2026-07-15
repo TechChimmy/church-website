@@ -4,6 +4,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useLanguage } from "@/hooks/useLanguage";
 
 // ─── Page Header ────────────────────────────────────────────────────────────
 
@@ -136,8 +137,10 @@ export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement
 // ─── Save Button ─────────────────────────────────────────────────────────────
 
 export function SaveButton({
-  loading, label = "Save Changes", onClick,
+  loading, label, onClick,
 }: { loading?: boolean; label?: string; onClick?: () => void }) {
+  const { t } = useLanguage();
+  const displayLabel = label ?? t("admin.saveChanges");
   return (
     <button
       type="button"
@@ -159,9 +162,9 @@ export function SaveButton({
           <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" />
           </svg>
-          Saving…
+          {t("admin.saving")}
         </span>
-      ) : label}
+      ) : displayLabel}
     </button>
   );
 }
@@ -169,8 +172,10 @@ export function SaveButton({
 // ─── Danger Button ───────────────────────────────────────────────────────────
 
 export function DangerButton({
-  label = "Delete", onClick, loading,
+  label, onClick, loading,
 }: { label?: string; onClick?: () => void; loading?: boolean }) {
+  const { t } = useLanguage();
+  const displayLabel = label ?? t("admin.delete");
   return (
     <button
       type="button"
@@ -187,7 +192,7 @@ export function DangerButton({
         (e.currentTarget as HTMLElement).style.backgroundColor = "#DC2626";
       }}
     >
-      {loading ? "Deleting…" : label}
+      {loading ? t("admin.deleting") : displayLabel}
     </button>
   );
 }
@@ -195,19 +200,20 @@ export function DangerButton({
 // ─── Badge ───────────────────────────────────────────────────────────────────
 
 export function Badge({ status }: { status: string }) {
-  const styles: Record<string, { bg: string; color: string }> = {
-    PENDING:   { bg: "rgba(234,179,8,0.12)",  color: "#92400E" },
-    APPROVED:  { bg: "rgba(59,130,246,0.12)", color: "#1D4ED8" },
-    REJECTED:  { bg: "rgba(220,38,38,0.1)",   color: "#B91C1C" },
-    PUBLISHED: { bg: "rgba(22,163,74,0.1)",   color: "#15803D" },
+  const { t } = useLanguage();
+  const styles: Record<string, { bg: string; color: string; label: string }> = {
+    PENDING:   { bg: "rgba(234,179,8,0.12)",  color: "#92400E", label: t("admin.pending") },
+    APPROVED:  { bg: "rgba(59,130,246,0.12)", color: "#1D4ED8", label: t("admin.approved") },
+    REJECTED:  { bg: "rgba(220,38,38,0.1)",   color: "#B91C1C", label: t("admin.rejected") },
+    PUBLISHED: { bg: "rgba(22,163,74,0.1)",   color: "#15803D", label: t("admin.published") },
   };
-  const s = styles[status] ?? { bg: "rgba(140,58,99,0.08)", color: "var(--burgundy)" };
+  const s = styles[status] ?? { bg: "rgba(140,58,99,0.08)", color: "var(--burgundy)", label: status };
   return (
     <span
       className="font-lato text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-sm"
       style={{ backgroundColor: s.bg, color: s.color }}
     >
-      {status}
+      {s.label}
     </span>
   );
 }
@@ -246,9 +252,9 @@ export function Toast({
 
 export function ConfirmModal({
   open,
-  title = "Confirm Action",
+  title,
   message,
-  confirmLabel = "Confirm",
+  confirmLabel,
   danger = false,
   loading = false,
   onConfirm,
@@ -263,6 +269,10 @@ export function ConfirmModal({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const { t } = useLanguage();
+  const displayTitle = title ?? t("admin.confirmAction");
+  const displayConfirmLabel = confirmLabel ?? t("admin.confirm");
+
   // Lock body scroll when open
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
@@ -303,7 +313,7 @@ export function ConfirmModal({
               </div>
             )}
             <h3 className="font-playfair text-[17px] font-bold" style={{ color: "var(--text-dark)" }}>
-              {title}
+              {displayTitle}
             </h3>
           </div>
           <button
@@ -345,17 +355,17 @@ export function ConfirmModal({
               (e.currentTarget as HTMLElement).style.backgroundColor = "";
             }}
           >
-            Cancel
+            {t("admin.cancel")}
           </button>
           {danger ? (
             <DangerButton
-              label={loading ? "Deleting…" : confirmLabel}
+              label={loading ? t("admin.deleting") : displayConfirmLabel}
               loading={loading}
               onClick={onConfirm}
             />
           ) : (
             <SaveButton
-              label={loading ? "Processing…" : confirmLabel}
+              label={loading ? t("admin.processing") : displayConfirmLabel}
               loading={loading}
               onClick={onConfirm}
             />

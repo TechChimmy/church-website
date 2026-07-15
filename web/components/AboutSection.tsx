@@ -1,13 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import { useLanguage } from "@/hooks/useLanguage";
 
 type AboutSectionProps = {
   heading: string;
+  headingTa?: string;
   body: string;
+  bodyTa?: string;
 };
 
-export default function AboutSection({ heading, body }: AboutSectionProps) {
+export default function AboutSection({ heading, headingTa, body, bodyTa }: AboutSectionProps) {
+  const { lang, t } = useLanguage();
+  const activeHeading = lang === "ta" && headingTa ? headingTa : heading;
+  const activeBody = lang === "ta" && bodyTa ? bodyTa : body;
+
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2" style={{ minHeight: "380px" }}>
       {/* Left — dark card */}
@@ -16,19 +23,16 @@ export default function AboutSection({ heading, body }: AboutSectionProps) {
         {/* Accent line */}
         <div className="w-8 h-[2px] rounded-full mb-5" style={{ backgroundColor: "var(--accent-beige)" }} />
         <h2 className="font-playfair text-[24px] sm:text-[28px] font-bold text-white mb-5 leading-tight">
-          {heading.split(" ")[0]}{" "}
-          <span style={{ color: "var(--accent-beige)" }}>{heading.split(" ").slice(1).join(" ")}</span>
+          {activeHeading.split(" ")[0]}{" "}
+          <span style={{ color: "var(--accent-beige)" }}>{activeHeading.split(" ").slice(1).join(" ")}</span>
         </h2>
         <p className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85] mb-3"
           style={{ color: "rgba(243,233,229,0.75)" }}>
-          {body}
+          {activeBody}
         </p>
         <p className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85] mb-3"
           style={{ color: "rgba(243,233,229,0.75)" }}>
-          A worn-barn universal sky-dotting the windows allowing the perfect spot to
-          curl up with a good book. Laughter and light-hearted conversation fill the
-          air as friends gather around a rustic wooden table sharing stories and
-          enjoying homemade treats.
+          {t("about.fallbackParagraph")}
         </p>
         <a href="/about" className="btn-outline self-start mt-4"
           style={{ color: "var(--accent-beige)", borderColor: "rgba(243,233,229,0.4)" }}
@@ -43,7 +47,7 @@ export default function AboutSection({ heading, body }: AboutSectionProps) {
             el.style.borderColor = "rgba(243,233,229,0.4)";
           }}
         >
-          Learn More
+          {t("about.learnMore")}
         </a>
       </div>
 

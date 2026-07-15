@@ -9,14 +9,18 @@ import {
 
 /* ── Hero Slides ── */
 type Slide = {
-  id: string; title: string; subtitle: string;
+  id: string; title: string; titleTa: string; subtitle: string; subtitleTa: string;
   ctaText: string; ctaHref: string; imageUrl: string; active: boolean; order: number;
 };
 
 /* ── Settings ── */
 type Settings = Record<string, string>;
 
-const HOMEPAGE_KEYS = ["join_us_text", "visit_us_text", "pray_heading"];
+const HOMEPAGE_KEYS = [
+  "join_us_text", "join_us_text_ta",
+  "visit_us_text", "visit_us_text_ta",
+  "pray_heading", "pray_heading_ta"
+];
 
 export default function AdminHomepage() {
   const [slides, setSlides]     = useState<Slide[]>([]);
@@ -63,7 +67,7 @@ export default function AdminHomepage() {
   async function addSlide() {
     await fetch("/api/cms/hero", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title: "New Slide", subtitle: "", ctaText: "Learn More", ctaHref: "/", imageUrl: "", order: slides.length }),
+      body: JSON.stringify({ title: "New Slide", titleTa: "", subtitle: "", subtitleTa: "", ctaText: "Learn More", ctaHref: "/", imageUrl: "", order: slides.length }),
     });
     loadSlides();
   }
@@ -89,13 +93,21 @@ export default function AdminHomepage() {
             {slides.map(slide => (
               <div key={slide.id} className="border border-stone-200 rounded-sm p-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <Field label="Heading">
+                  <Field label="Heading (English)">
                     <Input value={slide.title}
                       onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, title: e.target.value } : x))} />
                   </Field>
-                  <Field label="Subtext">
+                  <Field label="Heading (Tamil)">
+                    <Input value={slide.titleTa ?? ""}
+                      onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, titleTa: e.target.value } : x))} />
+                  </Field>
+                  <Field label="Subtext (English)">
                     <Input value={slide.subtitle}
                       onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, subtitle: e.target.value } : x))} />
+                  </Field>
+                  <Field label="Subtext (Tamil)">
+                    <Input value={slide.subtitleTa ?? ""}
+                      onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, subtitleTa: e.target.value } : x))} />
                   </Field>
                   <Field label="Button Text">
                     <Input value={slide.ctaText}
@@ -105,6 +117,18 @@ export default function AdminHomepage() {
                     <Input value={slide.ctaHref}
                       onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, ctaHref: e.target.value } : x))} />
                   </Field>
+                  <Field label="Display Order">
+                    <Input type="number" value={String(slide.order ?? 0)}
+                      onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, order: parseInt(e.target.value) || 0 } : x))} />
+                  </Field>
+                  <div className="flex items-center mt-6">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={slide.active ?? true}
+                        onChange={e => setSlides(s => s.map(x => x.id === slide.id ? { ...x, active: e.target.checked } : x))}
+                        className="accent-amber-500" />
+                      <span className="font-lato text-[13px] text-stone-600">Active</span>
+                    </label>
+                  </div>
                 </div>
                 <ImageUploader
                   label="Slide Background Image"
@@ -130,17 +154,38 @@ export default function AdminHomepage() {
       {/* ── Join Us / Visit Us text ── */}
       <Card className="mb-6">
         <CardSection title="Join Us Live & Visit Us Section">
-          <Field label="Join Us Live Text">
-            <Textarea rows={3} value={settings.join_us_text ?? ""}
-              onChange={e => setSettings(s => ({ ...s, join_us_text: e.target.value }))} />
-          </Field>
-          <SaveButton loading={saving} onClick={() => saveSetting("join_us_text", settings.join_us_text)} />
-          <div className="mt-4">
-            <Field label="Visit Us Text">
-              <Textarea rows={3} value={settings.visit_us_text ?? ""}
-                onChange={e => setSettings(s => ({ ...s, visit_us_text: e.target.value }))} />
-            </Field>
-            <SaveButton loading={saving} onClick={() => saveSetting("visit_us_text", settings.visit_us_text)} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Join Us Live Text (English)">
+                <Textarea rows={3} value={settings.join_us_text ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, join_us_text: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("join_us_text", settings.join_us_text)} />
+            </div>
+            <div>
+              <Field label="Join Us Live Text (Tamil)">
+                <Textarea rows={3} value={settings.join_us_text_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, join_us_text_ta: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("join_us_text_ta", settings.join_us_text_ta)} />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-stone-100">
+            <div>
+              <Field label="Visit Us Text (English)">
+                <Textarea rows={3} value={settings.visit_us_text ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, visit_us_text: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("visit_us_text", settings.visit_us_text)} />
+            </div>
+            <div>
+              <Field label="Visit Us Text (Tamil)">
+                <Textarea rows={3} value={settings.visit_us_text_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, visit_us_text_ta: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("visit_us_text_ta", settings.visit_us_text_ta)} />
+            </div>
           </div>
         </CardSection>
       </Card>
@@ -148,11 +193,20 @@ export default function AdminHomepage() {
       {/* ── Pray With Us ── */}
       <Card>
         <CardSection title="Pray With Us Section">
-          <Field label="Section Heading">
-            <Input value={settings.pray_heading ?? ""}
-              onChange={e => setSettings(s => ({ ...s, pray_heading: e.target.value }))} />
-          </Field>
-          <SaveButton loading={saving} onClick={() => saveSetting("pray_heading", settings.pray_heading)} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Section Heading (English)">
+              <Input value={settings.pray_heading ?? ""}
+                onChange={e => setSettings(s => ({ ...s, pray_heading: e.target.value }))} />
+            </Field>
+            <Field label="Section Heading (Tamil)">
+              <Input value={settings.pray_heading_ta ?? ""}
+                onChange={e => setSettings(s => ({ ...s, pray_heading_ta: e.target.value }))} />
+            </Field>
+          </div>
+          <div className="flex gap-3 mt-4">
+            <SaveButton loading={saving} label="Save English Heading" onClick={() => saveSetting("pray_heading", settings.pray_heading)} />
+            <SaveButton loading={saving} label="Save Tamil Heading" onClick={() => saveSetting("pray_heading_ta", settings.pray_heading_ta)} />
+          </div>
         </CardSection>
       </Card>
 

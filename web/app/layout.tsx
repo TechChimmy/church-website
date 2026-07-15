@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Lato } from "next/font/google";
 import "./globals.css";
+import { LanguageProvider } from "@/context/LanguageContext";
+import LoadingScreen from "@/components/LoadingScreen";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -27,8 +29,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${lato.variable}`}>
-      <body style={{ backgroundColor: "var(--bg-light)" }}>{children}</body>
+    <html lang="en" className={`${playfair.variable} ${lato.variable}`} data-scroll-behavior="smooth">
+      <body style={{ backgroundColor: "var(--bg-light)" }}>
+        <LanguageProvider>
+          <LoadingScreen />
+          {children}
+        </LanguageProvider>
+      </body>
     </html>
   );
 }

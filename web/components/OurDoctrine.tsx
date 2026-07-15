@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLanguage } from "@/hooks/useLanguage";
 
 export type DoctrineImages = Partial<{
   word: string;
@@ -10,11 +11,13 @@ export type DoctrineImages = Partial<{
 }>;
 
 export default function OurDoctrine({ images }: { images?: DoctrineImages }) {
+  const { t } = useLanguage();
+
   const DOCTRINE_ITEMS = [
-    { id: 1, image: images?.word   || "/images/doctrine/word.jpg",   title: "The Word",   desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-    { id: 2, image: images?.faith  || "/images/doctrine/faith.jpg",  title: "The Faith",  desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-    { id: 3, image: images?.spirit || "/images/doctrine/spirit.jpg", title: "The Spirit", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
-    { id: 4, image: images?.church || "/images/doctrine/church.jpg", title: "The Church", desc: "Your paragraph lorem ipsum the warmth and charm of a cosy sunlit afternoon spent in a quaint countryside cottage." },
+    { id: 1, image: images?.word   || "/images/doctrine/word.jpg",   title: t("doctrine.word"),   desc: t("doctrine.fallbackItemDesc") },
+    { id: 2, image: images?.faith  || "/images/doctrine/faith.jpg",  title: t("doctrine.faith"),  desc: t("doctrine.fallbackItemDesc") },
+    { id: 3, image: images?.spirit || "/images/doctrine/spirit.jpg", title: t("doctrine.spirit"), desc: t("doctrine.fallbackItemDesc") },
+    { id: 4, image: images?.church || "/images/doctrine/church.jpg", title: t("doctrine.church"), desc: t("doctrine.fallbackItemDesc") },
   ];
 
   return (
@@ -24,16 +27,12 @@ export default function OurDoctrine({ images }: { images?: DoctrineImages }) {
         <div className="flex items-center gap-4 mb-4">
           <div className="w-8 h-[2px] rounded-full" style={{ backgroundColor: "var(--burgundy)" }} />
           <h2 className="font-playfair text-[22px] sm:text-[24px] font-bold" style={{ color: "var(--text-dark)" }}>
-            Our Doctrine
+            {t("doctrine.heading")}
           </h2>
         </div>
         <p className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85] mb-10 max-w-[800px]"
           style={{ color: "#8A7078" }}>
-          Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a
-          quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed
-          tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze
-          rustles through the leaves, carrying the sweet scent of blooming flowers. It&apos;s a place
-          where time slows down and every moment is savoured like a cherished memory.
+          {t("doctrine.fallbackParagraph")}
         </p>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 mb-10">
@@ -84,7 +83,7 @@ export default function OurDoctrine({ images }: { images?: DoctrineImages }) {
         </div>
 
         <div className="flex justify-center">
-          <a href="#" className="btn-primary">Learn More</a>
+          <a href="#" className="btn-primary">{t("doctrine.learnMore")}</a>
         </div>
       </div>
     </section>

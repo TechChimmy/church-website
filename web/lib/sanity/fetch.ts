@@ -11,10 +11,18 @@ import { getSanityClient } from "./client";
  * - Always uses the CDN client (read-only, fast).
  */
 export const sanityFetch = cache(
-  <T>(query: string, params?: Record<string, unknown>): Promise<T> => {
-    const client = getSanityClient(true);
+  <T>(
+    query: string,
+    params?: Record<string, unknown>,
+    tags: string[] = [],
+    useCdn: boolean = true
+  ): Promise<T> => {
+    const client = getSanityClient(useCdn);
     return client.fetch<T>(query, params as any, {
-      next: { revalidate: 60 },
+      next: {
+        revalidate: useCdn ? 60 : 0,
+        tags: ["sanity", ...tags],
+      },
     });
   }
 );

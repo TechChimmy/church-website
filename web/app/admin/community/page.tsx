@@ -8,8 +8,8 @@ import {
 } from "@/components/admin/AdminUI";
 import Image from "next/image";
 
-type T = { id: string; name: string; body: string; imageUrl: string; order: number; active: boolean };
-const EMPTY: Omit<T,"id"> = { name:"", body:"", imageUrl:"", order:0, active:true };
+type T = { id: string; name: string; nameTa: string; body: string; bodyTa: string; imageUrl: string; order: number; active: boolean };
+const EMPTY: Omit<T,"id"> = { name:"", nameTa:"", body:"", bodyTa:"", imageUrl:"", order:0, active:true };
 
 export default function AdminCommunity() {
   const [items, setItems]     = useState<T[]>([]);
@@ -78,7 +78,9 @@ export default function AdminCommunity() {
                   </div>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="font-lato font-bold text-[14px] text-stone-900">{t.name}</p>
+                  <p className="font-lato font-bold text-[14px] text-stone-900">
+                    {t.name} / {t.nameTa || "(No Tamil Name)"}
+                  </p>
                   <p className="font-lato text-[12px] text-stone-500 line-clamp-2 mt-0.5">{t.body}</p>
                 </div>
               </div>
@@ -99,12 +101,19 @@ export default function AdminCommunity() {
           <h3 className="font-lato text-[12px] font-bold uppercase tracking-widest text-stone-500 mb-5">
             {editing ? "Edit Testimonial" : "Add Testimonial"}
           </h3>
-          <Field label="Name">
+          <Field label="Name (English)">
             <Input value={form.name} onChange={e => set("name", e.target.value)}
               placeholder="e.g. Blake & Kay" />
           </Field>
-          <Field label="Testimonial">
-            <Textarea rows={5} value={form.body} onChange={e => set("body", e.target.value)} />
+          <Field label="Name (Tamil)">
+            <Input value={form.nameTa} onChange={e => set("nameTa", e.target.value)}
+              placeholder="எ.கா. பிளேக் & கே" />
+          </Field>
+          <Field label="Testimonial (English)">
+            <Textarea rows={4} value={form.body} onChange={e => set("body", e.target.value)} />
+          </Field>
+          <Field label="Testimonial (Tamil)">
+            <Textarea rows={4} value={form.bodyTa} onChange={e => set("bodyTa", e.target.value)} />
           </Field>
           <Field label="Display Order">
             <Input type="number" value={String(form.order)}

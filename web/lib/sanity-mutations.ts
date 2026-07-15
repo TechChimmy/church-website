@@ -14,13 +14,20 @@ export async function sanityCreateDoc(params: {
 export async function sanityPatchDoc(params: {
   id: string;
   type: string;
-  patch: { set?: Record<string, any> };
+  patch: { set?: Record<string, any>; unset?: string[] };
 }): Promise<any> {
   const client = getSanityClient();
+  let patcher = client.patch(params.id);
+  
   if (params.patch?.set) {
-    return client.patch(params.id).set(params.patch.set).commit();
+    patcher = patcher.set(params.patch.set);
   }
-  return null;
+  
+  if (params.patch?.unset && params.patch.unset.length > 0) {
+    patcher = patcher.unset(params.patch.unset);
+  }
+  
+  return patcher.commit();
 }
 
 export async function sanityDeleteDoc(id: string): Promise<any> {

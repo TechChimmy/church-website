@@ -6,8 +6,8 @@ import {
   SaveButton, DangerButton, Toast,
 } from "@/components/admin/AdminUI";
 
-type ST = { id: string; title: string; day: string; time: string; order: number; active: boolean };
-const EMPTY: Omit<ST,"id"> = { title: "", day: "Sunday", time: "", order: 0, active: true };
+type ST = { id: string; title: string; titleTa: string; day: string; dayTa: string; time: string; timeTa: string; order: number; active: boolean };
+const EMPTY: Omit<ST,"id"> = { title: "", titleTa: "", day: "Sunday", dayTa: "ஞாயிற்றுக்கிழமை", time: "", timeTa: "", order: 0, active: true };
 
 export default function AdminServiceTimes() {
   const [items, setItems]     = useState<ST[]>([]);
@@ -74,11 +74,15 @@ export default function AdminServiceTimes() {
             {items.map(st => (
               <div key={st.id}
                 className="flex items-center justify-between border border-stone-200 px-4 py-3">
-                <div>
-                  <p className="font-lato font-bold text-[14px] text-stone-900">{st.title}</p>
-                  <p className="font-lato text-[12px] text-stone-400">{st.day} · {st.time}</p>
+                <div className="min-w-0 flex-1 pr-4">
+                  <p className="font-lato font-bold text-[14px] text-stone-900 truncate">
+                    {st.title} / {st.titleTa || "(No Tamil Name)"}
+                  </p>
+                  <p className="font-lato text-[12px] text-stone-400">
+                    {st.day} / {st.dayTa} · {st.time} / {st.timeTa}
+                  </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <button onClick={() => startEdit(st)}
                     className="font-lato text-[11px] font-bold uppercase tracking-wider
                                bg-stone-100 text-stone-700 px-3 py-1.5 hover:bg-stone-200 transition-colors">
@@ -96,17 +100,29 @@ export default function AdminServiceTimes() {
           <h3 className="font-lato text-[12px] font-bold uppercase tracking-widest text-stone-500 mb-5">
             {editing ? "Edit Service" : "Add Service"}
           </h3>
-          <Field label="Service Name">
+          <Field label="Service Name (English)">
             <Input value={form.title} onChange={e => set("title", e.target.value)}
               placeholder="e.g. Sunday Morning Worship" />
           </Field>
-          <Field label="Day">
+          <Field label="Service Name (Tamil)">
+            <Input value={form.titleTa} onChange={e => set("titleTa", e.target.value)}
+              placeholder="எ.கா. ஞாயிறு காலை ஆராதனை" />
+          </Field>
+          <Field label="Day (English)">
             <Input value={form.day} onChange={e => set("day", e.target.value)}
               placeholder="e.g. Sunday" />
           </Field>
-          <Field label="Time">
+          <Field label="Day (Tamil)">
+            <Input value={form.dayTa} onChange={e => set("dayTa", e.target.value)}
+              placeholder="எ.கா. ஞாயிற்றுக்கிழமை" />
+          </Field>
+          <Field label="Time (English)">
             <Input value={form.time} onChange={e => set("time", e.target.value)}
               placeholder="e.g. 9:00 AM to 11:00 AM" />
+          </Field>
+          <Field label="Time (Tamil)">
+            <Input value={form.timeTa} onChange={e => set("timeTa", e.target.value)}
+              placeholder="எ.கா. காலை 9:00 முதல் 11:00 வரை" />
           </Field>
           <Field label="Display Order">
             <Input type="number" value={String(form.order)}

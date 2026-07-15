@@ -13,8 +13,11 @@ export async function GET() {
       `*[_type == "service"] | order(order asc) {
         _id,
         name,
+        nameTa,
         day,
+        dayTa,
         time,
+        timeTa,
         order,
         active
       }`
@@ -22,8 +25,11 @@ export async function GET() {
     const mapped = items.map((st) => ({
       id: st._id,
       title: st.name,
+      titleTa: st.nameTa ?? "",
       day: st.day,
+      dayTa: st.dayTa ?? "",
       time: st.time,
+      timeTa: st.timeTa ?? "",
       order: st.order,
       active: st.active ?? true,
     }));
@@ -42,8 +48,11 @@ export async function POST(req: NextRequest) {
       type: "service",
       data: {
         name: data.title,
+        nameTa: data.titleTa,
         day: data.day,
+        dayTa: data.dayTa,
         time: data.time,
+        timeTa: data.timeTa,
         order: data.order ?? 0,
         active: data.active ?? true,
       },
@@ -53,8 +62,11 @@ export async function POST(req: NextRequest) {
     const item = {
       id: createdId,
       title: data.title,
+      titleTa: data.titleTa,
       day: data.day,
+      dayTa: data.dayTa,
       time: data.time,
+      timeTa: data.timeTa,
       order: data.order ?? 0,
       active: data.active ?? true,
     };
@@ -79,8 +91,11 @@ export async function PATCH(req: NextRequest) {
       patch: {
         set: {
           name: data.title,
+          nameTa: data.titleTa,
           day: data.day,
+          dayTa: data.dayTa,
           time: data.time,
+          timeTa: data.timeTa,
           order: data.order ?? 0,
           active: data.active ?? true,
         },
@@ -90,8 +105,11 @@ export async function PATCH(req: NextRequest) {
     const item = {
       id,
       title: data.title,
+      titleTa: data.titleTa,
       day: data.day,
+      dayTa: data.dayTa,
       time: data.time,
+      timeTa: data.timeTa,
       order: data.order ?? 0,
       active: data.active ?? true,
     };
