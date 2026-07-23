@@ -266,27 +266,19 @@ export default function Navbar() {
           >
             {/* ── BRAND ── */}
             <Link href="/" className="flex items-center shrink-0" style={{ textDecoration: "none", gap: 9 }}>
-              <div
+              <img
+                src="/cft_logo.png"
+                alt="CFC Logo"
                 className="cfc-cross"
                 style={{
-                  width: 30, height: 30,
-                  borderRadius:   "50%",
-                  background:     iconBg,
-                  border:         iconBorder,
-                  boxShadow:      iconShadow,
-                  display:        "flex",
-                  alignItems:     "center",
-                  justifyContent: "center",
-                  flexShrink:     0,
-                  transition:     "background 0.40s ease, border 0.40s ease, box-shadow 0.40s ease",
+                  width: 32,
+                  height: 32,
+                  objectFit: "contain",
+                  flexShrink: 0,
+                  filter: isCollapsed ? "brightness(0) invert(1)" : "none",
+                  transition: "transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.40s ease",
                 }}
-              >
-                <svg viewBox="0 0 24 24" style={{ width: 13, height: 13 }} fill="none"
-                  stroke="white" strokeWidth="2.4" strokeLinecap="round">
-                  <line x1="12" y1="3"  x2="12" y2="21" />
-                  <line x1="3"  y1="12" x2="21" y2="12" />
-                </svg>
-              </div>
+              />
 
               <div style={{ whiteSpace: "nowrap" }}>
                 <span

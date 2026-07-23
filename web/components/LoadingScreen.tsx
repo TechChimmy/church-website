@@ -35,48 +35,48 @@ export default function LoadingScreen() {
           className="fixed inset-0 bg-white flex flex-col items-center justify-center z-[9999]"
         >
           <div className="flex flex-col items-center select-none">
-            {/* Elegant SVG Cross drawing */}
-            <svg
-              width="80"
-              height="120"
-              viewBox="0 0 80 120"
-              fill="none"
-              stroke="#8c3a63"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              className="mb-4"
-            >
-              {/* Vertical line: from top (y=15) to bottom (y=105) */}
-              <motion.line
-                x1="40"
-                y1="15"
-                x2="40"
-                y2="105"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.75, ease: "easeInOut" }}
+            {/* Elegant Logo Animation */}
+            <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+              {/* Background Glow */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{
+                  opacity: [0, 0.15, 0.05, 0.15, 0],
+                  scale: [0.8, 1.2, 1.0, 1.3, 0.8],
+                }}
+                transition={{
+                  duration: 1.2,
+                  times: [0, 0.35, 0.6, 0.85, 1.0],
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 rounded-full blur-xl"
+                style={{ backgroundColor: "var(--burgundy)" }}
               />
-              {/* Horizontal line: from left (x=18) to right (x=62) at y=42 */}
-              <motion.line
-                x1="18"
-                y1="42"
-                x2="62"
-                y2="42"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 0.3, duration: 0.55, ease: "easeInOut" }}
+              
+              {/* Logo Image */}
+              <motion.img
+                src="/cft_logo.png"
+                alt="CFT Logo"
+                initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                animate={{
+                  opacity: 1,
+                  scale: [0.5, 1.1, 1.0, 1.03, 1.0],
+                  rotate: 0,
+                }}
+                transition={{
+                  duration: 1.1,
+                  times: [0, 0.4, 0.7, 0.9, 1.0],
+                  ease: "easeOut",
+                }}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  position: "relative",
+                  zIndex: 1,
+                }}
               />
-              {/* Soft intersection center glow */}
-              <motion.circle
-                cx="40"
-                cy="42"
-                r="5"
-                fill="#8c3a63"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: [0, 0.4, 0.25], scale: [0, 2.5, 1.8] }}
-                transition={{ delay: 0.65, duration: 0.5, ease: "easeOut" }}
-              />
-            </svg>
+            </div>
 
             {/* Logo text */}
             <motion.h1

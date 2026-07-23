@@ -2,9 +2,10 @@
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const CHAT_ID   = process.env.TELEGRAM_GROUP_CHAT_ID;
 
-async function sendMessage(text: string): Promise<{ ok: boolean; error?: string }> {
-  if (!BOT_TOKEN || !CHAT_ID) {
-    console.error("[Telegram] Missing TELEGRAM_BOT_TOKEN or TELEGRAM_GROUP_CHAT_ID");
+async function sendMessage(text: string, customChatId?: string): Promise<{ ok: boolean; error?: string }> {
+  const chatId = customChatId || CHAT_ID;
+  if (!BOT_TOKEN || !chatId) {
+    console.error("[Telegram] Missing TELEGRAM_BOT_TOKEN or target chat ID");
     return { ok: false, error: "Missing credentials" };
   }
   try {
@@ -13,7 +14,7 @@ async function sendMessage(text: string): Promise<{ ok: boolean; error?: string 
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: CHAT_ID, text, parse_mode: "HTML" }),
+        body: JSON.stringify({ chat_id: chatId, text, parse_mode: "HTML" }),
       }
     );
     if (!res.ok) {
@@ -76,6 +77,8 @@ export async function sendEventParticipation(opts: {
     timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short",
   });
   const text = `━━━━━━━━━━━━━━\n📋 <b>NEW EVENT PARTICIPATION</b>\n\n<b>Event:</b> ${opts.eventTitle}\n\n<b>Name:</b> ${opts.name}\n\n<b>Email:</b> ${opts.email}\n\n<b>Phone:</b> ${opts.phone ?? "Not provided"}\n\n<b>Submitted:</b> ${submitted}\n━━━━━━━━━━━━━━`;
-  return sendMessage(text);
+  
+  const eventChatId = process.env.TELEGRAM_EVENTS_CHAT_ID || CHAT_ID;
+  return sendMessage(text, eventChatId);
 }
 

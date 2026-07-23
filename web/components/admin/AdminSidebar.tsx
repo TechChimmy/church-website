@@ -175,9 +175,17 @@ export default function AdminSidebar() {
           <div className="flex items-center gap-2.5">
             <div
               className="w-7 h-7 rounded-sm flex items-center justify-center shrink-0"
-              style={{ backgroundColor: "var(--burgundy)" }}
             >
-              <Icons.Cross />
+              <img
+                src="/cft_logo.png"
+                alt="CFT Logo"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  filter: "brightness(0) invert(1)"
+                }}
+              />
             </div>
             <div>
               <p className="font-playfair text-[12px] font-semibold text-white leading-tight">

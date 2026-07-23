@@ -22,6 +22,9 @@
 ```
 TELEGRAM_BOT_TOKEN=123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ
 TELEGRAM_GROUP_CHAT_ID=-1001234567890
+
+# Optional: Dedicated group for event registrations (falls back to TELEGRAM_GROUP_CHAT_ID if omitted/blank)
+TELEGRAM_EVENTS_CHAT_ID=-1009876543210
 ```
 
 ## 4. Run Database Migration
@@ -46,10 +49,11 @@ npx prisma migrate dev --name add_prayer_contact_tables
 
 ## Form → Telegram Flow
 
-| Form | API Route | Telegram Format |
-|------|-----------|-----------------|
-| Pray With Us | `/api/prayer-request` | 🙏 NEW PRAYER REQUEST |
-| Ask Collins | `/api/ask-collins` | ❓ NEW ASK COLLINS QUESTION |
-| Write To Us | `/api/contact-message` | 📩 NEW CONTACT MESSAGE |
+| Form | API Route | Telegram Format | Target Group Variable |
+|------|-----------|-----------------|-----------------------|
+| Pray With Us | `/api/prayer-request` | 🙏 NEW PRAYER REQUEST | `TELEGRAM_GROUP_CHAT_ID` |
+| Ask Collins | `/api/ask-collins` | ❓ NEW ASK COLLINS QUESTION | `TELEGRAM_GROUP_CHAT_ID` |
+| Write To Us | `/api/contact-message` | 📩 NEW CONTACT MESSAGE | `TELEGRAM_GROUP_CHAT_ID` |
+| Event Registration | `/api/event-participation` | 📋 NEW EVENT PARTICIPATION | `TELEGRAM_EVENTS_CHAT_ID` (falls back to `TELEGRAM_GROUP_CHAT_ID`) |
 
 All submissions are **also saved to the database** so nothing is lost if Telegram is unavailable.
