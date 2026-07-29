@@ -68,6 +68,13 @@ export default function HeroSlider({ slides = [] }: { slides?: Slide[] }) {
     return ctaText;
   }
 
+  function handleCtaClick(e: React.MouseEvent<HTMLAnchorElement>, href: string) {
+    if (href === "#footer-visit") {
+      e.preventDefault();
+      document.getElementById("footer-visit")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
   return (
     <section className="relative w-full h-[420px] sm:h-[480px] overflow-hidden" style={{ backgroundColor: "#3D1126" }}>
       <AnimatePresence mode="wait">
@@ -116,7 +123,7 @@ export default function HeroSlider({ slides = [] }: { slides?: Slide[] }) {
                   </svg>
                 </div>
 
-                <h1 className="font-playfair text-[30px] sm:text-[42px] font-bold tracking-wide
+                <h1 className="font-playfair text-[24px] sm:text-[34px] md:text-[42px] font-bold tracking-wide
                                leading-tight mb-3"
                   style={{ textShadow: "0 2px 20px rgba(0,0,0,0.4)" }}>
                   {title}
@@ -125,25 +132,51 @@ export default function HeroSlider({ slides = [] }: { slides?: Slide[] }) {
                              mb-7" style={{ color: "rgba(243,233,229,0.85)" }}>
                   {subtitle}
                 </p>
-                <a
-                  href={slide.ctaHref}
-                  className="font-lato text-[11px] font-bold uppercase tracking-widest
-                             px-7 py-[12px] rounded-sm no-underline
-                             transition-all duration-200 will-change-transform"
-                  style={{ backgroundColor: "var(--accent-beige)", color: "var(--burgundy-dark)" }}
-                  onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = "white";
-                    (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(0,0,0,0.25)";
-                  }}
-                  onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-beige)";
-                    (e.currentTarget as HTMLElement).style.transform = "";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "";
-                  }}
-                >
-                  {ctaText}
-                </a>
+                {slide.ctaHref.startsWith("#") ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const id = slide.ctaHref.slice(1);
+                      document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                    className="font-lato text-[11px] font-bold uppercase tracking-widest
+                               px-7 py-[12px] rounded-sm no-underline
+                               transition-all duration-200 will-change-transform"
+                    style={{ backgroundColor: "var(--accent-beige)", color: "var(--burgundy-dark)" }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "white";
+                      (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+                      (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(0,0,0,0.25)";
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-beige)";
+                      (e.currentTarget as HTMLElement).style.transform = "";
+                      (e.currentTarget as HTMLElement).style.boxShadow = "";
+                    }}
+                  >
+                    {ctaText}
+                  </button>
+                ) : (
+                  <a
+                     href={slide.ctaHref}
+                    className="font-lato text-[11px] font-bold uppercase tracking-widest
+                               px-7 py-[12px] rounded-sm no-underline
+                               transition-all duration-200 will-change-transform"
+                    style={{ backgroundColor: "var(--accent-beige)", color: "var(--burgundy-dark)" }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "white";
+                      (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+                      (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 20px rgba(0,0,0,0.25)";
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.backgroundColor = "var(--accent-beige)";
+                      (e.currentTarget as HTMLElement).style.transform = "";
+                      (e.currentTarget as HTMLElement).style.boxShadow = "";
+                    }}
+                  >
+                    {ctaText}
+                  </a>
+                )}
               </motion.div>
             </motion.div>
           ) : null;

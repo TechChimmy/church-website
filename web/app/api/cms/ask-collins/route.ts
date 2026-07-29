@@ -1,8 +1,8 @@
-// app/api/cms/ask-collins/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/lib/sanity/client";
 import { fetchCollinsQuestions } from "@/lib/sanity-queries";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 async function requireAdmin() {
   return (await auth())?.user ?? null;
@@ -97,6 +97,10 @@ export async function PATCH(req: NextRequest) {
     // Single update
     const { id, ...data } = body;
     const updated = await client.patch(id).set(data).commit();
+
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
     return NextResponse.json({
       id: updated._id,
       name: updated.name,
@@ -136,14 +140,75 @@ export async function DELETE(req: NextRequest) {
         transaction.delete(id);
       });
       await transaction.commit();
+      
+      revalidatePath("/ask-collins");
+      (revalidateTag as any)("sanity");
       return NextResponse.json({ ok: true });
     }
     
     await client.delete(body.id);
+
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("DELETE /api/cms/ask-collins error:", err);
     return NextResponse.json({ error: "Failed to delete question" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  if (!(await requireAdmin()))
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  try {
+    const body = await req.json();
+    const client = getSanityClient();
+
+    const { name, question, questionTa, answer, answerTa, answerTitle, answerTitleTa, status, consent } = body;
+
+    const created = await client.create({
+      _type: "askCollins",
+      name: name || "Anonymous",
+      question: question || "",
+      questionTa: questionTa || "",
+      answer: answer || "",
+      answerTa: answerTa || "",
+      answerTitle: answerTitle || "",
+      answerTitleTa: answerTitleTa || "",
+      status: status || "PUBLISHED",
+      consent: consent !== false,
+      read: true,
+      archived: false,
+      createdAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
+    return NextResponse.json({
+      id: created._id,
+      name: created.name,
+      phone: "",
+      email: "",
+      question: created.question,
+      questionTa: created.questionTa || "",
+      consent: created.consent || true,
+      videoName: "",
+      timestamp: "",
+      answer: created.answer,
+      answerTa: created.answerTa || "",
+      answerTitle: created.answerTitle || "",
+      answerTitleTa: created.answerTitleTa || "",
+      status: created.status,
+      read: created.read,
+      archived: created.archived,
+      createdAt: created.createdAt,
+    });
+  } catch (err) {
+    console.error("POST /api/cms/ask-collins error:", err);
+    return NextResponse.json({ error: "Failed to create question" }, { status: 500 });
   }
 }
 

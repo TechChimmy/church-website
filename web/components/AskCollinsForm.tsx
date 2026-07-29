@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
 export default function AskCollinsForm() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -33,10 +33,6 @@ export default function AskCollinsForm() {
     }
     if (!form.question.trim() || form.question.trim().length < 5) {
       setError(t("askCollins.errorQuestion"));
-      return;
-    }
-    if (!form.consent) {
-      setError(t("askCollins.errorConsent"));
       return;
     }
 
@@ -144,21 +140,31 @@ export default function AskCollinsForm() {
                 style={{ backgroundColor: "white" }}
               />
 
-              {/* Row 4 — Consent Checkbox */}
-              <div className="mb-6 flex flex-col gap-1">
-                <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              {/* Row 4 — Consent Checkbox & Privacy Box */}
+              <div className="mb-6 p-4 rounded-sm border border-stone-200 bg-stone-50/80">
+                <div className="flex items-start gap-3">
                   <input
                     suppressHydrationWarning
                     type="checkbox"
+                    id="consent-checkbox"
                     checked={form.consent}
                     onChange={(e) => setForm({ ...form, consent: e.target.checked })}
-                    className="w-4 h-4 mt-0.5 cursor-pointer shrink-0"
-                    style={{ accentColor: "var(--burgundy)" }}
+                    className="w-4 h-4 mt-0.5 cursor-pointer shrink-0 accent-[var(--burgundy)]"
                   />
-                  <span className="font-lato text-[12.5px] text-stone-600 leading-normal">
-                    {t("askCollins.consentText")}
-                  </span>
-                </label>
+                  <label htmlFor="consent-checkbox" className="cursor-pointer select-none">
+                    <span className="font-lato text-[13px] font-bold text-stone-800 block mb-0.5">
+                      {lang === "ta" ? "பொதுவெளியில் வெளியிட ஒப்புதல்" : "Publish Publicly on Website"}
+                    </span>
+                    <span className="font-lato text-[12px] text-stone-500 leading-relaxed block">
+                      {t("askCollins.consentText")}
+                    </span>
+                    <span className="font-lato text-[11.5px] text-stone-400 block mt-1.5 italic">
+                      {lang === "ta" 
+                        ? "* இதைக் குறிப்பிடாமல் விட்டால், உங்கள் கேள்விக்கு மின்னஞ்சல் வழியாக மட்டுமே தனிப்பட்ட முறையில் பதிலளிக்கப்படும்."
+                        : "* Leave unchecked if you want your question kept private (answered only via email)."}
+                    </span>
+                  </label>
+                </div>
               </div>
 
               {/* Row 5 — Submit */}

@@ -53,7 +53,7 @@ export default function EventsCalendar({ events = {} }: { events?: Record<string
       transition={{ duration: 0.6 }}
     >
       <h2 className="font-playfair text-[24px] font-bold text-stone-900 text-center mb-7">
-        {t("calendar.ourEvents")}
+        {t("calendar.heading")}
       </h2>
 
       <div className="max-w-[740px] mx-auto">

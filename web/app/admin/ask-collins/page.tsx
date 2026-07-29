@@ -32,6 +32,24 @@ const EMPTY_ANSWER = {
   category: "Faith", categoryTa: "விசுவாசம்", excerpt: "", excerptTa: "", order: 0, active: true
 };
 
+const EMPTY_QUESTION: Q = {
+  id: "",
+  name: "Anonymous",
+  phone: "",
+  email: "",
+  question: "",
+  questionTa: "",
+  answer: "",
+  answerTa: "",
+  answerTitle: "",
+  answerTitleTa: "",
+  status: "PUBLISHED",
+  consent: true,
+  read: true,
+  archived: false,
+  createdAt: new Date().toISOString(),
+};
+
 export default function AdminAskCollins() {
   const [data, setData]       = useState<APIResponse>({ items: [], total: 0, page: 1, limit: 20, unreadCount: 0, pendingCount: 0 });
   const [filter, setFilter]   = useState("ALL");
@@ -101,22 +119,29 @@ export default function AdminAskCollins() {
     load(); showToast("Deleted");
   }
 
-  async function saveEdit() {
+  async function saveEdit(newStatus?: string) {
     if (!editing) return;
     setSaving(true);
-    await fetch("/api/cms/ask-collins", {
-      method: "PATCH", headers: { "Content-Type": "application/json" },
+    const isNew = !editing.id;
+    const url = "/api/cms/ask-collins";
+    const method = isNew ? "POST" : "PATCH";
+    
+    await fetch(url, {
+      method, headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: editing.id,
+        ...(!isNew ? { id: editing.id } : {}),
+        name: editing.name,
+        question: editing.question,
+        questionTa: editing.questionTa,
         answer: editing.answer,
         answerTa: editing.answerTa,
         answerTitle: editing.answerTitle,
         answerTitleTa: editing.answerTitleTa,
-        questionTa: editing.questionTa,
-        status: editing.status,
+        consent: editing.consent,
+        status: newStatus || editing.status,
       }),
     });
-    setSaving(false); setEditing(null); load(); showToast("Saved");
+    setSaving(false); setEditing(null); load(); showToast(isNew ? "Created" : "Saved");
   }
 
   function toggleSelect(id: string) {
@@ -198,26 +223,33 @@ export default function AdminAskCollins() {
       <div className="mb-10 border-b border-stone-200/80 pb-10">
         <h2 className="font-playfair text-[20px] font-bold text-stone-800 mb-4">Submitted Questions</h2>
         {/* Controls */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {STATUSES.map(s => (
-            <button key={s} onClick={() => setFilter(s)}
-              className={`font-lato text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-sm transition-colors
-                         ${filter === s ? "bg-stone-900 text-white" : "bg-white border border-stone-200 text-stone-600 hover:border-stone-400"}`}>
-              {s}
-            </button>
-          ))}
-          <input type="text" placeholder="Search..." value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="px-3 py-2 font-lato text-[12px] border border-stone-200 rounded-sm
-                       outline-none focus:border-stone-400 bg-white text-stone-800 placeholder:text-stone-300 w-44" />
-          <label className="flex items-center gap-1.5 font-lato text-[12px] text-stone-600 cursor-pointer">
-            <input type="checkbox" checked={unreadOnly} onChange={e => setUnreadOnly(e.target.checked)} />
-            Unread only
-          </label>
-          <label className="flex items-center gap-1.5 font-lato text-[12px] text-stone-600 cursor-pointer">
-            <input type="checkbox" checked={archived} onChange={e => setArchived(e.target.checked)} />
-            Archived
-          </label>
+        <div className="flex flex-wrap gap-2 mb-4 justify-between w-full items-center">
+          <div className="flex flex-wrap gap-2">
+            {STATUSES.map(s => (
+              <button key={s} onClick={() => setFilter(s)}
+                className={`font-lato text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-sm transition-colors
+                           ${filter === s ? "bg-stone-900 text-white" : "bg-white border border-stone-200 text-stone-600 hover:border-stone-400"}`}>
+                {s}
+              </button>
+            ))}
+            <input type="text" placeholder="Search..." value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="px-3 py-2 font-lato text-[12px] border border-stone-200 rounded-sm
+                         outline-none focus:border-stone-400 bg-white text-stone-800 placeholder:text-stone-300 w-44" />
+            <label className="flex items-center gap-1.5 font-lato text-[12px] text-stone-600 cursor-pointer">
+              <input type="checkbox" checked={unreadOnly} onChange={e => setUnreadOnly(e.target.checked)} />
+              Unread only
+            </label>
+            <label className="flex items-center gap-1.5 font-lato text-[12px] text-stone-600 cursor-pointer">
+              <input type="checkbox" checked={archived} onChange={e => setArchived(e.target.checked)} />
+              Archived
+            </label>
+          </div>
+          
+          <button onClick={() => setEditing(EMPTY_QUESTION)}
+            className="font-lato text-[11px] font-bold uppercase tracking-wider bg-[#8c3a63] text-white px-4 py-2 rounded-sm hover:bg-[#6d2c4e] transition-colors">
+            + Create New Q&A
+          </button>
         </div>
 
         {/* Bulk operations */}
@@ -441,23 +473,32 @@ export default function AdminAskCollins() {
           <div className="fixed inset-0 bg-black/40 z-40" onClick={() => setEditing(null)} />
           <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50
                           bg-white w-full max-w-[640px] p-8 shadow-2xl overflow-y-auto max-h-[90vh]">
-            <h3 className="font-playfair text-[18px] font-bold text-stone-900 mb-5">Answer Question</h3>
+            <h3 className="font-playfair text-[18px] font-bold text-stone-900 mb-5">
+              {!editing.id ? "Create Q&A Card" : "Edit Q&A Card"}
+            </h3>
             
-            <div className="bg-stone-50 rounded-sm px-4 py-3 mb-5 grid grid-cols-2 gap-4">
-              <div>
-                <p className="font-lato text-[11px] text-stone-700 font-bold mb-1">{editing.name} asks (English):</p>
-                <p className="font-lato text-[13px] text-stone-600">{editing.question}</p>
-              </div>
-              <div>
-                <p className="font-lato text-[11px] text-stone-700 font-bold mb-1">asks (Tamil):</p>
-                <p className="font-lato text-[13px] text-stone-600">{editing.questionTa || "(No Tamil Question)"}</p>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <Field label="Author Name">
+                <Input value={editing.name ?? ""}
+                  onChange={e => setEditing(v => v ? { ...v, name: e.target.value } : v)} placeholder="e.g. John or Anonymous" />
+              </Field>
+              <div className="flex items-end pb-1.5">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={editing.consent}
+                    onChange={e => setEditing(v => v ? { ...v, consent: e.target.checked } : v)} className="accent-[#8c3a63]" />
+                  <span className="font-lato text-[13px] text-stone-600">Show Name Publicly (Consent)</span>
+                </label>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 mb-4">
-              <Field label="Original Question Tamil Translation Refinement">
-                <Input value={editing.questionTa ?? ""}
-                  onChange={e => setEditing(v => v ? { ...v, questionTa: e.target.value } : v)} placeholder="Refine Tamil question translation..." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <Field label="Question (English)">
+                <Textarea rows={3} value={editing.question ?? ""}
+                  onChange={e => setEditing(v => v ? { ...v, question: e.target.value } : v)} placeholder="Enter question in English..." />
+              </Field>
+              <Field label="Question (Tamil)">
+                <Textarea rows={3} value={editing.questionTa ?? ""}
+                  onChange={e => setEditing(v => v ? { ...v, questionTa: e.target.value } : v)} placeholder="Enter question in Tamil..." />
               </Field>
             </div>
 
@@ -485,10 +526,9 @@ export default function AdminAskCollins() {
 
             <div className="flex gap-3 mt-2">
               <SaveButton loading={saving} label="Save & Publish" onClick={() => {
-                setEditing(v => v ? { ...v, status: "PUBLISHED" } : v);
-                setTimeout(saveEdit, 0);
+                saveEdit("PUBLISHED");
               }} />
-              <SaveButton loading={saving} label="Save Draft" onClick={saveEdit} />
+              <SaveButton loading={saving} label="Save Draft" onClick={() => saveEdit()} />
               <button onClick={() => setEditing(null)}
                 className="font-lato text-[11px] text-stone-400 hover:text-stone-700 transition-colors">
                 Cancel

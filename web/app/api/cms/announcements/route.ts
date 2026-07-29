@@ -4,6 +4,8 @@ import { sanityCreateDoc, sanityDeleteDoc, sanityPatchDoc } from "@/lib/sanity-m
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return Boolean((await auth())?.user);
 }

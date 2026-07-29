@@ -2,12 +2,13 @@ import Navbar from "@/components/Navbar";
 import FooterContact from "@/components/FooterContact";
 import AskCollinsHero from "@/components/AskCollinsHero";
 import AskCollinsForm from "@/components/AskCollinsForm";
+import AnsweredQuestions from "@/components/AnsweredQuestions";
 import AnswersFromTheWord from "@/components/AnswersFromTheWord";
 import OurCommunityServer from "@/components/OurCommunityServer";
 import { getAllSettings } from "@/lib/settings";
-import { fetchAnswersFromTheWord, fetchFooter } from "@/lib/sanity-queries";
+import { fetchAnswersFromTheWord, fetchFooter, fetchPublishedQuestions } from "@/lib/sanity-queries";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Ask Collins — Christian Fellowship Church",
@@ -15,9 +16,10 @@ export const metadata = {
 };
 
 export default async function AskCollinsPage() {
-  const [settings, answers, footer] = await Promise.all([
+  const [settings, answers, publishedQuestions, footer] = await Promise.all([
     getAllSettings(),
     fetchAnswersFromTheWord({ activeOnly: true }).catch(() => []),
+    fetchPublishedQuestions().catch(() => []),
     fetchFooter(),
   ]);
 
@@ -34,6 +36,7 @@ export default async function AskCollinsPage() {
       <Navbar />
       <AskCollinsHero />
       <AskCollinsForm />
+      <AnsweredQuestions questions={publishedQuestions} />
       <AnswersFromTheWord initialAnswers={answers} />
       <OurCommunityServer />
       <FooterContact {...contact} />

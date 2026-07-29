@@ -26,8 +26,14 @@ export default function PraySection({ heading, headingTa, initialPrayers = [] }:
   const handleSubmit = async () => {
     setError("");
     if (!form.prayerRequest.trim()) return;
-    if (!form.name.trim() || !form.phone.trim() || !form.email.trim()) {
-      setError(t("pray.errorFillAll"));
+    
+    const isPhoneRequired = !form.anonymous;
+    if (!form.name.trim() || !form.email.trim() || (isPhoneRequired && !form.phone.trim())) {
+      setError(
+        form.anonymous
+          ? (lang === "ta" ? "தயவுசெய்து உங்கள் பெயர் மற்றும் மின்னஞ்சலை நிரப்பவும்." : "Please fill in your name and email.")
+          : t("pray.errorFillAll")
+      );
       return;
     }
     setLoading(true);

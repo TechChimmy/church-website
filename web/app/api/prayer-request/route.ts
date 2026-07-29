@@ -21,11 +21,16 @@ export async function POST(req: NextRequest) {
   catch { return NextResponse.json({ error: "Invalid JSON." }, { status: 400 }); }
 
   const { name, phone, email, prayerRequest, anonymous } = body as Record<string, unknown>;
+  const isAnon = Boolean(anonymous);
 
   if (typeof name !== "string" || name.trim().length < 2)
     return NextResponse.json({ error: "Name is required (min 2 characters)." }, { status: 400 });
-  if (typeof phone !== "string" || phone.trim().length < 5)
-    return NextResponse.json({ error: "Phone number is required (min 5 digits)." }, { status: 400 });
+  
+  if (!isAnon) {
+    if (typeof phone !== "string" || phone.trim().length < 5)
+      return NextResponse.json({ error: "Phone number is required (min 5 digits)." }, { status: 400 });
+  }
+
   if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
     return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
   if (typeof prayerRequest !== "string" || prayerRequest.trim().length < 3)
@@ -33,14 +38,12 @@ export async function POST(req: NextRequest) {
   if (prayerRequest.trim().length > 2000)
     return NextResponse.json({ error: "Prayer request is too long." }, { status: 400 });
 
-  const isAnon = Boolean(anonymous);
-
   try {
     await sanityCreateDoc({
       type: "prayerRequest",
       data: {
         name:          (name as string).trim(),
-        phone:         (phone as string).trim(),
+        phone:         typeof phone === "string" ? phone.trim() : "",
         email:         (email as string).trim().toLowerCase(),
         prayerRequest: (prayerRequest as string).trim(),
         anonymous:     isAnon,
@@ -57,7 +60,7 @@ export async function POST(req: NextRequest) {
   sendPrayerRequest({
     anonymous:     isAnon,
     name:          (name as string).trim(),
-    phone:         (phone as string).trim(),
+    phone:         typeof phone === "string" ? phone.trim() : "",
     email:         (email as string).trim().toLowerCase(),
     prayerRequest: (prayerRequest as string).trim(),
   }).catch(err => console.error("[PrayerRequest] Telegram error:", err));

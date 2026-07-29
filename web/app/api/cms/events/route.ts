@@ -4,6 +4,8 @@ import { sanityCreateDoc, sanityDeleteDoc, sanityPatchDoc } from "@/lib/sanity-m
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return Boolean((await auth())?.user);
 }
@@ -36,7 +38,7 @@ export async function GET(req: NextRequest) {
       order,
     }`;
 
-    const events = await sanityFetch<any[]>(q);
+    const events = await sanityFetch<any[]>(q, {}, [], false);
     // Keep Prisma-style response fields (id vs _id)
     return NextResponse.json(
       events.map((ev) => ({
@@ -55,7 +57,12 @@ export async function GET(req: NextRequest) {
         featured: Boolean(ev.featured),
         active: ev.active ?? true,
         order: ev.order ?? 0,
-      }))
+      })),
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
+        },
+      }
     );
   } catch (err) {
     console.error("GET /api/cms/events error:", err);

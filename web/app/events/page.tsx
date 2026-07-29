@@ -9,7 +9,7 @@ import ServiceTimes from "@/components/ServiceTimes";
 import { fetchEvents, fetchFooter, fetchWeStayActive, fetchServiceTimes } from "@/lib/sanity-queries";
 import { getAllSettings } from "@/lib/settings";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Events — Christian Fellowship Church",

@@ -45,13 +45,7 @@ export async function POST(req: NextRequest) {
   if (question.trim().length > 2000) {
     return NextResponse.json({ error: "Question is too long (max 2000 characters)." }, { status: 400 });
   }
-
-  // If NOT submitted from Join Us Live, consent is required.
   const isJoinLive = source === "join-us-live";
-  if (!isJoinLive && !consent) {
-    return NextResponse.json({ error: "You must consent to public review to submit." }, { status: 400 });
-  }
-
   // If timestamp is provided, validate format
   if (isJoinLive && timestamp && typeof timestamp === "string" && timestamp.trim()) {
     if (!/^\d{1,2}:\d{2}(:\d{2})?$/.test(timestamp.trim())) {

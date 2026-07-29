@@ -45,17 +45,17 @@ export default function AdminEvents() {
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(""), 3000); };
 
   const load = useCallback(async () => {
-    const r = await fetch("/api/cms/events");
+    const r = await fetch("/api/cms/events", { cache: "no-store" });
     setEvents(await r.json());
   }, []);
 
   const loadActives = useCallback(async () => {
-    const r = await fetch("/api/cms/we-stay-active");
+    const r = await fetch("/api/cms/we-stay-active", { cache: "no-store" });
     setActives(await r.json());
   }, []);
 
   const loadSettings = useCallback(async () => {
-    const r = await fetch("/api/cms/settings");
+    const r = await fetch("/api/cms/settings", { cache: "no-store" });
     const all: { key: string; value: string }[] = await r.json();
     const map: S = {};
     EVENTS_PAGE_KEYS.forEach(k => { map[k] = all.find(s => s.key === k)?.value ?? ""; });
@@ -91,10 +91,16 @@ export default function AdminEvents() {
     setSaving(true);
     const method = editing ? "PATCH" : "POST";
     const body   = editing ? { ...form, id: editing } : form;
-    await fetch("/api/cms/events", {
+    const res = await fetch("/api/cms/events", {
       method, headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || "Failed to save event");
+      setSaving(false);
+      return;
+    }
     setSaving(false);
     cancelEdit();
     load();
@@ -103,10 +109,15 @@ export default function AdminEvents() {
 
   async function del(id: string) {
     if (!confirm("Delete this event?")) return;
-    await fetch("/api/cms/events", {
+    const res = await fetch("/api/cms/events", {
       method: "DELETE", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || "Failed to delete event");
+      return;
+    }
     load();
     showToast("Deleted");
   }
@@ -133,10 +144,16 @@ export default function AdminEvents() {
     setActiveSaving(true);
     const method = activeEditing ? "PATCH" : "POST";
     const body   = activeEditing ? { ...activeForm, id: activeEditing } : activeForm;
-    await fetch("/api/cms/we-stay-active", {
+    const res = await fetch("/api/cms/we-stay-active", {
       method, headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || "Failed to save card");
+      setActiveSaving(false);
+      return;
+    }
     setActiveSaving(false);
     cancelActive();
     loadActives();
@@ -145,10 +162,15 @@ export default function AdminEvents() {
 
   async function deleteActive(id: string) {
     if (!confirm("Delete this activity card?")) return;
-    await fetch("/api/cms/we-stay-active", {
+    const res = await fetch("/api/cms/we-stay-active", {
       method: "DELETE", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
     });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      alert(err.error || "Failed to delete card");
+      return;
+    }
     loadActives();
     showToast("Deleted");
   }
@@ -173,7 +195,7 @@ export default function AdminEvents() {
       </Card>
 
       {/* ── We Stay Active Editor ── */}
-      <div className="mb-8 border-b border-stone-200/80 pb-8">
+      <div className="mb-8 border-b border-stone-200/80 pb-8" id="we-stay-active">
         <h2 className="font-playfair text-[20px] font-bold text-stone-800 mb-4">We Stay Active Section</h2>
         <div className="grid gap-6" style={{ gridTemplateColumns: "1fr 340px" }}>
           {/* Active Cards List */}

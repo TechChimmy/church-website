@@ -15,7 +15,7 @@ import { fetchHeroSlides, fetchEvents, fetchPrayerRequestsApproved, fetchFooter,
 
 import { getChannelVideoData } from "@/lib/youtube";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 async function safeGetSlides() {
   try {
@@ -47,7 +47,7 @@ async function safeGetUpcomingEvents() {
   try {
     const events = await fetchEvents({ activeOnly: true });
     return events
-      .filter((ev: any) => ev.active !== false)
+      .filter((ev: any) => ev.active !== false && ev.featured === true)
       .slice(0, 4)
       .map((ev: any) => ({
         id: ev._id ?? ev.id,
@@ -160,6 +160,9 @@ export default async function HomePage() {
         joinUsTextTa={settings.join_us_text_ta ?? "உங்களுக்குப் பிடித்தமான ஆன்லைன் ஆராதனையில் எங்களோடு இணையுங்கள்."}
         visitUsText={settings.visit_us_text ?? "Your paragraph lorem ipsum the warmth and charm of a cosy service — we'd love to see you in person this Sunday."}
         visitUsTextTa={settings.visit_us_text_ta ?? "ஞாயிற்றுக்கிழமை ஆராதனையில் எங்களோடு நேரில் கலந்துகொள்ள உங்களை அன்போடு அழைக்கிறோம்."}
+        visitUsBtnText={settings.visit_us_btn_text}
+        visitUsBtnTextTa={settings.visit_us_btn_text_ta}
+        visitUsBtnLink={settings.visit_us_btn_link}
         mainVideo={ytData.mainVideo}
       />
       <AboutSection

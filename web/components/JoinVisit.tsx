@@ -12,10 +12,22 @@ type JoinVisitProps = {
   joinUsTextTa?: string;
   visitUsText: string;
   visitUsTextTa?: string;
+  visitUsBtnText?: string;
+  visitUsBtnTextTa?: string;
+  visitUsBtnLink?: string;
   mainVideo: YouTubeVideo | null;
 };
 
-export default function JoinVisit({ joinUsText, joinUsTextTa, visitUsText, visitUsTextTa, mainVideo }: JoinVisitProps) {
+export default function JoinVisit({
+  joinUsText,
+  joinUsTextTa,
+  visitUsText,
+  visitUsTextTa,
+  visitUsBtnText,
+  visitUsBtnTextTa,
+  visitUsBtnLink,
+  mainVideo
+}: JoinVisitProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { lang, t } = useLanguage();
@@ -25,12 +37,9 @@ export default function JoinVisit({ joinUsText, joinUsTextTa, visitUsText, visit
   // navigating — mirrors the existing "Visit Us" handler in Navbar.tsx.
   function handleGetDirections(e: React.MouseEvent) {
     e.preventDefault();
-    const doScroll = () => {
-      const el = document.getElementById("footer-visit");
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-    if (pathname === "/") {
-      doScroll();
+    const el = document.getElementById("footer-visit");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       router.push("/?scrollTo=footer-visit");
     }
@@ -39,9 +48,19 @@ export default function JoinVisit({ joinUsText, joinUsTextTa, visitUsText, visit
   const activeJoinText = lang === "ta" && joinUsTextTa ? joinUsTextTa : joinUsText;
   const activeVisitText = lang === "ta" && visitUsTextTa ? visitUsTextTa : visitUsText;
 
+  const defaultCta = lang === "ta" ? "திசைகளைப் பெறுக" : "Get Directions";
+  const customCta = lang === "ta" && visitUsBtnTextTa ? visitUsBtnTextTa : visitUsBtnText;
+  const activeCta = customCta || defaultCta;
+
+  const hasCustomLink = visitUsBtnLink && visitUsBtnLink.trim() !== "";
+  const activeHref = hasCustomLink ? visitUsBtnLink!.trim() : "/";
+  const activeOnClick = hasCustomLink ? undefined : handleGetDirections;
+  const target = hasCustomLink ? "_blank" : undefined;
+  const rel = hasCustomLink ? "noopener noreferrer" : undefined;
+
   const cards = [
-    { title: t("joinVisit.joinTitle"), body: activeJoinText,  cta: t("joinVisit.watchNow"),       href: "/join-us-live", onClick: undefined },
-    { title: t("joinVisit.visitTitle"),     body: activeVisitText, cta: t("joinVisit.getDirections"),  href: "/",              onClick: handleGetDirections },
+    { title: t("joinVisit.joinTitle"), body: activeJoinText,  cta: t("joinVisit.watchNow"),       href: "/join-us-live", onClick: undefined, target: undefined, rel: undefined },
+    { title: t("joinVisit.visitTitle"),     body: activeVisitText, cta: activeCta,  href: activeHref,              onClick: activeOnClick, target, rel },
   ];
 
   return (
@@ -101,7 +120,7 @@ export default function JoinVisit({ joinUsText, joinUsTextTa, visitUsText, visit
             <p className="font-lato text-[13px] leading-relaxed mb-4" style={{ color: "#8A7078" }}>
               {card.body}
             </p>
-            <a href={card.href} onClick={card.onClick} className="btn-dark">{card.cta}</a>
+            <a href={card.href} onClick={card.onClick} target={card.target} rel={card.rel} className="btn-dark">{card.cta}</a>
           </div>
         ))}
       </div>

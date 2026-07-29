@@ -5,6 +5,8 @@ import { sanityFetch } from "@/lib/sanity/fetch";
 import { getSanityClient } from "@/lib/sanity/client";
 import { sanityCreateDoc, sanityDeleteDoc, sanityPatchDoc } from "@/lib/sanity-mutations";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return Boolean((await auth())?.user);
 }

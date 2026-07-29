@@ -5,6 +5,8 @@ import { sanityFetch } from "@/lib/sanity/fetch";
 import { getSanityClient } from "@/lib/sanity/client";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return Boolean((await auth())?.user);
 }
@@ -39,36 +41,47 @@ export async function GET(req: NextRequest) {
       order,
       active
     }`;
-    let items = await sanityFetch<any[]>(q);
+    let items = await sanityFetch<any[]>(q, {}, [], false);
 
-    // Auto-seed default items if none exist
-    if (items.length === 0 && !activeOnly) {
-      console.log("[We Stay Active API] Seeding default cards into Sanity...");
+    if (items.length === 0) {
       const client = getSanityClient();
-      await Promise.all([
-        client.create({
-          _type: "weStayActive",
-          title: "Fellowship Groups",
-          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment.",
-          order: 0,
-          active: true
-        }),
-        client.create({
-          _type: "weStayActive",
-          title: "Church Retreat",
-          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment.",
-          order: 1,
-          active: true
-        }),
-        client.create({
-          _type: "weStayActive",
-          title: "Evangelical Sunday",
-          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment.",
-          order: 2,
-          active: true
-        }),
-      ]);
-      items = await client.fetch<any[]>(q);
+      const count = await client.fetch<number>(`count(*[_type == "weStayActive"])`);
+      if (count === 0) {
+        console.log("[api/cms/we-stay-active] Seeding default activity cards into Sanity...");
+        await Promise.all([
+          client.createOrReplace({
+            _id: "we-stay-active-fellowship-groups",
+            _type: "weStayActive",
+            title: "Fellowship Groups",
+            titleTa: "ஐக்கியக் குழுக்கள்",
+            description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+            descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+            order: 0,
+            active: true
+          }),
+          client.createOrReplace({
+            _id: "we-stay-active-church-retreat",
+            _type: "weStayActive",
+            title: "Church Retreat",
+            titleTa: "திருச்சபை முகாம்",
+            description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+            descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+            order: 1,
+            active: true
+          }),
+          client.createOrReplace({
+            _id: "we-stay-active-evangelical-sunday",
+            _type: "weStayActive",
+            title: "Evangelical Sunday",
+            titleTa: "சுவிசேஷ ஞாயிறு",
+            description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+            descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+            order: 2,
+            active: true
+          })
+        ]);
+        items = await client.fetch<any[]>(q);
+      }
     }
 
     return NextResponse.json(
@@ -81,7 +94,12 @@ export async function GET(req: NextRequest) {
         imageUrl: it.imageUrl ?? null,
         order: it.order ?? 0,
         active: it.active ?? true,
-      }))
+      })),
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0, must-revalidate",
+        },
+      }
     );
   } catch (err) {
     console.error("GET /api/cms/we-stay-active error:", err);

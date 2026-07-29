@@ -15,6 +15,7 @@ import community from './community';
 import announcement from './announcement';
 import adminUser from './adminUser';
 import weStayActive from './weStayActive';
+import doctrineItem from './doctrineItem';
 
 export const schemaTypes = [
   heroSlide,
@@ -34,6 +35,7 @@ export const schemaTypes = [
   announcement,
   adminUser,
   weStayActive,
+  doctrineItem,
 ];
 
 

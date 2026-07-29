@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
     let filterExpr = `[_type == "prayerRequest"`;
     if (filter === "ANONYMOUS") filterExpr += ` && anonymous == true`;
     if (filter === "NAMED") filterExpr += ` && anonymous == false`;
+    if (filter === "APPROVED") filterExpr += ` && approved == true`;
+    if (filter === "PENDING") filterExpr += ` && approved != true`;
     if (unreadOnly) filterExpr += ` && read == false`;
     if (archived) {
       filterExpr += ` && archived == true`;

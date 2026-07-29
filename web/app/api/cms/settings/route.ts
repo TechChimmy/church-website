@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/lib/sanity/client";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user) return null;
@@ -22,6 +24,10 @@ const DEFAULT_SETTINGS = [
   { key: "shepherd_image", label: "Shepherd Image URL", group: "shepherd", type: "text", value: "/images/about/pastor.jpg" },
 
   // Doctrine
+  { key: "doctrine_heading", label: "Doctrine Section Heading (English)", group: "doctrine", type: "text", value: "Our Doctrine" },
+  { key: "doctrine_heading_ta", label: "Doctrine Section Heading (Tamil)", group: "doctrine", type: "text", value: "எங்கள் உபதேசம்" },
+  { key: "doctrine_paragraph", label: "Doctrine Section Intro (English)", group: "doctrine", type: "textarea", value: "Our doctrine is based on the Bible and the faith that has been passed down." },
+  { key: "doctrine_paragraph_ta", label: "Doctrine Section Intro (Tamil)", group: "doctrine", type: "textarea", value: "எங்கள் உபதேசம் வேதாகமத்தை அடிப்படையாகக் கொண்டது." },
   { key: "doctrine_word_image", label: "Doctrine: The Word Image URL", group: "doctrine", type: "text", value: "/images/doctrine/word.jpg" },
   { key: "doctrine_faith_image", label: "Doctrine: Faith Image URL", group: "doctrine", type: "text", value: "/images/doctrine/faith.jpg" },
   { key: "doctrine_spirit_image", label: "Doctrine: Spirit Image URL", group: "doctrine", type: "text", value: "/images/doctrine/spirit.jpg" },
@@ -38,6 +44,9 @@ const DEFAULT_SETTINGS = [
   // Homepage Info
   { key: "join_us_text", label: "Join Us Section Copy", group: "homepage", type: "textarea", value: "Your paragraph lorem ipsum the warmth and charm of a cosy service — join us online wherever you are." },
   { key: "visit_us_text", label: "Visit Us Section Copy", group: "homepage", type: "textarea", value: "Your paragraph lorem ipsum the warmth and charm of a cosy service — we'd love to see you in person this Sunday." },
+  { key: "visit_us_btn_text", label: "Visit Us Button Text (English)", group: "homepage", type: "text", value: "Get Directions" },
+  { key: "visit_us_btn_text_ta", label: "Visit Us Button Text (Tamil)", group: "homepage", type: "text", value: "திசைகளைப் பெறுக" },
+  { key: "visit_us_btn_link", label: "Visit Us Button Link (Leave empty to scroll to footer)", group: "homepage", type: "text", value: "" },
   { key: "pray_heading", label: "Pray Section Heading", group: "homepage", type: "text", value: "Pray with us" },
 
   // YouTube Channel/API Key settings

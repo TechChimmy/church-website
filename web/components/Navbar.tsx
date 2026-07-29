@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import LanguageToggle from "@/components/LanguageToggle";
 import AnnouncementsDrawer from "@/components/AnnouncementsDrawer";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
   { key: "home",        href: "/",            scroll: null },
@@ -16,9 +17,9 @@ const NAV_LINKS = [
 ];
 
 // Heights used in multiple places
-const FULL_NAV_H    = 48;   // px — floating island height
+const FULL_NAV_H    = 60;   // px — floating island height
 const FULL_MARGIN_T = 8;    // px — gap from viewport top
-const DRAWER_TOP    = FULL_MARGIN_T + FULL_NAV_H; // 56px — where mobile drawer starts
+const DRAWER_TOP    = FULL_MARGIN_T + FULL_NAV_H; // 68px — where mobile drawer starts
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -63,8 +64,9 @@ export default function Navbar() {
 
   function handleVisitUs(e: React.MouseEvent) {
     e.preventDefault();
-    if (pathname === "/") {
-      document.getElementById("footer-visit")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const el = document.getElementById("footer-visit");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     } else {
       router.push("/?scrollTo=footer-visit");
     }
@@ -195,11 +197,11 @@ export default function Navbar() {
         }
       `}</style>
 
-      {/* ── SPACER: dynamic based on page layout (0 for home to let hero overlay, 60 for other pages) ── */}
+      {/* ── SPACER: dynamic based on page layout (0 for home to let hero overlay, 72 for other pages) ── */}
       <div
         aria-hidden="true"
         style={{
-          height: pathname === "/" ? 0 : 60,
+          height: pathname === "/" ? 0 : 72,
           flexShrink: 0,
           transition: "height 0.3s ease",
         }}
@@ -271,8 +273,8 @@ export default function Navbar() {
                 alt="CFC Logo"
                 className="cfc-cross"
                 style={{
-                  width: 32,
-                  height: 32,
+                  width: 36,
+                  height: 36,
                   objectFit: "contain",
                   flexShrink: 0,
                   filter: isCollapsed ? "brightness(0) invert(1)" : "none",
@@ -284,7 +286,7 @@ export default function Navbar() {
                 <span
                   className="font-playfair"
                   style={{
-                    display: "block", fontSize: isCollapsed ? 11.5 : 12, fontWeight: 700,
+                    display: "block", fontSize: isCollapsed ? 11.5 : 13.5, fontWeight: 700,
                     color: nameColor, letterSpacing: "0.025em", lineHeight: 1.25,
                     transition: "color 0.38s ease, font-size 0.38s ease",
                   }}
@@ -294,7 +296,7 @@ export default function Navbar() {
                 <span
                   className="font-lato"
                   style={{
-                    display: "block", fontSize: 8, fontWeight: 600,
+                    display: "block", fontSize: 8.5, fontWeight: 600,
                     color: subtitleColor, letterSpacing: "0.26em",
                     textTransform: "uppercase", marginTop: 1,
                     transition: "color 0.38s ease",
@@ -435,113 +437,132 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* ── MOBILE BACKDROP ── */}
-      <div
-        className="cfc-ov fixed inset-0 z-40 md:hidden"
-        style={{
-          backgroundColor:      menuOpen ? "rgba(10,3,8,0.52)" : "rgba(10,3,8,0)",
-          backdropFilter:       menuOpen ? "blur(6px)" : "blur(0px)",
-          WebkitBackdropFilter: menuOpen ? "blur(6px)" : "blur(0px)",
-          pointerEvents:        menuOpen ? "auto" : "none",
-        }}
-        onClick={() => setMenuOpen(false)}
-        aria-hidden="true"
-      />
-
-      {/* ── MOBILE DRAWER ── */}
-      <div
-        className="fixed left-0 right-0 z-50 md:hidden"
-        style={{
-          top:             DRAWER_TOP,
-          opacity:         menuOpen ? 1 : 0,
-          transform:       menuOpen ? "translateY(0) scaleY(1)" : "translateY(-10px) scaleY(0.97)",
-          transformOrigin: "top center",
-          pointerEvents:   menuOpen ? "auto" : "none",
-          transition:      "opacity 0.34s cubic-bezier(0.4,0,0.2,1), transform 0.34s cubic-bezier(0.34,1.56,0.64,1)",
-          background:      "linear-gradient(160deg, #ffffff 0%, #fdf8fb 100%)",
-          borderBottom:    "1px solid rgba(140,58,99,0.10)",
-          boxShadow:       menuOpen ? "0 16px 48px rgba(140,58,99,0.16), 0 4px 16px rgba(0,0,0,0.05)" : "none",
-        }}
-      >
-        <div style={{ height: 3, background: "linear-gradient(90deg, #4a1630 0%, var(--burgundy) 50%, #A04A74 100%)" }} />
-
-        <div style={{ display: "flex", flexDirection: "column", paddingTop: 6, paddingBottom: 24 }}>
-          {NAV_LINKS.map(({ key, href, scroll }, idx) => {
-            const label = t(`nav.${key}`);
-            const isActive = key === "home"
-              ? pathname === "/"
-              : pathname.startsWith(href) && href !== "/";
-
-            const base: React.CSSProperties = {
-              display: "flex", alignItems: "center", gap: 14,
-              padding: "13px 28px",
-              fontFamily: "var(--font-lato), sans-serif",
-              fontSize: 12, fontWeight: isActive ? 700 : 400,
-              letterSpacing: "0.14em", textTransform: "uppercase",
-              color: isActive ? "var(--burgundy)" : "#2d1922",
-              background: isActive ? "linear-gradient(90deg, rgba(140,58,99,0.07) 0%, transparent 80%)" : "transparent",
-              borderBottom: "1px solid #f3eef1",
-              textDecoration: "none", cursor: "pointer",
-              ["--d" as string]: `${idx * 48}ms`,
-            };
-
-            const dot = (
-              <span style={{
-                width: 7, height: 7, borderRadius: "50%", flexShrink: 0, display: "inline-block",
-                background: isActive ? "var(--burgundy)" : "rgba(140,58,99,0.22)",
-                boxShadow: isActive ? "0 0 0 2.5px rgba(140,58,99,0.18)" : "none",
-              }} />
-            );
-
-            if (scroll === "footer-visit") {
-              return (
-                <button key={key} onClick={handleVisitUs} suppressHydrationWarning
-                  className="cfc-mi"
-                  style={{ ...base, border: "none", borderBottom: "1px solid #f3eef1", textAlign: "left", width: "100%" }}
-                >{dot}{label}</button>
-              );
-            }
-            return (
-              <Link key={key} href={href} onClick={() => setMenuOpen(false)} className="cfc-mi" style={base}>
-                {dot}{label}
-              </Link>
-            );
-          })}
-
-          {/* Mobile Language Switcher */}
-          <div
-            className="cfc-mi"
-            style={{
-              padding: "20px 28px 4px",
-              display: "flex",
-              justifyContent: "center",
-              ["--d" as string]: `${NAV_LINKS.length * 48}ms`,
-            }}
-          >
-            <LanguageToggle />
-          </div>
-
-          <div style={{ padding: "10px 28px 4px" }}>
-            <Link
-              href="/join-us-live"
-              onClick={() => setMenuOpen(false)}
-              className="cfc-cta cfc-mi"
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            {/* ── MOBILE BACKDROP ── */}
+            <motion.div
+              className="fixed inset-0 z-40 md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.24, ease: "easeInOut" }}
               style={{
-                justifyContent: "center", gap: 8, padding: "14px 24px", borderRadius: 40, width: "100%",
-                background: "linear-gradient(135deg, #4a1630 0%, var(--burgundy) 55%, #A04A74 100%)",
-                color: "white", fontSize: 11.5, fontWeight: 600,
-                letterSpacing: "0.18em", textTransform: "uppercase",
-                fontFamily: "var(--font-lato), sans-serif",
-                boxShadow: "0 4px 20px rgba(74,22,48,0.38)",
-                ["--d" as string]: `${(NAV_LINKS.length + 1) * 48}ms`,
+                backgroundColor: "rgba(10,3,8,0.52)",
+                backdropFilter: "blur(6px)",
+                WebkitBackdropFilter: "blur(6px)",
+              }}
+              onClick={() => setMenuOpen(false)}
+              aria-hidden="true"
+            />
+
+            {/* ── MOBILE DRAWER ── */}
+            <motion.div
+              className="fixed left-0 right-0 z-50 md:hidden"
+              initial={{ opacity: 0, y: -12, scaleY: 0.96 }}
+              animate={{ opacity: 1, y: 0, scaleY: 1 }}
+              exit={{ opacity: 0, y: -12, scaleY: 0.96 }}
+              transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                top: DRAWER_TOP,
+                transformOrigin: "top center",
+                background: "linear-gradient(160deg, #ffffff 0%, #fdf8fb 100%)",
+                borderBottom: "1px solid rgba(140,58,99,0.10)",
+                boxShadow: "0 16px 48px rgba(140,58,99,0.16), 0 4px 16px rgba(0,0,0,0.05)",
               }}
             >
-              <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgba(255,255,255,0.88)", display: "inline-block", flexShrink: 0 }} />
-              {t("nav.joinUsLive")}
-            </Link>
-          </div>
-        </div>
-      </div>
+              <div style={{ height: 3, background: "linear-gradient(90deg, #4a1630 0%, var(--burgundy) 50%, #A04A74 100%)" }} />
+
+              <div style={{ display: "flex", flexDirection: "column", paddingTop: 6, paddingBottom: 24 }}>
+                {NAV_LINKS.map(({ key, href, scroll }, idx) => {
+                  const label = t(`nav.${key}`);
+                  const isActive = key === "home"
+                    ? pathname === "/"
+                    : pathname.startsWith(href) && href !== "/";
+
+                  const base: React.CSSProperties = {
+                    display: "flex", alignItems: "center", gap: 14,
+                    padding: "13px 28px",
+                    fontFamily: "var(--font-lato), sans-serif",
+                    fontSize: 12, fontWeight: isActive ? 700 : 400,
+                    letterSpacing: "0.14em", textTransform: "uppercase",
+                    color: isActive ? "var(--burgundy)" : "#2d1922",
+                    background: isActive ? "linear-gradient(90deg, rgba(140,58,99,0.07) 0%, transparent 80%)" : "transparent",
+                    borderBottom: "1px solid #f3eef1",
+                    textDecoration: "none", cursor: "pointer",
+                  };
+
+                  const dot = (
+                    <span style={{
+                      width: 7, height: 7, borderRadius: "50%", flexShrink: 0, display: "inline-block",
+                      background: isActive ? "var(--burgundy)" : "rgba(140,58,99,0.22)",
+                      boxShadow: isActive ? "0 0 0 2.5px rgba(140,58,99,0.18)" : "none",
+                    }} />
+                  );
+
+                  return (
+                    <motion.div
+                      key={key}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.03, duration: 0.2, ease: "easeOut" }}
+                    >
+                      {scroll === "footer-visit" ? (
+                        <button onClick={handleVisitUs} suppressHydrationWarning
+                          style={{ ...base, border: "none", borderBottom: "1px solid #f3eef1", textAlign: "left", width: "100%" }}
+                        >{dot}{label}</button>
+                      ) : (
+                        <Link href={href} onClick={() => setMenuOpen(false)} style={base}>
+                          {dot}{label}
+                        </Link>
+                      )}
+                    </motion.div>
+                  );
+                })}
+
+                {/* Mobile Language Switcher */}
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: NAV_LINKS.length * 0.03, duration: 0.2 }}
+                  style={{
+                    padding: "20px 28px 4px",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
+                  <LanguageToggle />
+                </motion.div>
+
+                {/* Live Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: (NAV_LINKS.length + 1) * 0.03, duration: 0.2 }}
+                  style={{ padding: "10px 28px 4px" }}
+                >
+                  <Link
+                    href="/join-us-live"
+                    onClick={() => setMenuOpen(false)}
+                    className="cfc-cta"
+                    style={{
+                      justifyContent: "center", gap: 8, padding: "14px 24px", borderRadius: 40, width: "100%",
+                      background: "linear-gradient(135deg, #4a1630 0%, var(--burgundy) 55%, #A04A74 100%)",
+                      color: "white", fontSize: 11.5, fontWeight: 600,
+                      letterSpacing: "0.18em", textTransform: "uppercase",
+                      fontFamily: "var(--font-lato), sans-serif",
+                      boxShadow: "0 4px 20px rgba(74,22,48,0.38)",
+                    }}
+                  >
+                    <span style={{ width: 7, height: 7, borderRadius: "50%", background: "rgba(255,255,255,0.88)", display: "inline-block", flexShrink: 0 }} />
+                    {t("nav.joinUsLive")}
+                  </Link>
+                </motion.div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }

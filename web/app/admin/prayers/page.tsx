@@ -12,7 +12,7 @@ type APIResp = { items: PR[]; total: number; page: number; limit: number; unread
 
 export default function AdminPrayers() {
   const [data, setData]         = useState<APIResp>({ items: [], total: 0, page: 1, limit: 20, unreadCount: 0 });
-  const [filter, setFilter]     = useState<"ALL"|"ANONYMOUS"|"NAMED">("ALL");
+  const [filter, setFilter]     = useState<"ALL"|"APPROVED"|"PENDING"|"NAMED"|"ANONYMOUS">("ALL");
   const [search, setSearch]     = useState("");
   const [unreadOnly, setUnread] = useState(false);
   const [archived, setArchived] = useState(false);
@@ -91,7 +91,7 @@ export default function AdminPrayers() {
 
       {/* Controls */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {(["ALL","NAMED","ANONYMOUS"] as const).map(f => (
+        {(["ALL", "APPROVED", "PENDING", "NAMED", "ANONYMOUS"] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
             className={`font-lato text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-sm transition-colors
                        ${filter === f ? "bg-stone-900 text-white" : "bg-white border border-stone-200 text-stone-600 hover:border-stone-400"}`}>

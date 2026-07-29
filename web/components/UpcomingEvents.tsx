@@ -278,7 +278,7 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
               return (
                 <div
                   key={ev.id}
-                  className="flex gap-0 overflow-hidden rounded-sm transition-all duration-200 will-change-transform h-full w-full"
+                  className="flex flex-col sm:flex-row gap-0 overflow-hidden rounded-sm transition-all duration-200 will-change-transform w-full"
                   style={{
                     border: "1px solid rgba(140,58,99,0.12)",
                     boxShadow: "0 2px 12px rgba(140,58,99,0.06)",
@@ -294,20 +294,19 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
                     el.style.boxShadow = "0 2px 12px rgba(140,58,99,0.06)";
                   }}
                 >
-                  <div className="w-[100px] sm:w-[120px] shrink-0 relative min-h-[140px]"
+                  <div className="w-full sm:w-[120px] md:w-[140px] h-[160px] sm:h-auto shrink-0 relative"
                     style={{ backgroundColor: "rgba(140,58,99,0.15)" }}>
-                    {ev.imageUrl ? (
-                      <Image src={ev.imageUrl} alt={title} fill className="object-cover" sizes="120px" loading="lazy" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center min-h-[140px]">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(140,58,99,0.4)" strokeWidth="1.5">
-                          <rect x="3" y="4" width="18" height="18" rx="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
-                        </svg>
-                      </div>
-                    )}
+                    <Image
+                      src={ev.imageUrl || "/images/banners/events.jpg"}
+                      alt={title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, 140px"
+                      loading="lazy"
+                    />
                   </div>
  
-                  <div className="py-4 px-4 sm:py-5 sm:pr-5 flex flex-col justify-between flex-1 min-w-0 bg-white h-full">
+                  <div className="py-4 px-4 sm:py-5 sm:pr-5 flex flex-col justify-between flex-1 min-w-0 bg-white">
                     <div className="flex-1 pb-3">
                       <p className="font-lato text-[11px] uppercase tracking-[1.5px] mb-1.5" style={{ color: "var(--burgundy)" }}>{dateStr}</p>
                       <h3 className="font-playfair text-[15px] sm:text-[17px] font-semibold mb-2 leading-snug break-words" style={{ color: "var(--text-dark)" }}>

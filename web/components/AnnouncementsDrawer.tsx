@@ -26,10 +26,9 @@ export default function AnnouncementsDrawer() {
   // Fetch active announcements
   useEffect(() => {
     fetch("/api/cms/announcements?active=true")
-      .then((res) => res.json())
+      .then((res) => res.ok ? res.json() : [])
       .then((data) => {
         if (Array.isArray(data)) {
-          // Sort latest first (just in case API didn't sort it)
           const sorted = data.sort((a, b) => {
             const da = a.date ? new Date(a.date).getTime() : 0;
             const db = b.date ? new Date(b.date).getTime() : 0;

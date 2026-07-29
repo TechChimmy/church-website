@@ -187,10 +187,10 @@ export default function CalendarOfEvents() {
                     return (
                       <td key={ci}
                         onClick={() => handleDayClick(day)}
-                        className={`p-2 align-top transition-colors ${evs.length>0?"cursor-pointer":""}`}
+                        className={`p-1 sm:p-2 align-top transition-colors ${evs.length>0?"cursor-pointer":""}`}
                         style={{
                           border: "1px solid rgba(140,58,99,0.08)",
-                          minHeight: 68,
+                          height: "60px",
                         }}
                         onMouseEnter={e => {
                           (e.currentTarget as HTMLElement).style.backgroundColor =
@@ -200,7 +200,7 @@ export default function CalendarOfEvents() {
                           (e.currentTarget as HTMLElement).style.backgroundColor = "";
                         }}
                       >
-                        <span className="font-lato text-[12px] font-bold mb-1 w-6 h-6 flex
+                        <span className="font-lato text-[11px] sm:text-[12px] font-bold mb-1 w-5 h-5 sm:w-6 sm:h-6 flex
                                         items-center justify-center rounded-full"
                           style={isToday ? {
                             backgroundColor: "var(--burgundy)",
@@ -208,19 +208,35 @@ export default function CalendarOfEvents() {
                           } : { color: "#5A4050" }}>
                           {day}
                         </span>
-                        {evs.map((ev,ei) => {
-                          const eventTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
-                          return (
-                            <span key={ei}
-                              className="block font-lato text-[10px] font-bold px-1.5 py-0.5 rounded-sm mt-0.5 truncate"
-                              style={{
-                                background: "rgba(140,58,99,0.12)",
-                                color: "var(--burgundy)",
-                              }}>
-                              {eventTitle}
-                            </span>
-                          );
-                        })}
+                        
+                        {/* Mobile indicator dots */}
+                        {evs.length > 0 && (
+                          <div className="flex flex-wrap justify-center gap-0.5 mt-0.5 sm:hidden">
+                            {evs.map((ev, ei) => (
+                              <span
+                                key={ei}
+                                className="w-1.5 h-1.5 rounded-full bg-[var(--burgundy)] block shrink-0"
+                              />
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Desktop labels */}
+                        <div className="hidden sm:block">
+                          {evs.map((ev,ei) => {
+                            const eventTitle = lang === "ta" && ev.titleTa ? ev.titleTa : ev.title;
+                            return (
+                              <span key={ei}
+                                className="block font-lato text-[10px] font-bold px-1.5 py-0.5 rounded-sm mt-0.5 truncate"
+                                style={{
+                                  background: "rgba(140,58,99,0.12)",
+                                  color: "var(--burgundy)",
+                                }}>
+                                {eventTitle}
+                              </span>
+                            );
+                          })}
+                        </div>
                       </td>
                     );
                   })}

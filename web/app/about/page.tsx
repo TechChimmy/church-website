@@ -10,7 +10,7 @@ import ServiceTimes from "@/components/ServiceTimes";
 import { getAllSettings } from "@/lib/settings";
 import { fetchFooter, fetchPrayerRequestsApproved, fetchServiceTimes } from "@/lib/sanity-queries";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "About Us — Christian Fellowship Church",
@@ -81,12 +81,24 @@ export default async function AboutPage() {
         headingTa={settings.pray_heading_ta ?? "எங்களோடு ஜெபியுங்கள்"}
         initialPrayers={prayers}
       />
-      <OurDoctrine images={{
-        word:   settings.doctrine_word_image,
-        faith:  settings.doctrine_faith_image,
-        spirit: settings.doctrine_spirit_image,
-        church: settings.doctrine_church_image,
-      }} />
+      <OurDoctrine
+        images={{
+          word:   settings.doctrine_word_image,
+          faith:  settings.doctrine_faith_image,
+          spirit: settings.doctrine_spirit_image,
+          church: settings.doctrine_church_image,
+        }}
+        heading={settings.doctrine_heading}
+        headingTa={settings.doctrine_heading_ta}
+        paragraph={settings.doctrine_paragraph}
+        paragraphTa={settings.doctrine_paragraph_ta}
+        items={{
+          word:   { title: settings.doctrine_word_title,   titleTa: settings.doctrine_word_title_ta,   desc: settings.doctrine_word_desc,   descTa: settings.doctrine_word_desc_ta },
+          faith:  { title: settings.doctrine_faith_title,  titleTa: settings.doctrine_faith_title_ta,  desc: settings.doctrine_faith_desc,  descTa: settings.doctrine_faith_desc_ta },
+          spirit: { title: settings.doctrine_spirit_title, titleTa: settings.doctrine_spirit_title_ta, desc: settings.doctrine_spirit_desc, descTa: settings.doctrine_spirit_desc_ta },
+          church: { title: settings.doctrine_church_title, titleTa: settings.doctrine_church_title_ta, desc: settings.doctrine_church_desc, descTa: settings.doctrine_church_desc_ta },
+        }}
+      />
       <OurCommunityServer />
       <ServiceTimes services={serviceTimes} />
       <FooterContact {...contact} />

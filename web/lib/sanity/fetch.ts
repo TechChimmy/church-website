@@ -15,12 +15,15 @@ export const sanityFetch = cache(
     query: string,
     params?: Record<string, unknown>,
     tags: string[] = [],
-    useCdn: boolean = true
+    useCdn: boolean = true,
+    revalidateSeconds?: number
   ): Promise<T> => {
     const client = getSanityClient(useCdn);
+    const reval = revalidateSeconds !== undefined ? revalidateSeconds : (useCdn ? 60 : 0);
     return client.fetch<T>(query, params as any, {
+      cache: reval === 0 ? "no-store" : undefined,
       next: {
-        revalidate: useCdn ? 60 : 0,
+        revalidate: reval,
         tags: ["sanity", ...tags],
       },
     });

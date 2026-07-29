@@ -5,7 +5,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
 export type ActivityItem = {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   titleTa?: string;
   description: string;
@@ -51,6 +52,20 @@ function ExpandableText({ text }: { text: string }) {
       )}
     </div>
   );
+}
+
+function getFallbackImage(title: string): string {
+  const t = title.toLowerCase();
+  if (t.includes("fellowship") || t.includes("ஐக்கிய")) {
+    return "/images/activity/fellowship.jpg";
+  }
+  if (t.includes("retreat") || t.includes("முகாம்")) {
+    return "/images/activity/retreat.jpg";
+  }
+  if (t.includes("evangelical") || t.includes("சுவிசேஷ") || t.includes("sunday")) {
+    return "/images/activity/evangelical.jpg";
+  }
+  return "/images/activity/fellowship.jpg";
 }
 
 export default function WeStayActive({ items = [] }: { items?: ActivityItem[] }) {
@@ -103,23 +118,17 @@ export default function WeStayActive({ items = [] }: { items?: ActivityItem[] })
             const description = lang === "ta" && item.descriptionTa ? item.descriptionTa : item.description;
 
             return (
-              <div key={item.id}
+              <div key={item._id ?? item.id ?? `active-${idx}`}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-10 items-start">
                 {/* Image */}
                 <div className={`${imageLeft ? "sm:order-1" : "sm:order-2"} order-1`}>
-                  {item.imageUrl ? (
-                    <Image
-                      src={item.imageUrl}
-                      alt={title}
-                      width={800}
-                      height={500}
-                      className="w-full h-[320px] object-cover rounded-sm"
-                    />
-                  ) : (
-                    <div className="w-full h-[320px] bg-stone-100 rounded-sm flex items-center justify-center">
-                      <span className="font-lato text-[12px] text-stone-400">{t("weStayActive.noImage")}</span>
-                    </div>
-                  )}
+                  <Image
+                    src={item.imageUrl || getFallbackImage(title)}
+                    alt={title}
+                    width={800}
+                    height={500}
+                    className="w-full h-[320px] object-cover rounded-sm"
+                  />
                 </div>
 
                 {/* Text */}

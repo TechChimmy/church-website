@@ -5,7 +5,7 @@ import { fetchAnswerById, fetchFooter } from "@/lib/sanity-queries";
 import { getAllSettings } from "@/lib/settings";
 import { notFound } from "next/navigation";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const ALL_ANSWERS_STATIC = [
   { id: "1", title: "Try Jesus", titleTa: "இயேசுவை தேடுங்கள்", body: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. Inside, the ambience is enhanced by the gentle glow of candlelight, casting playful shadows on the walls." },

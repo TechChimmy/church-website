@@ -8,6 +8,7 @@ import LanguageToggle from "@/components/LanguageToggle";
 
 interface Props {
   user: { name?: string | null; email?: string | null };
+  onMenuToggle?: () => void;
 }
 
 function pageTitleFromPath(path: string, t: any): string {
@@ -16,7 +17,6 @@ function pageTitleFromPath(path: string, t: any): string {
     "/admin/homepage": t("admin.homepage"),
     "/admin/about": t("admin.aboutPage"),
     "/admin/events": t("admin.events"),
-    "/admin/calendar": t("admin.calendar"),
     "/admin/ask-collins": t("admin.askCollins"),
     "/admin/join-us-live": t("admin.joinUsLive"),
     "/admin/service-times": t("admin.serviceTimes"),
@@ -31,7 +31,7 @@ function pageTitleFromPath(path: string, t: any): string {
   return map[path] ?? "Admin";
 }
 
-export default function AdminTopBar({ user }: Props) {
+export default function AdminTopBar({ user, onMenuToggle }: Props) {
   const { t } = useLanguage();
   const { data: session } = useSession();
   const pathname = usePathname();
@@ -40,11 +40,27 @@ export default function AdminTopBar({ user }: Props) {
 
   return (
     <header
-      className="h-14 bg-white flex items-center justify-between px-4 sm:px-6 shrink-0"
-      style={{ borderBottom: "1px solid rgba(140,58,99,0.1)" }}
+      className="h-14 bg-white flex items-center justify-between px-4 sm:px-6 shrink-0 gap-3"
+      style={{ borderBottom: "1px solid rgba(140,58,99,0.1)", boxShadow: "0 1px 8px rgba(0,0,0,0.04)" }}
     >
+      {/* Hamburger toggle */}
+      <button
+        onClick={onMenuToggle}
+        aria-label="Toggle navigation"
+        className="flex items-center justify-center w-8 h-8 rounded-[6px] transition-colors shrink-0"
+        style={{ color: "#7A6570" }}
+        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.backgroundColor = "rgba(140,58,99,0.08)"; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.backgroundColor = ""; }}
+      >
+        <svg viewBox="0 0 24 24" className="w-[18px] h-[18px]" fill="none" stroke="currentColor" strokeWidth="2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+
       {/* Page title */}
-      <p className="font-playfair text-[16px] font-bold hidden sm:block" style={{ color: "var(--text-dark)" }}>
+      <p className="font-playfair text-[16px] font-bold flex-1 hidden sm:block" style={{ color: "var(--text-dark)" }}>
         {pageTitle}
       </p>
 

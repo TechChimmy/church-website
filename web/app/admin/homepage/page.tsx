@@ -19,6 +19,7 @@ type Settings = Record<string, string>;
 const HOMEPAGE_KEYS = [
   "join_us_text", "join_us_text_ta",
   "visit_us_text", "visit_us_text_ta",
+  "visit_us_btn_text", "visit_us_btn_text_ta", "visit_us_btn_link",
   "pray_heading", "pray_heading_ta"
 ];
 
@@ -185,6 +186,30 @@ export default function AdminHomepage() {
                   onChange={e => setSettings(s => ({ ...s, visit_us_text_ta: e.target.value }))} />
               </Field>
               <SaveButton loading={saving} onClick={() => saveSetting("visit_us_text_ta", settings.visit_us_text_ta)} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6 pt-6 border-t border-stone-100">
+            <div>
+              <Field label="Visit Us Button Text (English)">
+                <Input value={settings.visit_us_btn_text ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, visit_us_btn_text: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("visit_us_btn_text", settings.visit_us_btn_text)} />
+            </div>
+            <div>
+              <Field label="Visit Us Button Text (Tamil)">
+                <Input value={settings.visit_us_btn_text_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, visit_us_btn_text_ta: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("visit_us_btn_text_ta", settings.visit_us_btn_text_ta)} />
+            </div>
+            <div>
+              <Field label="Visit Us Button Link (Empty = scroll to footer)">
+                <Input value={settings.visit_us_btn_link ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, visit_us_btn_link: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("visit_us_btn_link", settings.visit_us_btn_link)} />
             </div>
           </div>
         </CardSection>

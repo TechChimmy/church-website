@@ -1,5 +1,6 @@
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { getSanityClient } from "@/lib/sanity/client";
+import { optimizeImageUrl } from "@/lib/sanity/image";
 
 // NOTE: These queries assume Sanity document types matching files in sanity/schemaTypes.
 // We keep response shapes compatible with existing frontend components.
@@ -23,21 +24,25 @@ export async function fetchHeroSlides() {
   }`;
 
   try {
-    let slides = await sanityFetch<any[]>(q);
-    if (slides.length === 0) {
+    let slides = await sanityFetch<any[]>(q, {}, [], false, 0);
+    const client = getSanityClient();
+    const count = await client.fetch<number>(`count(*[_type == "heroSlide"])`);
+    if (count === 0) {
       console.log("[fetchHeroSlides] Seeding default hero slides into Sanity...");
-      const client = getSanityClient();
       await Promise.all([
-        client.create({ _type: "heroSlide", title: "Welcome Home", subtitle: "Sunday Service · 9am & 11am", order: 0, active: true }),
-        client.create({ _type: "heroSlide", title: "Faith. Hope. Love.", subtitle: "Building a community rooted in Christ", order: 1, active: true }),
-        client.create({ _type: "heroSlide", title: "Come as You Are", subtitle: "You are welcome here, always", order: 2, active: true }),
+        client.createOrReplace({ _id: "hero-slide-welcome-home", _type: "heroSlide", title: "Welcome Home", subtitle: "Sunday Service · 9am & 11am", order: 0, active: true }),
+        client.createOrReplace({ _id: "hero-slide-faith-hope-love", _type: "heroSlide", title: "Faith. Hope. Love.", subtitle: "Building a community rooted in Christ", order: 1, active: true }),
+        client.createOrReplace({ _id: "hero-slide-come-as-you-are", _type: "heroSlide", title: "Come as You Are", subtitle: "You are welcome here, always", order: 2, active: true }),
       ]);
       slides = await client.fetch<any[]>(q);
     }
-    return slides;
+    return slides.map((s: any) => ({
+      ...s,
+      imageUrl: s.imageUrl ? optimizeImageUrl(s.imageUrl, 1920) : "",
+    }));
   } catch (error) {
     console.error("fetchHeroSlides error:", error);
-    return sanityFetch<any[]>(q);
+    return sanityFetch<any[]>(q, {}, [], false, 0);
   }
 }
 
@@ -60,7 +65,11 @@ export async function fetchEvents(opts?: { activeOnly?: boolean }) {
     active,
   }`;
 
-  return sanityFetch<any[]>(q);
+  const res = await sanityFetch<any[]>(q, {}, [], false, 0);
+  return res.map((r: any) => ({
+    ...r,
+    imageUrl: r.imageUrl ? optimizeImageUrl(r.imageUrl, 1200) : "",
+  }));
 }
 
 export async function fetchCalendarEvents() {
@@ -73,7 +82,7 @@ export async function fetchCalendarEvents() {
     date,
     active
   }| order(date asc)`;
-  return sanityFetch<any[]>(q);
+  return sanityFetch<any[]>(q, {}, [], false, 0);
 }
 
 export async function fetchServiceTimes() {
@@ -88,7 +97,7 @@ export async function fetchServiceTimes() {
     order,
     active
   }`;
-  return sanityFetch<any[]>(q);
+  return sanityFetch<any[]>(q, {}, [], false, 60);
 }
 
 export async function fetchGalleryImages() {
@@ -99,7 +108,7 @@ export async function fetchGalleryImages() {
     order,
     active
   }`;
-  return sanityFetch<any[]>(q);
+  return sanityFetch<any[]>(q, {}, [], false, 60);
 }
 
 export async function fetchHomepageContent() {
@@ -111,7 +120,7 @@ export async function fetchHomepageContent() {
     prayerHeading,
     prayerHeadingTa
   }`;
-  return sanityFetch<any>(q);
+  return sanityFetch<any>(q, {}, [], false, 60);
 }
 
 export async function fetchFooter() {
@@ -122,7 +131,7 @@ export async function fetchFooter() {
     email,
     mapEmbed
   }`;
-  return sanityFetch<any>(q);
+  return sanityFetch<any>(q, {}, [], false, 60);
 }
 
 export async function fetchPrayerRequestsApproved() {
@@ -136,7 +145,7 @@ export async function fetchPrayerRequestsApproved() {
     archived,
     createdAt
   }`;
-  return sanityFetch<any[]>(q);
+  return sanityFetch<any[]>(q, {}, [], false, 60);
 }
 
 export async function fetchCollinsQuestions(opts?: { status?: string; archived?: boolean; search?: string; unread?: boolean; page?: number; limit?: number }) {
@@ -188,10 +197,10 @@ export async function fetchCollinsQuestions(opts?: { status?: string; archived?:
   if (search) params.search = `${search}*`;
 
   const [items, total, unreadCount, pendingCount] = await Promise.all([
-    sanityFetch<any[]>(qItems, params),
-    sanityFetch<number>(qTotal, params),
-    sanityFetch<number>(qUnreadCount),
-    sanityFetch<number>(qPendingCount),
+    sanityFetch<any[]>(qItems, params, [], false),
+    sanityFetch<number>(qTotal, params, [], false),
+    sanityFetch<number>(qUnreadCount, {}, [], false),
+    sanityFetch<number>(qPendingCount, {}, [], false),
   ]);
 
   return { items, total, page, limit, unreadCount, pendingCount };
@@ -218,7 +227,11 @@ export async function fetchAnswersFromTheWord(opts?: { activeOnly?: boolean }) {
     order,
     _createdAt
   }`;
-  return sanityFetch<any[]>(q);
+  const res = await sanityFetch<any[]>(q, {}, [], false, 60);
+  return res.map((r: any) => ({
+    ...r,
+    imageUrl: r.imageUrl ? optimizeImageUrl(r.imageUrl, 1000) : null,
+  }));
 }
 
 export async function fetchAnswerById(id: string) {
@@ -239,12 +252,16 @@ export async function fetchAnswerById(id: string) {
     active,
     _createdAt
   }`;
-  return sanityFetch<any>(q, { id }, [], false);
+  const res = await sanityFetch<any>(q, { id }, [], false, 60);
+  if (res) {
+    res.imageUrl = res.imageUrl ? optimizeImageUrl(res.imageUrl, 1200) : null;
+  }
+  return res;
 }
 
 export async function fetchSiteSettingsFlat() {
   const q = `*[_type == "siteSetting"]{ key, value }`;
-  return sanityFetch<SanitySiteSetting[]>(q);
+  return sanityFetch<SanitySiteSetting[]>(q, {}, [], false, 60);
 }
 
 export async function fetchWeStayActive(opts?: { activeOnly?: boolean }) {
@@ -259,7 +276,53 @@ export async function fetchWeStayActive(opts?: { activeOnly?: boolean }) {
     order,
     active
   }`;
-  return sanityFetch<any[]>(q);
+  let res = await sanityFetch<any[]>(q, {}, [], false, 0);
+
+  if (res.length === 0) {
+    const client = getSanityClient();
+    const count = await client.fetch<number>(`count(*[_type == "weStayActive"])`);
+    if (count === 0) {
+      console.log("[fetchWeStayActive] Seeding default activity cards into Sanity...");
+      await Promise.all([
+        client.createOrReplace({
+          _id: "we-stay-active-fellowship-groups",
+          _type: "weStayActive",
+          title: "Fellowship Groups",
+          titleTa: "ஐக்கியக் குழுக்கள்",
+          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+          descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+          order: 0,
+          active: true
+        }),
+        client.createOrReplace({
+          _id: "we-stay-active-church-retreat",
+          _type: "weStayActive",
+          title: "Church Retreat",
+          titleTa: "திருச்சபை முகாம்",
+          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+          descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+          order: 1,
+          active: true
+        }),
+        client.createOrReplace({
+          _id: "we-stay-active-evangelical-sunday",
+          _type: "weStayActive",
+          title: "Evangelical Sunday",
+          titleTa: "சுவிசேஷ ஞாயிறு",
+          description: "Your paragraph lorem ipsum the warmth and charm of a cosy, sunlit afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment. Outside, a gentle breeze rustles through the leaves, carrying the sweet scent of blooming flowers. It's a place where time slows down and every moment is savoured like a cherished memory.",
+          descriptionTa: "உங்கள் பத்தி லோரெம் இப்சம் ஒரு வசதியான, வெயில் நிறைந்த மதிய நேரத்தின் வெப்பம் மற்றும் கவர்ச்சியானது ஒரு விசித்திரமான கிராமப்புற குடிசையில் கழிக்கப்பட்டது. நெருப்பிடம் மென்மையான விரிசல் மற்றும் புதிதாக காய்ச்சப்பட்ட தேநீரின் வாசனை புலன்களை சூழ்ந்து, தூய்மையான திருப்தியான சூழ்நிலையை உருவாக்குகிறது. வெளியே, ஒரு மென்மையான காற்று இலைகள் வழியாக சலசலக்கிறது, பூக்கும் பூக்களின் இனிமையான வாசனையை சுமந்து செல்கிறது. இது நேரம் மெதுவாகக் குறையும் இடமாகும், மேலும் ஒவ்வொரு கணமும் ஒரு போற்றத்தக்க நினைவகமாக ரசிக்கப்படுகிறது.",
+          order: 2,
+          active: true
+        })
+      ]);
+      res = await client.fetch<any[]>(q);
+    }
+  }
+
+  return res.map((r: any) => ({
+    ...r,
+    imageUrl: r.imageUrl ? optimizeImageUrl(r.imageUrl, 1200) : null,
+  }));
 }
 
 export async function fetchAnnouncements(opts?: { activeOnly?: boolean }) {
@@ -273,6 +336,22 @@ export async function fetchAnnouncements(opts?: { activeOnly?: boolean }) {
     date,
     active
   }`;
-  return sanityFetch<any[]>(q);
+  return sanityFetch<any[]>(q, {}, [], false, 60);
+}
+
+export async function fetchPublishedQuestions() {
+  const q = `*[_type == "askCollins" && status == "PUBLISHED" && archived != true] | order(createdAt desc) {
+    _id,
+    name,
+    question,
+    questionTa,
+    answer,
+    answerTa,
+    answerTitle,
+    answerTitleTa,
+    consent,
+    createdAt
+  }`;
+  return sanityFetch<any[]>(q, {}, [], false, 60);
 }
 

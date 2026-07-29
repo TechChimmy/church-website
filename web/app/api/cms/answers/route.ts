@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
       order,
       active
     }`;
-    const items = await sanityFetch<any[]>(q);
+    const items = await sanityFetch<any[]>(q, {}, [], false);
 
     return NextResponse.json(
       items.map((it) => ({

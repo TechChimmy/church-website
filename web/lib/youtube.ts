@@ -89,10 +89,26 @@ function mapItem(item: {
     snippet.thumbnails?.default?.url ??
     `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 
+  let publishedAt = snippet.publishedAt ?? "";
+
+  // Try to parse DD/MM/YYYY or DD-MM-YYYY date format from title
+  const title = snippet.title ?? "";
+  const dateRegex = /(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/;
+  const match = title.match(dateRegex);
+  if (match) {
+    const day = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1; // JS month is 0-indexed
+    const year = parseInt(match[3], 10);
+    const parsedDate = new Date(Date.UTC(year, month, day, 12, 0, 0));
+    if (!isNaN(parsedDate.getTime())) {
+      publishedAt = parsedDate.toISOString();
+    }
+  }
+
   return {
     videoId,
     title: snippet.title ?? "Sermon",
-    publishedAt: snippet.publishedAt ?? "",
+    publishedAt,
     thumbnail: thumb,
     isLive: snippet.liveBroadcastContent === "live",
     isUpcoming: snippet.liveBroadcastContent === "upcoming",
@@ -193,7 +209,7 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
       const playlistData = await ytFetch("playlistItems", {
         part: "snippet",
         playlistId: uploadsPlaylistId,
-        maxResults: "10",
+        maxResults: "30",
       }, apiKey);
 
       const items = playlistData?.items ?? [];
@@ -268,6 +284,13 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
     // Filter out upcoming videos
     const uploads = allVideos.filter(v => !v.isUpcoming);
 
+    // Sort uploads chronologically by parsed/published date (newest first)
+    uploads.sort((a, b) => {
+      const timeA = new Date(a.publishedAt).getTime();
+      const timeB = new Date(b.publishedAt).getTime();
+      return timeB - timeA;
+    });
+
     if (uploads.length === 0 && !liveVideo) {
       // If we genuinely fetched nothing and have no live video, return emptyResult
       cachedVideoData = emptyResult;
@@ -279,7 +302,7 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
       // Priority 1: Channel IS live — build recent list (excluding live video)
       const sermons = uploads
         .filter(v => v.videoId !== liveVideo.videoId)
-        .slice(0, 4);
+        .slice(0, 24);
 
       cachedVideoData = {
         mainVideo: liveVideo,
@@ -295,7 +318,7 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
     if (activeLiveFromUploads) {
       const sermons = uploads
         .filter(v => v.videoId !== activeLiveFromUploads.videoId)
-        .slice(0, 4);
+        .slice(0, 24);
 
       cachedVideoData = {
         mainVideo: activeLiveFromUploads,
@@ -311,7 +334,7 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
     if (completedVideo) {
       const sermons = uploads
         .filter(v => v.videoId !== completedVideo.videoId)
-        .slice(0, 4);
+        .slice(0, 24);
 
       cachedVideoData = {
         mainVideo: completedVideo,
@@ -325,7 +348,7 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
     // Priority 3: Fallback: Latest uploaded video
     if (uploads.length > 0) {
       const mainVideo = uploads[0];
-      const sermons = uploads.slice(1, 5); // next 4 as "previous sermons"
+      const sermons = uploads.slice(1, 25); // next 24 as "previous sermons"
 
       cachedVideoData = {
         mainVideo,
