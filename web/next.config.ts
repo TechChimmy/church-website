@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   skipTrailingSlashRedirect: true,
   allowedDevOrigins: ["192.168.1.51", "192.168.0.104", "192.168.0.101", "192.168.0.102"],
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
     remotePatterns: [
       {
         protocol: "https",
@@ -31,13 +32,13 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      'react$': path.resolve(__dirname, 'lib/react-patch.js'),
+      'react$': path.resolve(__dirname, 'src/lib/react-patch.js'),
     };
     return config;
   },
   turbopack: {
     resolveAlias: {
-      react: "./lib/react-patch.js",
+      react: "./src/lib/react-patch.js",
     },
   },
   async rewrites() {
