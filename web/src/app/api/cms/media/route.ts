@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/lib/sanity/client";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return (await auth())?.user ?? null;
 }

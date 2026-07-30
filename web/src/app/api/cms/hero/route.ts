@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { getSanityClient } from "@/lib/sanity/client";
 import { sanityCreateDoc, sanityDeleteDoc, sanityPatchDoc } from "@/lib/sanity-mutations";
@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
     });
 
     revalidatePath("/");
+    (revalidateTag as any)("sanity");
     return NextResponse.json(created);
   } catch (error) {
     console.error("POST /api/cms/hero error:", error);
@@ -174,6 +175,7 @@ export async function PATCH(req: NextRequest) {
     });
 
     revalidatePath("/");
+    (revalidateTag as any)("sanity");
     return NextResponse.json(updated);
   } catch (error) {
     console.error("PATCH /api/cms/hero error:", error);
@@ -191,6 +193,7 @@ export async function DELETE(req: NextRequest) {
     await sanityDeleteDoc(id);
 
     revalidatePath("/");
+    (revalidateTag as any)("sanity");
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/cms/hero error:", error);

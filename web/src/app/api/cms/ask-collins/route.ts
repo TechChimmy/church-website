@@ -4,6 +4,8 @@ import { getSanityClient } from "@/lib/sanity/client";
 import { fetchCollinsQuestions } from "@/lib/sanity-queries";
 import { revalidatePath, revalidateTag } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 async function requireAdmin() {
   return (await auth())?.user ?? null;
 }

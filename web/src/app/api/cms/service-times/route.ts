@@ -1,9 +1,11 @@
 // app/api/cms/service-times/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { sanityCreateDoc, sanityPatchDoc, sanityDeleteDoc } from "@/lib/sanity-mutations";
+
+export const dynamic = "force-dynamic";
 
 async function requireAdmin() { return (await auth())?.user ?? null; }
 
@@ -74,6 +76,7 @@ export async function POST(req: NextRequest) {
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/join-us-live");
+    (revalidateTag as any)("sanity");
     return NextResponse.json(item);
   } catch (error) {
     console.error("POST /api/cms/service-times error:", error);
@@ -117,6 +120,7 @@ export async function PATCH(req: NextRequest) {
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/join-us-live");
+    (revalidateTag as any)("sanity");
     return NextResponse.json(item);
   } catch (error) {
     console.error("PATCH /api/cms/service-times error:", error);
@@ -132,6 +136,7 @@ export async function DELETE(req: NextRequest) {
     revalidatePath("/");
     revalidatePath("/about");
     revalidatePath("/join-us-live");
+    (revalidateTag as any)("sanity");
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/cms/service-times error:", error);

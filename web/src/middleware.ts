@@ -38,7 +38,7 @@ export default auth((req) => {
 
     // Rewrite /studio/ and subpaths to Sanity Studio port (3333)
     const studioPath = pathname.slice("/studio".length) || "/";
-    const targetUrl = `http://localhost:3333/studio${studioPath}`;
+    const targetUrl = `http://127.0.0.1:3333/studio${studioPath}`;
     console.log(`[Middleware] Rewrite ${pathname} -> ${targetUrl}`);
     return NextResponse.rewrite(new URL(targetUrl, req.url));
   }

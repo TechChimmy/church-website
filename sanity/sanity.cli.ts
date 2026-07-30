@@ -9,6 +9,19 @@ export default defineCliConfig({
     dataset,
   },
   studioHost: 'cft-church-cms',
+  vite(viteConfig) {
+    return {
+      ...viteConfig,
+      server: {
+        ...viteConfig.server,
+        host: '127.0.0.1',
+        hmr: {
+          clientPort: 3333,
+          host: '127.0.0.1',
+        },
+      },
+    };
+  },
 });
 
 

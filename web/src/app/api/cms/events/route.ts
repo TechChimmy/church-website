@@ -117,26 +117,39 @@ export async function PATCH(req: NextRequest) {
 
     if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
 
+    const setFields: Record<string, any> = {};
+    const unsetFields: string[] = [];
+
+    const assignField = (key: string, val: any) => {
+      if (val === undefined) return;
+      if (val === null) {
+        unsetFields.push(key);
+      } else {
+        setFields[key] = val;
+      }
+    };
+
+    assignField("title", data.title?.trim() ?? undefined);
+    assignField("titleTa", data.titleTa?.trim() ?? undefined);
+    assignField("description", data.description?.trim() ?? undefined);
+    assignField("descriptionTa", data.descriptionTa?.trim() ?? undefined);
+    assignField("date", data.date ? new Date(data.date).toISOString() : undefined);
+    assignField("endDate", data.endDate ? new Date(data.endDate).toISOString() : null);
+    assignField("time", data.time?.trim() || null);
+    assignField("timeTa", data.timeTa?.trim() || null);
+    assignField("location", data.location?.trim() || null);
+    assignField("locationTa", data.locationTa?.trim() || null);
+    assignField("imageUrl", data.imageUrl?.trim() || null);
+    assignField("featured", typeof data.featured === "boolean" ? data.featured : undefined);
+    assignField("active", typeof data.active === "boolean" ? data.active : undefined);
+    assignField("order", data.order !== undefined ? Number(data.order) : undefined);
+
     const updated = await sanityPatchDoc({
       id,
       type: "event",
       patch: {
-        set: {
-          title: data.title?.trim() ?? undefined,
-          titleTa: data.titleTa?.trim() ?? undefined,
-          description: data.description?.trim() ?? undefined,
-          descriptionTa: data.descriptionTa?.trim() ?? undefined,
-          date: data.date ? new Date(data.date).toISOString() : undefined,
-          endDate: data.endDate ? new Date(data.endDate).toISOString() : null,
-          time: data.time?.trim() || null,
-          timeTa: data.timeTa?.trim() || null,
-          location: data.location?.trim() || null,
-          locationTa: data.locationTa?.trim() || null,
-          imageUrl: data.imageUrl?.trim() || null,
-          featured: typeof data.featured === "boolean" ? data.featured : undefined,
-          active: typeof data.active === "boolean" ? data.active : undefined,
-          order: data.order !== undefined ? Number(data.order) : undefined,
-        },
+        set: setFields,
+        ...(unsetFields.length > 0 ? { unset: unsetFields } : {}),
       },
     });
 

@@ -9,7 +9,9 @@ export default async function OurCommunityServer() {
     const q = `*[_type == "community" && active == true] | order(order asc) {
       _id,
       name,
+      nameTa,
       quote,
+      quoteTa,
       "imageUrl": image.asset->url
     }`;
 
@@ -51,7 +53,9 @@ export default async function OurCommunityServer() {
     const testimonials = items.map((t) => ({
       id: t._id,
       name: t.name ?? "",
+      nameTa: t.nameTa ?? "",
       body: t.quote ?? "",
+      bodyTa: t.quoteTa ?? "",
       imageUrl: t.imageUrl ? optimizeImageUrl(t.imageUrl, 400) : null,
     }));
 

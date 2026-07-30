@@ -78,8 +78,16 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -8 }}
                 transition={{ duration: 0.3 }}
-                className="max-w-[640px] mx-auto"
+                className="max-w-[640px] mx-auto flex flex-col items-center"
               >
+                {activeTestimonial?.imageUrl && (
+                  <img
+                    src={activeTestimonial.imageUrl}
+                    alt={name}
+                    className="w-16 h-16 rounded-full object-cover mb-4 border-2 shadow-sm"
+                    style={{ borderColor: "rgba(140,58,99,0.3)" }}
+                  />
+                )}
                 <p className="font-playfair text-[16px] font-semibold mb-2"
                   style={{ color: "var(--burgundy)" }}>
                   — {name}

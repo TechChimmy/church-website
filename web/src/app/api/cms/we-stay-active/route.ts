@@ -163,19 +163,28 @@ export async function PATCH(req: NextRequest) {
       }
     } : null;
 
+    const setFields: Record<string, any> = {
+      title: data.title?.trim() ?? undefined,
+      titleTa: data.titleTa?.trim() ?? undefined,
+      description: data.description?.trim() ?? undefined,
+      descriptionTa: data.descriptionTa?.trim() ?? undefined,
+      order: data.order !== undefined ? Number(data.order) : undefined,
+      active: typeof data.active === "boolean" ? data.active : undefined,
+    };
+
+    const unsetFields: string[] = [];
+    if (imageField) {
+      setFields.image = imageField;
+    } else {
+      unsetFields.push("image");
+    }
+
     const updated = await sanityPatchDoc({
       id,
       type: "weStayActive",
       patch: {
-        set: {
-          title: data.title?.trim() ?? undefined,
-          titleTa: data.titleTa?.trim() ?? undefined,
-          description: data.description?.trim() ?? undefined,
-          descriptionTa: data.descriptionTa?.trim() ?? undefined,
-          image: imageField !== null ? imageField : undefined,
-          order: data.order !== undefined ? Number(data.order) : undefined,
-          active: typeof data.active === "boolean" ? data.active : undefined,
-        },
+        set: setFields,
+        ...(unsetFields.length > 0 ? { unset: unsetFields } : {}),
       },
     });
 

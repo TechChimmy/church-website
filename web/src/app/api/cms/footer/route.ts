@@ -2,7 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/lib/sanity/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+export const dynamic = "force-dynamic";
 
 async function requireAdmin() {
   return Boolean((await auth())?.user);
@@ -72,6 +74,7 @@ export async function PATCH(req: NextRequest) {
     revalidatePath("/events");
     revalidatePath("/ask-collins");
     revalidatePath("/join-us-live");
+    (revalidateTag as any)("sanity");
 
     return NextResponse.json({
       address: updated.address ?? "",

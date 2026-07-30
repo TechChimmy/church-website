@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { getSanityClient } from "@/lib/sanity/client";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
@@ -143,6 +143,7 @@ export async function PATCH(req: NextRequest) {
     revalidatePath("/about");
     revalidatePath("/events");
     revalidatePath("/join-us-live");
+    (revalidateTag as any)("sanity");
     
     return NextResponse.json({
       id: updated._id,

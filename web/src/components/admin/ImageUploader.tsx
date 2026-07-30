@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 
 interface Props {
@@ -19,6 +19,10 @@ export default function ImageUploader({
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(currentUrl ?? "");
+
+  useEffect(() => {
+    setPreview(currentUrl ?? "");
+  }, [currentUrl]);
 
   async function handleFile(file: File) {
     setLoading(true);
@@ -62,8 +66,24 @@ export default function ImageUploader({
         }}
       >
         {preview ? (
-          <div className="relative w-full h-32">
-            <Image src={preview} alt="preview" fill className="object-contain rounded-sm" />
+          <div className="relative w-full flex flex-col items-center gap-2">
+            <div className="relative w-full h-32">
+              <Image src={preview} alt="preview" fill className="object-contain rounded-sm" />
+            </div>
+            <button
+              type="button"
+              className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest rounded-[5px] transition-colors bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
+              onClick={(e) => {
+                e.stopPropagation();
+                setPreview("");
+                onUploaded("");
+                if (inputRef.current) {
+                  inputRef.current.value = "";
+                }
+              }}
+            >
+              Remove Image
+            </button>
           </div>
         ) : (
           <div className="w-full h-20 bg-stone-100 rounded-sm flex items-center justify-center">

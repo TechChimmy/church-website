@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { sanityCreateDoc, sanityPatchDoc, sanityDeleteDoc } from "@/lib/sanity-mutations";
+import { revalidatePath, revalidateTag } from "next/cache";
+
+export const dynamic = "force-dynamic";
 
 async function requireAdmin() { return (await auth())?.user ?? null; }
 
@@ -98,6 +101,11 @@ export async function POST(req: NextRequest) {
       active: data.active ?? true,
     };
 
+    revalidatePath("/about");
+    revalidatePath("/events");
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
     return NextResponse.json(item);
   } catch (error) {
     console.error("POST /api/cms/testimonials error:", error);
@@ -156,6 +164,11 @@ export async function PATCH(req: NextRequest) {
       active: data.active ?? true,
     };
 
+    revalidatePath("/about");
+    revalidatePath("/events");
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
     return NextResponse.json(item);
   } catch (error) {
     console.error("PATCH /api/cms/testimonials error:", error);
@@ -168,6 +181,12 @@ export async function DELETE(req: NextRequest) {
     if (!await requireAdmin()) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await req.json();
     await sanityDeleteDoc(id);
+
+    revalidatePath("/about");
+    revalidatePath("/events");
+    revalidatePath("/ask-collins");
+    (revalidateTag as any)("sanity");
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("DELETE /api/cms/testimonials error:", error);
