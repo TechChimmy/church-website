@@ -12,8 +12,10 @@ export async function POST(req: NextRequest) {
 
   if (typeof name !== "string" || name.trim().length < 2)
     return NextResponse.json({ error: "Name is required." }, { status: 400 });
-  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
+  if (typeof phone !== "string" || phone.trim().length < 5)
+    return NextResponse.json({ error: "Phone number is required." }, { status: 400 });
+  if (typeof email === "string" && email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
+    return NextResponse.json({ error: "Please enter a valid email address." }, { status: 400 });
   if (typeof eventId !== "string" || !eventId)
     return NextResponse.json({ error: "Event ID is required." }, { status: 400 });
 
@@ -24,8 +26,8 @@ export async function POST(req: NextRequest) {
       eventId:    eventId.trim(),
       eventTitle: typeof eventTitle === "string" ? eventTitle.trim() : "",
       name:       name.trim(),
-      email:      email.trim().toLowerCase(),
-      phone:      typeof phone === "string" && phone.trim() ? phone.trim() : null,
+      email:      typeof email === "string" && email.trim() ? email.trim().toLowerCase() : null,
+      phone:      phone.trim(),
       createdAt:  new Date().toISOString(),
     };
     const result = await sanityCreateDoc({

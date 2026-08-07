@@ -70,13 +70,13 @@ export async function sendContactMessage(opts: {
 }
 
 export async function sendEventParticipation(opts: {
-  eventTitle: string; name: string; email: string; phone?: string; submittedAt: string | Date;
+  eventTitle: string; name: string; email?: string | null; phone?: string | null; submittedAt: string | Date;
 }): Promise<{ ok: boolean; error?: string }> {
   const dateObj = typeof opts.submittedAt === "string" ? new Date(opts.submittedAt) : opts.submittedAt;
   const submitted = dateObj.toLocaleString("en-IN", {
     timeZone: "Asia/Kolkata", dateStyle: "medium", timeStyle: "short",
   });
-  const text = `━━━━━━━━━━━━━━\n📋 <b>NEW EVENT PARTICIPATION</b>\n\n<b>Event:</b> ${opts.eventTitle}\n\n<b>Name:</b> ${opts.name}\n\n<b>Email:</b> ${opts.email}\n\n<b>Phone:</b> ${opts.phone ?? "Not provided"}\n\n<b>Submitted:</b> ${submitted}\n━━━━━━━━━━━━━━`;
+  const text = `━━━━━━━━━━━━━━\n📋 <b>NEW EVENT PARTICIPATION</b>\n\n<b>Event:</b> ${opts.eventTitle}\n\n<b>Name:</b> ${opts.name}\n\n<b>Phone:</b> ${opts.phone || "Not provided"}\n\n<b>Email:</b> ${opts.email || "Not provided"}\n\n<b>Submitted:</b> ${submitted}\n━━━━━━━━━━━━━━`;
   
   const eventChatId = process.env.TELEGRAM_EVENTS_CHAT_ID || CHAT_ID;
   return sendMessage(text, eventChatId);

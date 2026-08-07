@@ -133,8 +133,13 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
   async function handleSubmit() {
     setError("");
     if (!form.name.trim()) { setError(t("askCollins.errorName")); return; }
-    if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      setError(t("askCollins.errorEmail")); return;
+    if (!form.phone.trim()) {
+      setError(lang === "ta" ? "தயவுசெய்து உங்கள் தொலைபேசி எண்ணை உள்ளிடவும்." : "Please enter your phone number.");
+      return;
+    }
+    if (form.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      setError(t("askCollins.errorEmail"));
+      return;
     }
     if (!modalEvent) return;
     setSubmitting(true);
@@ -146,8 +151,8 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
           eventId: modalEvent.id,
           eventTitle: lang === "ta" && modalEvent.titleTa ? modalEvent.titleTa : modalEvent.title,
           name: form.name.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim() || null,
+          phone: form.phone.trim(),
+          email: form.email.trim() || null,
         }),
       });
       if (res.ok) {
@@ -441,8 +446,8 @@ export default function UpcomingEvents({ events = [] }: UpcomingEventsProps) {
                     <p className="font-lato text-[12px] font-bold uppercase tracking-widest mb-4" style={{ color: "#8A7078" }}>{lang === "ta" ? "உங்கள் விவரங்கள்" : "Your details"}</p>
                     <div className="flex flex-col gap-3">
                       <input suppressHydrationWarning type="text" placeholder={lang === "ta" ? "உங்கள் முழு பெயர் *" : "Your full name *"} value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300 outline-none bg-white text-stone-800 focus:border-[var(--burgundy)] transition-colors placeholder:text-stone-300 rounded-sm" />
-                      <input suppressHydrationWarning type="email" placeholder={lang === "ta" ? "உங்கள் மின்னஞ்சல் முகவரி *" : "Your email address *"} value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300 outline-none bg-white text-stone-800 focus:border-[var(--burgundy)] transition-colors placeholder:text-stone-300 rounded-sm" />
-                      <input suppressHydrationWarning type="tel" placeholder={lang === "ta" ? "தொலைபேசி எண் (விருப்பம்)" : "Phone number (optional)"} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300 outline-none bg-white text-stone-800 focus:border-[var(--burgundy)] transition-colors placeholder:text-stone-300 rounded-sm" />
+                      <input suppressHydrationWarning type="tel" placeholder={lang === "ta" ? "உங்கள் தொலைபேசி எண் *" : "Your phone number *"} value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300 outline-none bg-white text-stone-800 focus:border-[var(--burgundy)] transition-colors placeholder:text-stone-300 rounded-sm" />
+                      <input suppressHydrationWarning type="email" placeholder={lang === "ta" ? "உங்கள் மின்னஞ்சல் முகவரி (விருப்பம்)" : "Your email address (optional)"} value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} className="w-full px-4 py-3 font-lato text-[13px] border border-stone-300 outline-none bg-white text-stone-800 focus:border-[var(--burgundy)] transition-colors placeholder:text-stone-300 rounded-sm" />
                     </div>
                     {error && <p className="font-lato text-[12.5px] text-red-500 mt-3">{error}</p>}
                     <div className="flex gap-3 mt-5">

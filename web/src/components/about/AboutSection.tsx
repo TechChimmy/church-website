@@ -28,14 +28,14 @@ export default function AboutSection({ heading, headingTa, body, bodyTa, imageUr
           {activeHeading.split(" ")[0]}{" "}
           <span style={{ color: "var(--accent-beige)" }}>{activeHeading.split(" ").slice(1).join(" ")}</span>
         </h2>
-        <p className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85] mb-3"
-          style={{ color: "rgba(243,233,229,0.75)" }}>
-          {activeBody}
-        </p>
-        <p className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85] mb-3"
-          style={{ color: "rgba(243,233,229,0.75)" }}>
-          {t("about.fallbackParagraph")}
-        </p>
+        <div className="space-y-3 mb-3">
+          {activeBody.split("\n").filter(Boolean).map((paragraph, index) => (
+            <p key={index} className="font-lato text-[13px] sm:text-[13.5px] leading-[1.85]"
+              style={{ color: "rgba(243,233,229,0.75)" }}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
         <a href="/about" className="btn-outline self-start mt-4"
           style={{ color: "var(--accent-beige)", borderColor: "rgba(243,233,229,0.4)" }}
           onMouseEnter={e => {

@@ -25,10 +25,14 @@ export default function OurShepherd({ heading, headingTa, body, bodyTa, imageUrl
           {firstWord}{" "}
           <span style={{ color: "var(--accent-beige)" }}>{restWords.join(" ")}</span>
         </h2>
-        <p className="font-lato text-[13px] leading-[1.85] mb-3"
-          style={{ color: "rgba(243,233,229,0.75)" }}>
-          {activeBody}
-        </p>
+        <div className="space-y-3 mb-3">
+          {activeBody.split("\n").filter(Boolean).map((paragraph, index) => (
+            <p key={index} className="font-lato text-[13px] leading-[1.85]"
+              style={{ color: "rgba(243,233,229,0.75)" }}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
         <a href="#"
           className="font-lato text-[11px] font-bold uppercase tracking-[1.4px] px-6 py-[10px]
                      rounded-sm no-underline transition-all duration-200 self-start mt-4 will-change-transform"
