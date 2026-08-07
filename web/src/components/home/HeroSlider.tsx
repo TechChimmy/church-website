@@ -115,13 +115,7 @@ export default function HeroSlider({ slides = [] }: { slides?: Slide[] }) {
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
               >
-                {/* Decorative cross mark */}
-                <div className="mb-4 opacity-60">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(243,233,229,0.7)" strokeWidth="1.5">
-                    <line x1="12" y1="2" x2="12" y2="22" />
-                    <line x1="2" y1="12" x2="22" y2="12" />
-                  </svg>
-                </div>
+
 
                 <h1 className="font-playfair text-[24px] sm:text-[34px] md:text-[42px] font-bold tracking-wide
                                leading-tight mb-3"
