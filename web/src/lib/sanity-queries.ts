@@ -117,6 +117,14 @@ export async function fetchHomepageContent() {
     joinTextTa,
     visitText,
     visitTextTa,
+    visitUsBtnText,
+    visitUsBtnTextTa,
+    visitUsBtnLink,
+    aboutHeading,
+    aboutHeadingTa,
+    aboutBody,
+    aboutBodyTa,
+    "aboutImageUrl": aboutImage.asset->url,
     prayerHeading,
     prayerHeadingTa
   }`;

@@ -15,8 +15,16 @@ async function requireAdmin() {
 const DEFAULT_SETTINGS = [
   // About Page
   { key: "about_image", label: "About Hero Image URL", group: "about", type: "text", value: "/images/about/banner.jpg" },
-  { key: "about_heading", label: "About Heading", group: "about", type: "text", value: "About Us" },
-  { key: "about_body", label: "About Content", group: "about", type: "textarea", value: "Your paragraph lorem ipsum the warmth and charm of a cosy Sunday afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment." },
+  { key: "about_hero_title", label: "About Hero Title (English)", group: "about", type: "text", value: "About Us" },
+  { key: "about_hero_title_ta", label: "About Hero Title (Tamil)", group: "about", type: "text", value: "எங்களைப் பற்றி" },
+  { key: "about_hero_subtitle", label: "About Hero Subtitle (English)", group: "about", type: "text", value: "Christian Fellowship Church" },
+  { key: "about_hero_subtitle_ta", label: "About Hero Subtitle (Tamil)", group: "about", type: "text", value: "கிறிஸ்தவ ஐக்கிய சபை" },
+  { key: "about_heading", label: "About Heading (English)", group: "about", type: "text", value: "About Us" },
+  { key: "about_heading_ta", label: "About Heading (Tamil)", group: "about", type: "text", value: "எங்களைப் பற்றி" },
+  { key: "about_body", label: "About Content (English)", group: "about", type: "textarea", value: "Your paragraph lorem ipsum the warmth and charm of a cosy Sunday afternoon spent in a quaint countryside cottage. The soft crackle of a fireplace and the aroma of freshly brewed tea envelope the senses, creating an atmosphere of pure contentment." },
+  { key: "about_body_ta", label: "About Content (Tamil)", group: "about", type: "textarea", value: "விசுவாசம், அன்பு மற்றும் கிறிஸ்தவ ஐக்கியத்தின் மூலம் ஒரு புதிய சமூதாயத்தை உருவாக்குவதே எங்களின் நோக்கம்." },
+  { key: "community_heading", label: "Community Section Heading (English)", group: "about", type: "text", value: "Our Community" },
+  { key: "community_heading_ta", label: "Community Section Heading (Tamil)", group: "about", type: "text", value: "எங்கள் சமூகம்" },
 
   // Shepherd
   { key: "shepherd_heading", label: "Shepherd Heading", group: "shepherd", type: "text", value: "Our Shepherd" },
@@ -35,6 +43,10 @@ const DEFAULT_SETTINGS = [
 
   // Events Page Banner
   { key: "events_banner_image", label: "Events Page Banner Image URL", group: "events", type: "text", value: "/images/banners/events.jpg" },
+  { key: "events_hero_title", label: "Events Hero Title (English)", group: "events", type: "text", value: "Upcoming Events" },
+  { key: "events_hero_title_ta", label: "Events Hero Title (Tamil)", group: "events", type: "text", value: "நிகழ்ச்சிகள்" },
+  { key: "events_hero_subtitle", label: "Events Hero Subtitle (English)", group: "events", type: "text", value: "Join Us in Fellowship & Worship" },
+  { key: "events_hero_subtitle_ta", label: "Events Hero Subtitle (Tamil)", group: "events", type: "text", value: "எங்கள் சபை நிகழ்வுகள்" },
 
   // Activity Images
   { key: "activity_fellowship_image", label: "Activity: Fellowship Image URL", group: "activity", type: "text", value: "/images/activity/fellowship.jpg" },
@@ -53,6 +65,26 @@ const DEFAULT_SETTINGS = [
   { key: "youtube_api_key", label: "YouTube API Key", group: "youtube", type: "text", value: "your_youtube_api_key" },
   { key: "youtube_channel_id", label: "YouTube Channel ID", group: "youtube", type: "text", value: "your_channel_id" },
 
+  // Ask Collins Page Settings
+  { key: "ask_collins_banner_image", label: "Ask Collins Hero Banner Image URL", group: "ask_collins", type: "text", value: "/images/banners/ask-collins.jpg" },
+  { key: "ask_collins_hero_title", label: "Ask Collins Hero Title (English)", group: "ask_collins", type: "text", value: "Ask Collins" },
+  { key: "ask_collins_hero_title_ta", label: "Ask Collins Hero Title (Tamil)", group: "ask_collins", type: "text", value: "போதகரிடம் கேளுங்கள்" },
+  { key: "ask_collins_hero_subtitle", label: "Ask Collins Hero Subtitle (English)", group: "ask_collins", type: "text", value: "Biblical Wisdom & Guidance" },
+  { key: "ask_collins_hero_subtitle_ta", label: "Ask Collins Hero Subtitle (Tamil)", group: "ask_collins", type: "text", value: "உங்கள் கேள்விகளுக்கு வேதாகம பதில்கள்" },
+  { key: "ask_collins_tagline", label: "Form Tagline (English)", group: "ask_collins", type: "text", value: "HAVE A QUESTION?" },
+  { key: "ask_collins_tagline_ta", label: "Form Tagline (Tamil)", group: "ask_collins", type: "text", value: "கேள்வி உள்ளதா?" },
+  { key: "ask_collins_heading", label: "Form Heading (English)", group: "ask_collins", type: "text", value: "Ask Pastor Collins" },
+  { key: "ask_collins_heading_ta", label: "Form Heading (Tamil)", group: "ask_collins", type: "text", value: "போதகர் கோலின்ஸிடம் கேளுங்கள்" },
+  { key: "ask_collins_subheading", label: "Form Subheading (English)", group: "ask_collins", type: "textarea", value: "Do you have questions about faith, Scripture, life, or Christian doctrine? Submit your question below." },
+  { key: "ask_collins_subheading_ta", label: "Form Subheading (Tamil)", group: "ask_collins", type: "textarea", value: "விசுவாசம், வேதாகமம், வாழ்க்கை அல்லது கிறிஸ்தவ உபதேசம் பற்றிய கேள்விகள் உள்ளதா? உங்கள் கேள்வியை கீழே சமர்ப்பிக்கவும்." },
+  { key: "answered_questions_tagline", label: "Q&A Section Tagline (English)", group: "ask_collins", type: "text", value: "COMMUNITY Q&A" },
+  { key: "answered_questions_tagline_ta", label: "Q&A Section Tagline (Tamil)", group: "ask_collins", type: "text", value: "கேள்வி & பதில்" },
+  { key: "answered_questions_heading", label: "Q&A Section Heading (English)", group: "ask_collins", type: "text", value: "Questions Answered by Pastor Collins" },
+  { key: "answered_questions_heading_ta", label: "Q&A Section Heading (Tamil)", group: "ask_collins", type: "text", value: "போதகர் கோலின்ஸுடன் கேள்வி-பதில்" },
+  { key: "answers_word_tagline", label: "Answers Blog Section Tagline (English)", group: "ask_collins", type: "text", value: "EXPLORE THE TRUTH" },
+  { key: "answers_word_tagline_ta", label: "Answers Blog Section Tagline (Tamil)", group: "ask_collins", type: "text", value: "சத்தியத்தை ஆராயுங்கள்" },
+  { key: "answers_word_heading", label: "Answers Blog Section Heading (English)", group: "ask_collins", type: "text", value: "Answers from the Word" },
+  { key: "answers_word_heading_ta", label: "Answers Blog Section Heading (Tamil)", group: "ask_collins", type: "text", value: "வேதாகமத்தில் இருந்து பதில்கள்" },
 ];
 
 export async function GET() {

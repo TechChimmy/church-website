@@ -2,6 +2,7 @@ import OurCommunity from "./OurCommunity";
 import { sanityFetch } from "@/lib/sanity/fetch";
 import { getSanityClient } from "@/lib/sanity/client";
 import { optimizeImageUrl } from "@/lib/sanity/image";
+import { getAllSettings } from "@/lib/settings";
 
 export default async function OurCommunityServer() {
   try {
@@ -15,7 +16,12 @@ export default async function OurCommunityServer() {
       "imageUrl": image.asset->url
     }`;
 
-    let items = await sanityFetch<any[]>(q);
+    const [itemsRes, settings] = await Promise.all([
+      sanityFetch<any[]>(q),
+      getAllSettings().catch(() => ({})),
+    ]);
+
+    let items = itemsRes;
 
     const count = await client.fetch<number>(`count(*[_type == "community"])`);
     if (count === 0) {
@@ -59,7 +65,13 @@ export default async function OurCommunityServer() {
       imageUrl: t.imageUrl ? optimizeImageUrl(t.imageUrl, 400) : null,
     }));
 
-    return <OurCommunity testimonials={testimonials} />;
+    return (
+      <OurCommunity
+        testimonials={testimonials}
+        heading={(settings as Record<string, string>).community_heading}
+        headingTa={(settings as Record<string, string>).community_heading_ta}
+      />
+    );
   } catch (error) {
     console.error("OurCommunityServer error:", error);
     return <OurCommunity testimonials={[]} />;

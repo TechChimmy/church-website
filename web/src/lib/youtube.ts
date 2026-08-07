@@ -43,9 +43,13 @@ async function ytFetch(
     }
 
     return res.json();
-  } catch (err) {
+  } catch (err: any) {
     if (process.env.NODE_ENV === "development") {
-      console.error(`[YouTube API Connection Error] Endpoint: ${endpoint}`, err);
+      if (err?.name === "TimeoutError" || err?.name === "AbortError") {
+        console.warn(`[YouTube API Warning] Endpoint '${endpoint}' request timed out after 3s.`);
+      } else {
+        console.error(`[YouTube API Connection Error] Endpoint: ${endpoint}`, err?.message || String(err));
+      }
     }
     return null;
   }
@@ -398,12 +402,19 @@ export async function getChannelVideoData(): Promise<YouTubeLiveResult> {
     return globalForYouTube.cachedVideoData;
   }
 
-  // First request: fetch synchronously to populate the cache
+  // First request: fetch with a 2.5s max budget so initial page load is fast and never blocked
   try {
-    const data = await fetchChannelVideoData(channelIdInput, apiKey, emptyResult);
-    globalForYouTube.cachedVideoData = data;
-    globalForYouTube.lastFetchTime = Date.now();
-    return globalForYouTube.cachedVideoData;
+    const fetchPromise = fetchChannelVideoData(channelIdInput, apiKey, emptyResult).then((data) => {
+      globalForYouTube.cachedVideoData = data;
+      globalForYouTube.lastFetchTime = Date.now();
+      return data;
+    });
+
+    const timeoutPromise = new Promise<YouTubeLiveResult>((resolve) => {
+      setTimeout(() => resolve(emptyResult), 2500);
+    });
+
+    return await Promise.race([fetchPromise, timeoutPromise]);
   } catch (error) {
     console.error("Error fetching YouTube video data:", error);
     return emptyResult;

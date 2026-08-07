@@ -60,7 +60,13 @@ export default async function EventsPage() {
   return (
     <main>
       <Navbar />
-      <EventsHero imageUrl={settings.events_banner_image} />
+      <EventsHero
+        imageUrl={settings.events_banner_image}
+        title={settings.events_hero_title}
+        titleTa={settings.events_hero_title_ta}
+        subtitle={settings.events_hero_subtitle}
+        subtitleTa={settings.events_hero_subtitle_ta}
+      />
       <UpcomingEvents events={upcomingEvents} />
       <WeStayActive items={activeItems} />
       <CalendarOfEvents />

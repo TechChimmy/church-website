@@ -26,7 +26,11 @@ const EMPTY_ACTIVE: Omit<ActiveItem, "id"> = {
 };
 
 type S = Record<string, string>;
-const EVENTS_PAGE_KEYS = ["events_banner_image"];
+const EVENTS_PAGE_KEYS = [
+  "events_banner_image",
+  "events_hero_title", "events_hero_title_ta",
+  "events_hero_subtitle", "events_hero_subtitle_ta",
+];
 
 export default function AdminEvents() {
   const [events, setEvents]     = useState<Ev[]>([]);
@@ -184,7 +188,33 @@ export default function AdminEvents() {
 
       {/* Events Page Banner */}
       <Card className="mb-8">
-        <CardSection title="Events Page Banner">
+        <CardSection title="Events Page Banner & Titles">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div>
+              <Field label="Hero Title (English)">
+                <Input value={settings.events_hero_title ?? ""} onChange={e => setSettingValue("events_hero_title", e.target.value)} placeholder="Upcoming Events" />
+              </Field>
+              <SaveButton loading={false} onClick={() => saveSetting("events_hero_title")} />
+            </div>
+            <div>
+              <Field label="Hero Title (Tamil)">
+                <Input value={settings.events_hero_title_ta ?? ""} onChange={e => setSettingValue("events_hero_title_ta", e.target.value)} placeholder="நிகழ்ச்சிகள்" />
+              </Field>
+              <SaveButton loading={false} onClick={() => saveSetting("events_hero_title_ta")} />
+            </div>
+            <div>
+              <Field label="Hero Subtitle / Tagline (English)">
+                <Input value={settings.events_hero_subtitle ?? ""} onChange={e => setSettingValue("events_hero_subtitle", e.target.value)} placeholder="Join Us in Fellowship & Worship" />
+              </Field>
+              <SaveButton loading={false} onClick={() => saveSetting("events_hero_subtitle")} />
+            </div>
+            <div>
+              <Field label="Hero Subtitle / Tagline (Tamil)">
+                <Input value={settings.events_hero_subtitle_ta ?? ""} onChange={e => setSettingValue("events_hero_subtitle_ta", e.target.value)} placeholder="எங்கள் சபை நிகழ்வுகள்" />
+              </Field>
+              <SaveButton loading={false} onClick={() => saveSetting("events_hero_subtitle_ta")} />
+            </div>
+          </div>
           <ImageUploader
             label="Events Page Banner Image"
             currentUrl={settings.events_banner_image}

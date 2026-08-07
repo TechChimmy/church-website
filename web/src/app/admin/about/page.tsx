@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState, useCallback } from "react";
 import ImageUploader from "@/components/admin/ImageUploader";
@@ -11,6 +11,8 @@ type S = Record<string, string>;
 
 // Keys for static site settings (About Us + Shepherd sections)
 const ABOUT_KEYS = [
+  "about_hero_title", "about_hero_title_ta",
+  "about_hero_subtitle", "about_hero_subtitle_ta",
   "about_heading", "about_heading_ta",
   "about_body", "about_body_ta",
   "about_image",
@@ -19,6 +21,7 @@ const ABOUT_KEYS = [
   "shepherd_image",
   "doctrine_heading", "doctrine_heading_ta",
   "doctrine_paragraph", "doctrine_paragraph_ta",
+  "community_heading", "community_heading_ta",
 ];
 
 // ─── Dynamic Doctrine Item type ───────────────────────────────────────────────
@@ -229,6 +232,37 @@ export default function AdminAbout() {
 
       {/* ── About Us ─────────────────────────────────────── */}
       <Card className="mb-6">
+        <CardSection title="About Page Hero & Banner">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Hero Title (English)">
+                <Input value={settings.about_hero_title ?? ""} onChange={e => set("about_hero_title", e.target.value)} placeholder="About Us" />
+              </Field>
+              <SaveButton loading={saving === "about_hero_title"} onClick={() => save("about_hero_title")} />
+            </div>
+            <div>
+              <Field label="Hero Title (Tamil)">
+                <Input value={settings.about_hero_title_ta ?? ""} onChange={e => set("about_hero_title_ta", e.target.value)} placeholder="எங்களைப் பற்றி" />
+              </Field>
+              <SaveButton loading={saving === "about_hero_title_ta"} onClick={() => save("about_hero_title_ta")} />
+            </div>
+            <div>
+              <Field label="Hero Subtitle / Tagline (English)">
+                <Input value={settings.about_hero_subtitle ?? ""} onChange={e => set("about_hero_subtitle", e.target.value)} placeholder="Christian Fellowship Church" />
+              </Field>
+              <SaveButton loading={saving === "about_hero_subtitle"} onClick={() => save("about_hero_subtitle")} />
+            </div>
+            <div>
+              <Field label="Hero Subtitle / Tagline (Tamil)">
+                <Input value={settings.about_hero_subtitle_ta ?? ""} onChange={e => set("about_hero_subtitle_ta", e.target.value)} placeholder="கிறிஸ்தவ ஐக்கிய சபை" />
+              </Field>
+              <SaveButton loading={saving === "about_hero_subtitle_ta"} onClick={() => save("about_hero_subtitle_ta")} />
+            </div>
+          </div>
+        </CardSection>
+      </Card>
+
+      <Card className="mb-6">
         <CardSection title="About Us Section">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -330,6 +364,26 @@ export default function AdminAbout() {
                 <Textarea rows={4} value={settings.doctrine_paragraph_ta ?? ""} onChange={e => set("doctrine_paragraph_ta", e.target.value)} />
               </Field>
               <SaveButton loading={saving === "doctrine_paragraph_ta"} onClick={() => save("doctrine_paragraph_ta")} />
+            </div>
+          </div>
+        </CardSection>
+      </Card>
+
+      {/* ── Our Community Section ───────────────────────────── */}
+      <Card className="mb-6">
+        <CardSection title="Our Community — Section Heading">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Section Heading (English)">
+                <Input value={settings.community_heading ?? ""} onChange={e => set("community_heading", e.target.value)} placeholder="Our Community" />
+              </Field>
+              <SaveButton loading={saving === "community_heading"} onClick={() => save("community_heading")} />
+            </div>
+            <div>
+              <Field label="Section Heading (Tamil)">
+                <Input value={settings.community_heading_ta ?? ""} onChange={e => set("community_heading_ta", e.target.value)} placeholder="எங்கள் சமூகம்" />
+              </Field>
+              <SaveButton loading={saving === "community_heading_ta"} onClick={() => save("community_heading_ta")} />
             </div>
           </div>
         </CardSection>

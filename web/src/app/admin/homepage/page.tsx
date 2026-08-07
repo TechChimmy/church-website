@@ -20,6 +20,9 @@ const HOMEPAGE_KEYS = [
   "join_us_text", "join_us_text_ta",
   "visit_us_text", "visit_us_text_ta",
   "visit_us_btn_text", "visit_us_btn_text_ta", "visit_us_btn_link",
+  "about_heading", "about_heading_ta",
+  "about_body", "about_body_ta",
+  "about_image",
   "pray_heading", "pray_heading_ta"
 ];
 
@@ -211,6 +214,57 @@ export default function AdminHomepage() {
               </Field>
               <SaveButton loading={saving} onClick={() => saveSetting("visit_us_btn_link", settings.visit_us_btn_link)} />
             </div>
+          </div>
+        </CardSection>
+      </Card>
+
+      {/* ── About Us Section ── */}
+      <Card className="mb-6">
+        <CardSection title="About Us Section">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <Field label="Section Heading (English)">
+                <Input value={settings.about_heading ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, about_heading: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("about_heading", settings.about_heading)} />
+            </div>
+            <div>
+              <Field label="Section Heading (Tamil)">
+                <Input value={settings.about_heading_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, about_heading_ta: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("about_heading_ta", settings.about_heading_ta)} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 pt-6 border-t border-stone-100">
+            <div>
+              <Field label="Body Copy (English)">
+                <Textarea rows={4} value={settings.about_body ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, about_body: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("about_body", settings.about_body)} />
+            </div>
+            <div>
+              <Field label="Body Copy (Tamil)">
+                <Textarea rows={4} value={settings.about_body_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, about_body_ta: e.target.value }))} />
+              </Field>
+              <SaveButton loading={saving} onClick={() => saveSetting("about_body_ta", settings.about_body_ta)} />
+            </div>
+          </div>
+
+          <div className="mt-6 pt-6 border-t border-stone-100">
+            <ImageUploader
+              label="About Section Image"
+              currentUrl={settings.about_image ?? ""}
+              folder="about"
+              onUploaded={url => {
+                setSettings(s => ({ ...s, about_image: url }));
+                saveSetting("about_image", url);
+              }}
+            />
           </div>
         </CardSection>
       </Card>

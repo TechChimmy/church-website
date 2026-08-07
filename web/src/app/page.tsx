@@ -170,6 +170,7 @@ export default async function HomePage() {
         headingTa={settings.about_heading_ta ?? "எங்களைப் பற்றி"}
         body={settings.about_body ?? "Your paragraph lorem ipsum the warmth and charm of a cosy Sunday afternoon spent in a quaint countryside cottage."}
         bodyTa={settings.about_body_ta ?? "விசுவாசம், அன்பு மற்றும் கிறிஸ்தவ ஐக்கியத்தின் மூலம் ஒரு புதிய சமூதாயத்தை உருவாக்குவதே எங்களின் நோக்கம்."}
+        imageUrl={settings.about_image}
       />
       <PraySection
         heading={settings.pray_heading ?? "Pray with us"}

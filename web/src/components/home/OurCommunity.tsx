@@ -6,8 +6,19 @@ import { useLanguage } from "@/hooks/useLanguage";
 
 type T = { id: string; name: string; nameTa?: string; body: string; bodyTa?: string; imageUrl?: string | null };
 
-export default function OurCommunity({ testimonials: initialTestimonials = null }: { testimonials?: T[] | null }) {
+type OurCommunityProps = {
+  testimonials?: T[] | null;
+  heading?: string;
+  headingTa?: string;
+};
+
+export default function OurCommunity({
+  testimonials: initialTestimonials = null,
+  heading,
+  headingTa,
+}: OurCommunityProps) {
   const { lang, t } = useLanguage();
+  const displayHeading = lang === "ta" && headingTa ? headingTa : (heading || t("community.heading"));
 
   const FALLBACK: T[] = [
     { id:"f1", name:"Blake & Kay", body: t("community.fallbackParagraph") },
@@ -44,7 +55,7 @@ export default function OurCommunity({ testimonials: initialTestimonials = null 
           <div className="w-8 h-[2px] rounded-full mb-3" style={{ backgroundColor: "var(--burgundy)" }} />
           <h2 className="font-playfair text-[24px] sm:text-[26px] font-bold text-center"
             style={{ color: "var(--text-dark)" }}>
-            {t("community.heading")}
+            {displayHeading}
           </h2>
         </div>
 

@@ -16,8 +16,25 @@ interface Question {
   createdAt: string;
 }
 
-export default function AnsweredQuestions({ questions }: { questions: Question[] }) {
+interface AnsweredQuestionsProps {
+  questions: Question[];
+  tagline?: string;
+  taglineTa?: string;
+  heading?: string;
+  headingTa?: string;
+}
+
+export default function AnsweredQuestions({
+  questions,
+  tagline,
+  taglineTa,
+  heading,
+  headingTa,
+}: AnsweredQuestionsProps) {
   const { lang } = useLanguage();
+  const displayTagline = lang === "ta" && taglineTa ? taglineTa : (tagline || (lang === "ta" ? "கேள்வி & பதில்" : "COMMUNITY Q&A"));
+  const displayHeading = lang === "ta" && headingTa ? headingTa : (heading || (lang === "ta" ? "போதகர் கோலின்ஸுடன் கேள்வி-பதில்" : "Questions Answered by Pastor Collins"));
+
   const [activeQuestion, setActiveQuestion] = useState<Question | null>(null);
   const sliderRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -40,7 +57,6 @@ export default function AnsweredQuestions({ questions }: { questions: Question[]
   const scroll = (direction: "left" | "right") => {
     if (sliderRef.current) {
       const { scrollLeft } = sliderRef.current;
-      // Scroll by approximately one card width
       const cardWidth = 380;
       const scrollTo = direction === "left" 
         ? scrollLeft - cardWidth 
@@ -59,10 +75,10 @@ export default function AnsweredQuestions({ questions }: { questions: Question[]
         <div className="relative flex flex-col items-center justify-center mb-8 text-center min-h-[72px]">
           <div className="max-w-2xl mx-auto">
             <span className="font-lato text-[11px] font-bold uppercase tracking-widest text-[var(--burgundy)] mb-2 block">
-              {lang === "ta" ? "கேள்வி & பதில்" : "COMMUNITY Q&A"}
+              {displayTagline}
             </span>
             <h2 className="font-playfair text-[28px] sm:text-[32px] font-bold text-stone-900 leading-tight">
-              {lang === "ta" ? "போதகர் கோலின்ஸுடன் கேள்வி-பதில்" : "Questions Answered by Pastor Collins"}
+              {displayHeading}
             </h2>
           </div>
 

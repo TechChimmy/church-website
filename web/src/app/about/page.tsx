@@ -62,7 +62,13 @@ export default async function AboutPage() {
   return (
     <main>
       <Navbar />
-      <AboutHero imageUrl={settings.about_image ?? ""} />
+      <AboutHero
+        imageUrl={settings.about_image ?? ""}
+        title={settings.about_hero_title}
+        titleTa={settings.about_hero_title_ta}
+        subtitle={settings.about_hero_subtitle}
+        subtitleTa={settings.about_hero_subtitle_ta}
+      />
       <AboutUsSection
         heading={settings.about_heading ?? "About Us"}
         headingTa={settings.about_heading_ta ?? "எங்களைப் பற்றி"}

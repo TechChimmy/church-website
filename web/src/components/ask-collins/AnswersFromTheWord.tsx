@@ -30,8 +30,25 @@ const ALL_ANSWERS = [
 
 const PAGE_SIZE = 4;
 
-export default function AnswersFromTheWord({ initialAnswers = [] }: { initialAnswers?: any[] }) {
+interface AnswersFromTheWordProps {
+  initialAnswers?: any[];
+  tagline?: string;
+  taglineTa?: string;
+  heading?: string;
+  headingTa?: string;
+}
+
+export default function AnswersFromTheWord({
+  initialAnswers = [],
+  tagline,
+  taglineTa,
+  heading,
+  headingTa,
+}: AnswersFromTheWordProps) {
   const { lang, t } = useLanguage();
+  const displayTagline = lang === "ta" && taglineTa ? taglineTa : (tagline || (lang === "ta" ? "சத்தியத்தை ஆராயுங்கள்" : "EXPLORE THE TRUTH"));
+  const displayHeading = lang === "ta" && headingTa ? headingTa : (heading || t("answers.heading"));
+
   const answers = (initialAnswers && initialAnswers.length > 0)
     ? initialAnswers.map((item) => {
         const title = lang === "ta" && item.titleTa ? item.titleTa : (item.title || item.question || "");
@@ -85,10 +102,10 @@ export default function AnswersFromTheWord({ initialAnswers = [] }: { initialAns
       <div className="max-w-[1280px] mx-auto">
         <div className="flex flex-col items-center mb-12">
           <span className="font-lato text-[11px] uppercase tracking-[3px] mb-2" style={{ color: "var(--burgundy)" }}>
-            {lang === "ta" ? "சத்தியத்தை ஆராயுங்கள்" : "EXPLORE THE TRUTH"}
+            {displayTagline}
           </span>
           <h2 className="font-playfair text-[28px] sm:text-[34px] font-bold text-stone-900 leading-tight text-center" style={{ color: "var(--text-dark)" }}>
-            {t("answers.heading")}
+            {displayHeading}
           </h2>
           <div className="w-12 h-[2px] rounded-full mt-4" style={{ backgroundColor: "var(--burgundy)" }} />
         </div>

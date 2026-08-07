@@ -50,6 +50,19 @@ const EMPTY_QUESTION: Q = {
   createdAt: new Date().toISOString(),
 };
 
+const ASK_COLLINS_KEYS = [
+  "ask_collins_banner_image",
+  "ask_collins_hero_title", "ask_collins_hero_title_ta",
+  "ask_collins_hero_subtitle", "ask_collins_hero_subtitle_ta",
+  "ask_collins_tagline", "ask_collins_tagline_ta",
+  "ask_collins_heading", "ask_collins_heading_ta",
+  "ask_collins_subheading", "ask_collins_subheading_ta",
+  "answered_questions_tagline", "answered_questions_tagline_ta",
+  "answered_questions_heading", "answered_questions_heading_ta",
+  "answers_word_tagline", "answers_word_tagline_ta",
+  "answers_word_heading", "answers_word_heading_ta",
+];
+
 export default function AdminAskCollins() {
   const [data, setData]       = useState<APIResponse>({ items: [], total: 0, page: 1, limit: 20, unreadCount: 0, pendingCount: 0 });
   const [filter, setFilter]   = useState("ALL");
@@ -62,6 +75,10 @@ export default function AdminAskCollins() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [toast, setToast]     = useState("");
 
+  // Page level settings
+  const [settings, setSettings]       = useState<Record<string, string>>({});
+  const [settingsSaving, setSettingsSaving] = useState(false);
+
   // Answers state
   const [answers, setAnswers]             = useState<AnswerItem[]>([]);
   const [answerForm, setAnswerForm]       = useState<Omit<AnswerItem, "id"> & { id?: string }>(EMPTY_ANSWER);
@@ -69,6 +86,25 @@ export default function AdminAskCollins() {
   const [answersSaving, setAnswersSaving]   = useState(false);
 
   const showToast = (m: string) => { setToast(m); setTimeout(() => setToast(""), 3000); };
+
+  const loadSettings = useCallback(async () => {
+    const r = await fetch("/api/cms/settings");
+    if (!r.ok) return;
+    const all: { key: string; value: string }[] = await r.json();
+    const map: Record<string, string> = {};
+    ASK_COLLINS_KEYS.forEach(k => { map[k] = all.find(s => s.key === k)?.value ?? ""; });
+    setSettings(map);
+  }, []);
+
+  async function saveSetting(key: string, value: string) {
+    setSettingsSaving(true);
+    await fetch("/api/cms/settings", {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ key, value }),
+    });
+    setSettingsSaving(false);
+    showToast("Setting saved");
+  }
 
   const load = useCallback(async () => {
     const params = new URLSearchParams({
@@ -90,7 +126,8 @@ export default function AdminAskCollins() {
   useEffect(() => {
     load();
     loadAnswers();
-  }, [load, loadAnswers]);
+    loadSettings();
+  }, [load, loadAnswers, loadSettings]);
 
   async function patch(id: string, upd: Record<string, unknown>) {
     setSaving(true);
@@ -203,21 +240,143 @@ export default function AdminAskCollins() {
     <div>
       <AdminPageHeader title="Ask Collins & Answers" description="Review submitted questions and publish answers into the blog database." />
 
-      {/* Stats row */}
-      <div className="flex gap-4 mb-5">
-        <div className="bg-white border border-stone-200 rounded-sm px-4 py-2">
-          <span className="font-lato text-[11px] text-stone-400 uppercase tracking-wider">Unread</span>
-          <span className="font-playfair text-[20px] font-bold text-stone-900 ml-3">{data.unreadCount}</span>
+      {/* ── Page & Section Copy Settings Card ── */}
+      <Card className="mb-8">
+        <h2 className="font-playfair text-[18px] font-bold text-stone-900 mb-4">Page Headers & Section Copy Settings</h2>
+        <div className="space-y-6">
+          {/* Hero Banner */}
+          <div className="border-b border-stone-100 pb-6">
+            <h3 className="font-lato text-[12px] font-bold uppercase tracking-wider text-stone-500 mb-3">1. Hero Banner & Title</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <Field label="Hero Title (English)">
+                <Input value={settings.ask_collins_hero_title ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_hero_title: e.target.value }))} placeholder="Ask Collins" />
+              </Field>
+              <Field label="Hero Title (Tamil)">
+                <Input value={settings.ask_collins_hero_title_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_hero_title_ta: e.target.value }))} placeholder="போதகரிடம் கேளுங்கள்" />
+              </Field>
+              <Field label="Hero Subtitle / Tagline (English)">
+                <Input value={settings.ask_collins_hero_subtitle ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_hero_subtitle: e.target.value }))} placeholder="Biblical Wisdom & Guidance" />
+              </Field>
+              <Field label="Hero Subtitle / Tagline (Tamil)">
+                <Input value={settings.ask_collins_hero_subtitle_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_hero_subtitle_ta: e.target.value }))} placeholder="உங்கள் கேள்விகளுக்கு வேதாகம பதில்கள்" />
+              </Field>
+            </div>
+            <ImageUploader
+              label="Ask Collins Hero Banner Image"
+              currentUrl={settings.ask_collins_banner_image ?? ""}
+              folder="banners"
+              onUploaded={url => {
+                setSettings(s => ({ ...s, ask_collins_banner_image: url }));
+                saveSetting("ask_collins_banner_image", url);
+              }}
+            />
+            <div className="flex gap-2 mt-3">
+              <SaveButton loading={settingsSaving} label="Save Hero Settings" onClick={() => {
+                saveSetting("ask_collins_hero_title", settings.ask_collins_hero_title);
+                saveSetting("ask_collins_hero_title_ta", settings.ask_collins_hero_title_ta);
+                saveSetting("ask_collins_hero_subtitle", settings.ask_collins_hero_subtitle);
+                saveSetting("ask_collins_hero_subtitle_ta", settings.ask_collins_hero_subtitle_ta);
+              }} />
+            </div>
+          </div>
+
+          {/* Submission Form Section */}
+          <div className="border-b border-stone-100 pb-6">
+            <h3 className="font-lato text-[12px] font-bold uppercase tracking-wider text-stone-500 mb-3">2. Question Submission Form Section</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <Field label="Form Tagline (English)">
+                <Input value={settings.ask_collins_tagline ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_tagline: e.target.value }))} />
+              </Field>
+              <Field label="Form Tagline (Tamil)">
+                <Input value={settings.ask_collins_tagline_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_tagline_ta: e.target.value }))} />
+              </Field>
+              <Field label="Form Heading (English)">
+                <Input value={settings.ask_collins_heading ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_heading: e.target.value }))} />
+              </Field>
+              <Field label="Form Heading (Tamil)">
+                <Input value={settings.ask_collins_heading_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, ask_collins_heading_ta: e.target.value }))} />
+              </Field>
+              <div className="sm:col-span-2">
+                <Field label="Form Subheading / Description (English)">
+                  <Textarea rows={2} value={settings.ask_collins_subheading ?? ""}
+                    onChange={e => setSettings(s => ({ ...s, ask_collins_subheading: e.target.value }))} />
+                </Field>
+              </div>
+              <div className="sm:col-span-2">
+                <Field label="Form Subheading / Description (Tamil)">
+                  <Textarea rows={2} value={settings.ask_collins_subheading_ta ?? ""}
+                    onChange={e => setSettings(s => ({ ...s, ask_collins_subheading_ta: e.target.value }))} />
+                </Field>
+              </div>
+            </div>
+            <SaveButton loading={settingsSaving} label="Save Form Headings" onClick={() => {
+              saveSetting("ask_collins_tagline", settings.ask_collins_tagline);
+              saveSetting("ask_collins_tagline_ta", settings.ask_collins_tagline_ta);
+              saveSetting("ask_collins_heading", settings.ask_collins_heading);
+              saveSetting("ask_collins_heading_ta", settings.ask_collins_heading_ta);
+              saveSetting("ask_collins_subheading", settings.ask_collins_subheading);
+              saveSetting("ask_collins_subheading_ta", settings.ask_collins_subheading_ta);
+            }} />
+          </div>
+
+          {/* Answered Questions & Answers from the Word Headings */}
+          <div>
+            <h3 className="font-lato text-[12px] font-bold uppercase tracking-wider text-stone-500 mb-3">3. Section Headings (Q&A Slider & Answers Blog)</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <Field label="Community Q&A Tagline (English)">
+                <Input value={settings.answered_questions_tagline ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answered_questions_tagline: e.target.value }))} />
+              </Field>
+              <Field label="Community Q&A Tagline (Tamil)">
+                <Input value={settings.answered_questions_tagline_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answered_questions_tagline_ta: e.target.value }))} />
+              </Field>
+              <Field label="Community Q&A Heading (English)">
+                <Input value={settings.answered_questions_heading ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answered_questions_heading: e.target.value }))} />
+              </Field>
+              <Field label="Community Q&A Heading (Tamil)">
+                <Input value={settings.answered_questions_heading_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answered_questions_heading_ta: e.target.value }))} />
+              </Field>
+              <Field label="Answers from Word Tagline (English)">
+                <Input value={settings.answers_word_tagline ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answers_word_tagline: e.target.value }))} />
+              </Field>
+              <Field label="Answers from Word Tagline (Tamil)">
+                <Input value={settings.answers_word_tagline_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answers_word_tagline_ta: e.target.value }))} />
+              </Field>
+              <Field label="Answers from Word Heading (English)">
+                <Input value={settings.answers_word_heading ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answers_word_heading: e.target.value }))} />
+              </Field>
+              <Field label="Answers from Word Heading (Tamil)">
+                <Input value={settings.answers_word_heading_ta ?? ""}
+                  onChange={e => setSettings(s => ({ ...s, answers_word_heading_ta: e.target.value }))} />
+              </Field>
+            </div>
+            <SaveButton loading={settingsSaving} label="Save Section Headings" onClick={() => {
+              saveSetting("answered_questions_tagline", settings.answered_questions_tagline);
+              saveSetting("answered_questions_tagline_ta", settings.answered_questions_tagline_ta);
+              saveSetting("answered_questions_heading", settings.answered_questions_heading);
+              saveSetting("answered_questions_heading_ta", settings.answered_questions_heading_ta);
+              saveSetting("answers_word_tagline", settings.answers_word_tagline);
+              saveSetting("answers_word_tagline_ta", settings.answers_word_tagline_ta);
+              saveSetting("answers_word_heading", settings.answers_word_heading);
+              saveSetting("answers_word_heading_ta", settings.answers_word_heading_ta);
+            }} />
+          </div>
         </div>
-        <div className="bg-white border border-stone-200 rounded-sm px-4 py-2">
-          <span className="font-lato text-[11px] text-stone-400 uppercase tracking-wider">Pending</span>
-          <span className="font-playfair text-[20px] font-bold text-stone-900 ml-3">{data.pendingCount}</span>
-        </div>
-        <div className="bg-white border border-stone-200 rounded-sm px-4 py-2">
-          <span className="font-lato text-[11px] text-stone-400 uppercase tracking-wider">Total</span>
-          <span className="font-playfair text-[20px] font-bold text-stone-900 ml-3">{data.total}</span>
-        </div>
-      </div>
+      </Card>
 
       {/* ── Ask Collins Questions section ── */}
       <div className="mb-10 border-b border-stone-200/80 pb-10">

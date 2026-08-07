@@ -8,12 +8,14 @@ type AboutSectionProps = {
   headingTa?: string;
   body: string;
   bodyTa?: string;
+  imageUrl?: string;
 };
 
-export default function AboutSection({ heading, headingTa, body, bodyTa }: AboutSectionProps) {
+export default function AboutSection({ heading, headingTa, body, bodyTa, imageUrl }: AboutSectionProps) {
   const { lang, t } = useLanguage();
   const activeHeading = lang === "ta" && headingTa ? headingTa : heading;
   const activeBody = lang === "ta" && bodyTa ? bodyTa : body;
+  const imageSrc = imageUrl || "/images/about/section.jpg";
 
   return (
     <section className="grid grid-cols-1 sm:grid-cols-2" style={{ minHeight: "380px" }}>
@@ -54,7 +56,7 @@ export default function AboutSection({ heading, headingTa, body, bodyTa }: About
       {/* Right — image */}
       <div className="relative overflow-hidden order-first sm:order-last min-h-[380px]">
         <Image
-          src="/images/about/section.jpg"
+          src={imageSrc}
           alt="About Us"
           fill
           sizes="(max-width: 768px) 100vw, 50vw"

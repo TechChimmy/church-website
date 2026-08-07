@@ -34,10 +34,35 @@ export default async function AskCollinsPage() {
   return (
     <main>
       <Navbar />
-      <AskCollinsHero />
-      <AskCollinsForm />
-      <AnsweredQuestions questions={publishedQuestions} />
-      <AnswersFromTheWord initialAnswers={answers} />
+      <AskCollinsHero
+        bannerImage={settings.ask_collins_banner_image}
+        title={settings.ask_collins_hero_title}
+        titleTa={settings.ask_collins_hero_title_ta}
+        subtitle={settings.ask_collins_hero_subtitle}
+        subtitleTa={settings.ask_collins_hero_subtitle_ta}
+      />
+      <AskCollinsForm
+        tagline={settings.ask_collins_tagline}
+        taglineTa={settings.ask_collins_tagline_ta}
+        heading={settings.ask_collins_heading}
+        headingTa={settings.ask_collins_heading_ta}
+        subheading={settings.ask_collins_subheading}
+        subheadingTa={settings.ask_collins_subheading_ta}
+      />
+      <AnsweredQuestions
+        questions={publishedQuestions}
+        tagline={settings.answered_questions_tagline}
+        taglineTa={settings.answered_questions_tagline_ta}
+        heading={settings.answered_questions_heading}
+        headingTa={settings.answered_questions_heading_ta}
+      />
+      <AnswersFromTheWord
+        initialAnswers={answers}
+        tagline={settings.answers_word_tagline}
+        taglineTa={settings.answers_word_tagline_ta}
+        heading={settings.answers_word_heading}
+        headingTa={settings.answers_word_heading_ta}
+      />
       <OurCommunityServer />
       <FooterContact {...contact} />
       <div className="bg-black text-center text-[11px] tracking-wide text-white/30 py-3 font-lato">

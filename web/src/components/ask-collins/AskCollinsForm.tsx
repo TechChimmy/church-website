@@ -4,8 +4,28 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 
-export default function AskCollinsForm() {
+interface AskCollinsFormProps {
+  tagline?: string;
+  taglineTa?: string;
+  heading?: string;
+  headingTa?: string;
+  subheading?: string;
+  subheadingTa?: string;
+}
+
+export default function AskCollinsForm({
+  tagline,
+  taglineTa,
+  heading,
+  headingTa,
+  subheading,
+  subheadingTa,
+}: AskCollinsFormProps = {}) {
   const { lang, t } = useLanguage();
+  const displayTagline = lang === "ta" && taglineTa ? taglineTa : (tagline || t("askCollins.tagline"));
+  const displayHeading = lang === "ta" && headingTa ? headingTa : (heading || t("askCollins.heading"));
+  const displaySubheading = lang === "ta" && subheadingTa ? subheadingTa : (subheading || t("askCollins.subheading"));
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -71,10 +91,10 @@ export default function AskCollinsForm() {
         {/* Heading */}
         <div className="flex flex-col items-center mb-8">
           <span className="font-lato text-[11px] uppercase tracking-[3px] mb-2" style={{ color: "var(--burgundy)" }}>
-            {t("askCollins.tagline")}
+            {displayTagline}
           </span>
           <h2 className="font-playfair text-[28px] sm:text-[34px] font-bold text-stone-900 leading-tight text-center" style={{ color: "var(--text-dark)" }}>
-            {t("askCollins.heading")}
+            {displayHeading}
           </h2>
           <div className="w-12 h-[2px] rounded-full mt-4" style={{ backgroundColor: "var(--burgundy)" }} />
         </div>
@@ -82,7 +102,7 @@ export default function AskCollinsForm() {
         {/* Card for the Form */}
         <div className="bg-white p-6 sm:p-10 rounded-sm" style={{ border: "1px solid rgba(140,58,99,0.12)", boxShadow: "0 4px 20px rgba(140,58,99,0.06)" }}>
           <p className="font-lato text-[14px] text-stone-500 leading-relaxed mb-8 text-center">
-            {t("askCollins.subheading")}
+            {displaySubheading}
           </p>
 
           {submitted ? (
